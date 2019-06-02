@@ -1,0 +1,38 @@
+# Site settings
+title:          Hersh Bhasin's Tech Blog
+description:    "Hersh Bhasin on Technology"
+#baseurl:        "/tale"
+url:            "https://hershbhasin.github.io"
+
+# Google Analytics
+google_analytics: UA-137392264-1
+
+# Author
+author:
+  name:         Hersh Bhasin
+  url:          https://hershbhasin.com
+  email:        hershbhasin63@gmail.com
+
+# Build settings
+markdown:       kramdown
+include:
+  - _pages
+
+# Assets
+sass:
+  sass_dir:     _sass
+  style:        compressed
+
+# Gems
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-seo-tag
+  # - jemoji #Uncomment this to allow emoji in your post
+
+# Permalinks
+permalink:      /:year-:month-:day/:title
+paginate:       10
+
+# Excludes
+exclude: [ Gemfile, Gemfile.lock, tale.gemspec ]

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-06-02T20:49:01-05:00</updated><id>http://localhost:4000/</id><title type="html">Hersh Bhasin’s Tech Blog</title><subtitle>Hersh Bhasin on Technology</subtitle><author><name>Hersh Bhasin</name><email>hershbhasin63@gmail.com</email></author><entry><title type="html">Azure Data Factory</title><link href="http://localhost:4000/2019-06-02/azure-data-factory" rel="alternate" type="text/html" title="Azure Data Factory" /><published>2019-06-02T00:00:00-05:00</published><updated>2019-06-02T00:00:00-05:00</updated><id>http://localhost:4000/2019-06-02/azure-data-factory</id><content type="html" xml:base="http://localhost:4000/2019-06-02/azure-data-factory">&lt;h1 id=&quot;overview&quot;&gt;Overview&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-06-02T23:36:56-05:00</updated><id>http://localhost:4000/</id><title type="html">Hersh Bhasin’s Tech Blog</title><subtitle>Hersh Bhasin on Technology</subtitle><author><name>Hersh Bhasin</name><email>hershbhasin63@gmail.com</email></author><entry><title type="html">Azure Data Factory</title><link href="http://localhost:4000/2019-06-02/azure-data-factory" rel="alternate" type="text/html" title="Azure Data Factory" /><published>2019-06-02T00:00:00-05:00</published><updated>2019-06-02T00:00:00-05:00</updated><id>http://localhost:4000/2019-06-02/azure-data-factory</id><content type="html" xml:base="http://localhost:4000/2019-06-02/azure-data-factory">&lt;h1 id=&quot;overview&quot;&gt;Overview&lt;/h1&gt;
 
 &lt;p&gt;In the Event Logs Ingestion &amp;amp; Storage post, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :&lt;/p&gt;
 
@@ -505,7 +505,212 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 &lt;p&gt;The pipeline should start running and can be viewed under the &lt;em&gt;Monitor &amp;amp; Manage&lt;/em&gt; tab in the Data Factory. Very soon, you should see transformed output in the Data Lake output folder.&lt;/p&gt;
 
 &lt;div class=&quot;language-html highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Source Code Link: 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Overview</summary></entry><entry><title type="html">Introducing Tale</title><link href="http://localhost:4000/2017-03-29/introducing-tale" rel="alternate" type="text/html" title="Introducing Tale" /><published>2017-03-29T00:00:00-05:00</published><updated>2017-03-29T00:00:00-05:00</updated><id>http://localhost:4000/2017-03-29/introducing-tale</id><content type="html" xml:base="http://localhost:4000/2017-03-29/introducing-tale">&lt;p&gt;Tale is a minimal &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; theme curated for storytellers. It is designed and developed by &lt;a href=&quot;https://github.com/chesterhow/&quot;&gt;myself&lt;/a&gt; for a friend who writes short stories.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Overview</summary></entry><entry><title type="html">A Cost Effective Data Ingestion &amp;amp; Curation Pipeline in Azure</title><link href="http://localhost:4000/2019-05-05/data-ingestion" rel="alternate" type="text/html" title="A Cost Effective Data Ingestion &amp; Curation Pipeline in Azure" /><published>2019-05-05T00:00:00-05:00</published><updated>2019-05-05T00:00:00-05:00</updated><id>http://localhost:4000/2019-05-05/data-ingestion</id><content type="html" xml:base="http://localhost:4000/2019-05-05/data-ingestion">&lt;p&gt;##Introduction&lt;/p&gt;
+
+&lt;p&gt;For analytics data, we would need to store large volumes of data. Storage in CosmosDB or SQL Server is very expensive (for example, in CosmosDB there is a storage charge and a RU charge per query). Storage in Data Lake is cheap, and for cost effectiveness, analytics data  can be persisted/archived in a Data Lake. Please refer to the price comparisons section below.&lt;/p&gt;
+
+&lt;h2 id=&quot;source-code&quot;&gt;Source Code&lt;/h2&gt;
+&lt;p&gt;The source code for this blog post is available here: &lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/BigData&quot;&gt;Source Code Link&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;price-comparison-between-cosmosdb-and-data-lake&quot;&gt;Price Comparison between CosmosDb and Data Lake&lt;/h2&gt;
+
+&lt;p&gt;Here are the price comparisons for storing 1TB of data in a Data Lake vs Cosmos Db. You will note from the following costing that Cosmos db is 88% more expensive than a Data Lake with Data Lake Analytics:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Pricing per Microsoft Azure Calculator&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_1.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;CosmosDB&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Per Month 1 TB Storage, 20,000 RU/Sec (1 year reserved. This is the minimum you can reserve on fixed monthly commitment package):&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_2.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Data Lake&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Per month: I TB Storage, 1,000,000 Reads, 1,000,000 writes.  With monthly commitment package, I TB  cost is only $35/Month&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_3.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Conclusion: Cosmos db is 88% more expensive than a Data Lake with Data Lake Analytics&lt;/em&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;justification-for--storing-raw-data-in-data-lake&quot;&gt;Justification for  Storing Raw Data in Data Lake&lt;/h1&gt;
+
+&lt;p&gt;Storage in Data Lakes is cheap and is the preferred storage for Big Data like device event logs. Conceptually, a data lake is nothing more than a data repository. The data lake can store any type of data. Cost and effort are reduced because the data is stored in its original native format with no structure (schema) required of it initially. We can transform the data later as and when need arises. This is the “ELT” strategy in Big Data, where ELT stands for: Extract, Load and Transform. This strategy aligns with the “Schema on Read” technique, where we are able to store data relatively easily, with little upfront investment, then query the data “where it lives” without being required to relocate the data first. This technique  is different from the traditional “ETL” strategy where Transformation occurs before  Load to the data warehouse - this is referred to a “Schema on Write” because the schema, i.e., structure of the data, must be defined before the data is loaded to the data warehouse. This takes time and effort to do correctly. It also means we typically need to define use cases ahead of time in order to validate the schema is correct.&lt;/p&gt;
+
+&lt;p&gt;We would like to treat this data as immutable data because we might want to harvest this data for various purposes, and to go back to a point in time, if necessary. Also, data in Event Hubs are transient, typically held for a week. To persist this data, it is very easy to connect it to a Data Lake. The speed at which data arrives from an Event Hub is a non-issue for a Data Lake, and typically a data lake accommodates both a batch layer (data loaded from batch processes) and a speed layer (data loaded from streaming data or near real-time applications).&lt;/p&gt;
+
+&lt;h1 id=&quot;curating-and-transforming-data&quot;&gt;Curating and Transforming Data&lt;/h1&gt;
+
+&lt;p&gt;Data required for reporting purposes can be curated from the Data Lake. Such curated data can have a schema applied to it. For example data from Event Hubs is stored in the Data Lake with an Avero schema, and the Body is stored as  a byte array. We can transform this data, by applying a custom schema and persist the curated data as either csv files in the Data Lake or to a database table. We can also summarize and aggregate this data and store the summarized data in a curated folder in the Data lake&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Data archived in a Data lake can  be curated as follows:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;As a scheduled batch job: scheduled reports for a period can be made available as csv files (also residing in the Data Lake) and displayed as links to csv files in a  Web Report Area.&lt;/li&gt;
+  &lt;li&gt;As Batch Jobs: users will be able to create any type of report  based on the raw data persisted in the Data Lake. Since all raw data will be  persisted, this will include summarizing / aggregating reports etc. The user will submit his request and a background job will run, the output of which will be a CSV file. When the job is completed, user will get a notification that the report is available as a CSV file on the Report area.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;proof-of-concept&quot;&gt;Proof of Concept&lt;/h1&gt;
+
+&lt;p&gt;I will  now demonstrate how Event Hub data can be stored and curated from  a Data Lake.  In the source code provided, a Event Hub client application will write events to an event hub, The event hub will archive its contents into a Data Lake and a Data Lake Analytics job will curate this data as csv files.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_4.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;create-data-lake-and-data-analytics&quot;&gt;Create Data Lake and Data Analytics&lt;/h2&gt;
+&lt;p&gt;Create a Data Lake Store and a Data Analytics Service. This can be done by running the provided ARM template in source code folder:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ARMTemplates\Data Ingestion\DataLake_DataAnalytics.json. 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You can run the template in the  Azure portal under &lt;em&gt;All Services/ Template (preview).&lt;/em&gt; This will create a DataLake and a Data Analytics service&lt;/p&gt;
+
+&lt;h2 id=&quot;set-up-archive-folder-in-data-lake&quot;&gt;Set Up Archive Folder in Data Lake&lt;/h2&gt;
+
+&lt;p&gt;In this section, you create a folder within the account where you want to capture the data from Event Hubs.&lt;/p&gt;
+
+&lt;p&gt;You also assign permissions to Event Hubs so that it can write data into a Data Lake Storage Gen1 account.&lt;/p&gt;
+
+&lt;p&gt;Open the Data Lake Storage Gen1 account where you want to capture data from Event Hubs and then click on Data Explorer.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_5.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Click New Folder and then enter a name for folder where you want to capture the data.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_6.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Assign permissions at the root of Data Lake Storage Gen1.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;a. Click Data Explorer, select the root of the Data Lake Storage Gen1 account, and then click Access.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_7.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;b. Under Access, click Add, click Select User or Group, and then search for Microsoft.EventHubs.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_8.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Click Select.&lt;/p&gt;
+
+&lt;p&gt;c. Under Assign Permissions, click Select Permissions. Set Permissions to Execute. Set Add to to This folder and all children. Set Add as to An access permission entry and a default permission entry.&lt;/p&gt;
+
+&lt;p&gt;Important&lt;/p&gt;
+
+&lt;p&gt;When creating a new folder hierarchy for capturing data received by Azure Event Hubs, this is an easy way to ensure access to the destination folder. However, adding permissions to all children of a top level folder with many child files and folders may take a long time. If your root folder contains a large number of files and folders, it may be faster to add Execute permissions for Microsoft.EventHubs individually to each folder in the path to your final destination folder.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_9.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Click OK.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Assign permissions for the folder under the Data Lake Storage Gen1 account where you want to capture data.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;a. Click Data Explorer, select the folder in the Data Lake Storage Gen1 account, and then click Access.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_10.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;b. Under Access, click Add, click Select User or Group, and then search for Microsoft.EventHubs.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_12.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Click Select.&lt;/p&gt;
+
+&lt;p&gt;c. Under Assign Permissions, click Select Permissions. Set Permissions to Read, Write,and Execute. Set Add to to This folder and all children. Finally, set Add as to An access permission entry and a default permission entry.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ingest_13.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Click OK.&lt;/p&gt;
+
+&lt;h2 id=&quot;create-an-event-hub-and-set-it-up-to-archive-to-the-archive-folder-set-up-above&quot;&gt;Create an Event Hub and set it up to Archive to the Archive Folder set up above&lt;/h2&gt;
+&lt;p&gt;In the source code folder, I have provided an ARM template called :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ARMTemplates\Data Ingestion\EventHub_DataLake.json.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You can run the template in the  Azure portal under &lt;em&gt;All Services/ Template (preview)&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Running this template will create an Event Hub and set it up to capture Event Hub data to the archivefolder of the DataLake created earlier.&lt;/p&gt;
+
+&lt;p&gt;If you look at the Capture section of the eventhub, you will notice that:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Capture has been turned on&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Capture will happen every 5 min&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Empty headers will not be written (otherwise you will have empty files created)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Event Hub points to the data lake created earlier&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Points to the archivefolder&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The Capture File format has been set to:&lt;/p&gt;
+
+    &lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s2&quot;&gt;&quot;{Namespace}_{EventHub}_{PartitionId}/{Year}/{Month}/{Day}_{Hour}_{Minute}_{Second}&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;The Data Lake will accumulate avro files by month. Look at the &lt;em&gt;data/archive&lt;/em&gt; folder in the source code to see how the data will be stored in the data lake&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Once created, Event Hub will save the events as avro files in Data Lake Store every 1 minute.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;a href=&quot;/assets/ingest_14.PNG&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;sending-data-to-event-hub&quot;&gt;Sending data to Event Hub&lt;/h1&gt;
+&lt;p&gt;A sample Event Hub events generator C# Console Application has been provided in the source code at: &lt;em&gt;..\EventHubClient\SampleSender&lt;/em&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Get the Event Hub connection string from Settings/Shared access policies&lt;/li&gt;
+  &lt;li&gt;Update variable EventHubConnectionString in program.cs in provided sample: &lt;em&gt;SampleSender&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;Run the sample app&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Sample Message Sent to Event Hub&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;timestamp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2019-04-22T16:20:36.480717-05:00&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;device&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Room Book 1001&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;category&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Network&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;priority&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Warning&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;message&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Login Timeout&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;project&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Richardson&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tenant&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ABC Integrators&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;transform--the-data&quot;&gt;Transform  the Data&lt;/h1&gt;
+
+&lt;p&gt;In the source code provided, open the solution &lt;em&gt;CloudworxUSQLApplication&lt;/em&gt; in Visual Studio.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Register assemblies&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Copy the following files from your CloudworxUSQLApplication/Lib directory to a directory in Azure Data Lake Store (e.g. \Assemblies\Avro):&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Microsoft.Analytics.Samples.Formats.dll&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Avro.dll&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;log4net.dll&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Newtonsoft.Json.dll&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Open Project CloudworxUSQLApplication in Visual Studio and:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create a database ( run &lt;em&gt;1-CreateDB.usql.cs&lt;/em&gt;), switch to the new database&lt;/li&gt;
+  &lt;li&gt;Check file paths in &lt;em&gt;2-RegisterAssemblies.usql&lt;/em&gt; and update them if necessary&lt;/li&gt;
+  &lt;li&gt;register the assemblies which have previously been uploaded to ADLS by submitting &lt;em&gt;2-RegisterAssemblies.usql&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;Run &lt;em&gt;logs.usql&lt;/em&gt; job&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/azure/data-lake-store/data-lake-store-archive-eventhub-capture&quot;&gt;Microsoft Documentation&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">##Introduction</summary></entry><entry><title type="html">Introducing Tale</title><link href="http://localhost:4000/2017-03-29/introducing-tale" rel="alternate" type="text/html" title="Introducing Tale" /><published>2017-03-29T00:00:00-05:00</published><updated>2017-03-29T00:00:00-05:00</updated><id>http://localhost:4000/2017-03-29/introducing-tale</id><content type="html" xml:base="http://localhost:4000/2017-03-29/introducing-tale">&lt;p&gt;Tale is a minimal &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; theme curated for storytellers. It is designed and developed by &lt;a href=&quot;https://github.com/chesterhow/&quot;&gt;myself&lt;/a&gt; for a friend who writes short stories.&lt;/p&gt;
 
 &lt;h2 id=&quot;tale-features&quot;&gt;Tale features&lt;/h2&gt;
 &lt;ul&gt;

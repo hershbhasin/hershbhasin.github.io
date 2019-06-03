@@ -7,14 +7,21 @@ title: "Embedded Reporting with Azure Power BI Embedded"
 author: "Hersh Bhasin"
 
 ---
+## Introduction 
 
 Power BI Embedded is intended to simplify how ISVs and developers use Power BI capabilities with embedded analytics. In this proof of concept, I will show you how to set up an Azure  Power BI Embedded environment. In an earlier POC: [Event Streaming using Azure Stream Analytics](https://tech.hershbhasin.com/2019/04/event-streaming-using-azure-stream_2.html), I demonstrated the use of Azure Stream Analytics to stream event hub data into a Azure SQL Server database. This POC extends the earlier streaming POC and shows how to build reports off the event hub data, how to host the reports on Azure using PowerBI embedded and finally, how to embed the reports in a custom MVC application.
 
-### Solution Overview
+This is a two part post:
+
+1. [Azure Stream Analytics](https://hershbhasin.com/2019-03-09/azure-stream-analytics )
+2. [Embedded Reporting with Azure Power BI Embedded](https://hershbhasin.com/2019-04-07/powerbi-embedded)
+
+
+## Solution Overview
 
 ![](/assets/powerbi_1.PNG)
 
-### Report Creation
+## Report Creation
 
 1. Report should be created in Power BI desktop ([Free Download)](https://powerbi.microsoft.com/en-us/desktop/)
 2. Data Connectivity mode: should be DirectQuery (so data is always current. We can also explore schedule refreshes if DirectQuery is considered sub optimal)
@@ -57,7 +64,7 @@ The report runs within the MVC application on Localhost
 
 ![](/assets/powerbi_2.PNG)
 
-### Source Code Download
+## Source Code Download
 
 [Source Code](https://github.com/hershbhasin/AzureSamples/tree/master/AzureStreaming)
 

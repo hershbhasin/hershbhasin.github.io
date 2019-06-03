@@ -2,7 +2,7 @@
 
 layout: post
 
-title: "Azure VM Gold Images"
+title: "Pagination Strategy for Cosmosdb APIs"
 
 author: "Hersh Bhasin"
 ---
@@ -55,7 +55,7 @@ The  "prev"  and "next" links above contain the encoded state of the "next" or "
 - In your response, you  provide a "Next" link to to the user that contains the RequestContinuation token as a querystring
 - In the next API request, you obtain the RequestContinuation from the querystring and set the FeedOptions with the token
 
-```json
+```c#
 var spec = SqlQueries.Telemetry(parameters.Vin, parameters.PageSize, parameters.StartDate, parameters.EndDate);
 
 //use the continuation token if you have it
@@ -92,7 +92,7 @@ if (documents != null)
 
 This strategy uses the record timestamp  to build the "next" and "previous" links.  **Building the "Next" link  using DateTime span** The data comes back in the descending order of timestamp.  Using the specified "Page Size" (which becomes the Top n rows in the DocDb SQL query,)  you get the next page load, using the "Beginning-Of-Time" as the start date and the Last Record of current page set as the end date  (which is the minimum timestamp as the data is sorted descending) .**Building the "Previous" link  using DateTime span** The logic is reversed in the "Previous" strategy.  To go back to a previous page set, you  use the timestamp of the first record (max timestamp) of current page set as the start date and the "End-Of-Time" as the end date and you sort the query Ascending. That way the Top n pages of the resultant dataset is the "Previous" page set you need. In code, you sort the dataset descending and return it. **Example Implementation**
 
-```json
+```c#
 public  SqlQuerySpec TelemetrySql(MethodParams.Telemetry parameters)
     {
 

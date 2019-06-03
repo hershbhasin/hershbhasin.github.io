@@ -31,7 +31,7 @@ A DSC Config file is a simple text file that has instructions as in the examples
 
 This file shows how to refer to a Automation Variable called "DownloadPackagesPath" and then to write it out to a text file on the server at the path specified in the "DestinationPath." Automation variables allow us to pass in input variables to the DSC Configuration files. You create a Variable from the "Variables" link on the Automation account and enter the Name, Type & Value. In this case we created a variable called "DownloadPackagesPath" with the value of some file share path.
 
-```
+```powershell
 Configuration CreateFileDemo
 {
 
@@ -69,7 +69,7 @@ Once the machine is onboarded, and a valid and compiled DSC Configuration exists
 
 Suppose you want a software called FireEye to be installed on all your DSC managed servers. You would create a Azure file share. You will upload the FireEye installer files to this file share. You will create a Automation Credential Asset ( similar to how we created the variable asset DownloadPackagesPath) by clicking the Credentials Link on the automation account called (say) DSCPackageStorage as follows: **Credential Asset** Name: DSCPackageStorage Username: AZUREfile-storage-name (this is the name of the storage account, prefixed by "AZURE") Password: Key of the file storage **Variable Asset** We created the Variable Asset **DownloadPackagePath** earlier. Now in the value, enter the path to your folder where you uploaded your install files for FireEye The following DSC Configuration copies the install files from the file share to a local c:packages folder, using the specified credentials and the sourcePath specified in the DownloadPackagePath automation variable. Once copied locally, the software FireEye gets installed.
 
-```
+```powershell
 Configuration DownloadInstallPackages
 {
    $storageCredential = Get-AutomationPSCredential -Name "DSCPackageStorage"
@@ -153,7 +153,7 @@ In the "RunBooks" tab of the automation account, click "Add a runbook" and impor
 
 There a number of variables passed in but the important ones are
 
-```
+```powershell
 $RegistrationKey : Key of the DSC automation account (found on the Keys section of the automation account)
 
 $RegistrationUrl: URL of the automation account, found also in the Keys section of the automation account

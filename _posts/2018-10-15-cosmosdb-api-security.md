@@ -2,7 +2,7 @@
 
 layout: post
 
-title: "Azure VM Gold Images"
+title: "Security Strategy for CosmosDB APIs"
 
 author: "Hersh Bhasin"
 ---
@@ -65,7 +65,7 @@ An APIM Policy can be applied to the API using the Publisher portal that can int
 
 In the policy below, I am checking for a header called request-email and if it exists, someone is trying to hack my API so I return a 400 Bad Request , else I set the request-email header with the user email.
 
-```json
+```xml
 <policies>
     <inbound>
         <choose>

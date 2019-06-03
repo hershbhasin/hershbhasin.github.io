@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Azure Data Factory"
+title: "Scheduling Data Transformation with Azure Data Factory"
 author: "Hersh Bhasin"
 ---
 

@@ -11,7 +11,7 @@ These are some applications I have created that are being sold on Apple stores.
 
 ## Published - Submission Tracker
 
-[![img](/assets/apps_1.png)
+![img](/assets/apps_1.png)
 
 
 [Published! is available on Mac Store](https://itunes.apple.com/us/app/published!-manuscript-submissions/id504429681?ls=1&mt=12#)
@@ -22,7 +22,7 @@ Published! is a powerful submission tracking software for authors, poets, artist
 
 ## TimeMarch 
 
-[![img](/assets/apps_2.png)
+![img](/assets/apps_2.png)
 
 [Time March is  available on the Apple Store](https://itunes.apple.com/us/app/time-march/id982857290?ls=1&mt=8)
 

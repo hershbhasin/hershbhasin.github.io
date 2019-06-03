@@ -8,12 +8,15 @@ author: "Hersh Bhasin"
 
 ---
 
-##Introduction
+## Introduction
 
 For analytics data, we would need to store large volumes of data. Storage in CosmosDB or SQL Server is very expensive (for example, in CosmosDB there is a storage charge and a RU charge per query). Storage in Data Lake is cheap, and for cost effectiveness, analytics data  can be persisted/archived in a Data Lake. Please refer to the price comparisons section below.
 
-## Source Code
-The source code for this blog post is available here: [Source Code Link](https://github.com/hershbhasin/AzureSamples/tree/master/BigData)
+This is a two part post:
+
+[Part 1: Data Ingestion](https://hershbhasin.com/2019-05-05/data-ingestion)
+
+[Part 2: Data Curation with Azure Data Factory](https://hershbhasin.com/2019-06-02/azure-data-factory)
 
 ## Price Comparison between CosmosDb and Data Lake
 
@@ -203,3 +206,9 @@ Copy the following files from your CloudworxUSQLApplication/Lib directory to a d
 # References
 
  [Microsoft Documentation](https://docs.microsoft.com/en-us/azure/data-lake-store/data-lake-store-archive-eventhub-capture)
+
+
+
+## Source Code
+
+The source code for this blog post is available here: [Source Code Link](https://github.com/hershbhasin/AzureSamples/tree/master/BigData)

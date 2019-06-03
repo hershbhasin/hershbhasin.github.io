@@ -26,6 +26,14 @@ Also, we will have 12 folders created, one for each month.
 
 Now our objective is to automate the extraction and curation of this monthly data by a process that can be scheduled to run once every month.  For this we will use Azure Data Factory
 
+
+
+This is a two part post:
+
+[Part 1: Data Ingestion](https://hershbhasin.com/2019-05-05/data-ingestion)
+
+[Part 2: Data Curation with Azure Data Factory](https://hershbhasin.com/2019-06-02/azure-data-factor)
+
 # Azure Data Factory
 
 **What is Azure Data Factory**
@@ -69,19 +77,19 @@ You can spin up an environment in Azure using the ARM template linked above. You
 
 
 
-# The Azure Data Lake Analytics Account (ADLS)
+# The Azure Data Lake Analytics Account (ADLA)
 
-## What is ADLS
+## What is ADLA
 
-ADLA is a platform that enables processing of extremely large data sets, integration with existing Data Warehousing, and true parallel processing of structured and unstructured data. ADLA is well equipped to handle many of the types of processing we do in the *T* portion of *ETL*; that is, transforming data. It provides similar functionality like Hadoop (with Hive and Spark).  However, it is simpler to learn & use:  whereas in Hadoop, you encounter the learning curve of mastering any of its six supported languages -- Hive, Pig, Java, Scala, Python, Bash; in ADLS, you just use one: USQL, which is a combination of SQL and C#. Also the pricing of ADALS is per job, which is different from the per hour, (based on how long you keep your cluster running,)  pricing of competing Big Data cloud offerings.  With ADLA, you pay for each individual job that is run. Each job run through ADLA is assigned a number of **Analytic Units (AUs)**. Each job is billed based on how many AUs were used and how many hours the job ran. So a simple job that used 10 AUs for one hour would be billed for 10 processing hours.
+ADLA is a platform that enables processing of extremely large data sets, integration with existing Data Warehousing, and true parallel processing of structured and unstructured data. ADLA is well equipped to handle many of the types of processing we do in the *T* portion of *ETL*; that is, transforming data. It provides similar functionality like Hadoop (with Hive and Spark).  However, it is simpler to learn & use:  whereas in Hadoop, you encounter the learning curve of mastering any of its six supported languages -- Hive, Pig, Java, Scala, Python, Bash; in ADLA, you just use one: USQL, which is a combination of SQL and C#. Also the pricing of ADALA is per job, which is different from the per hour, (based on how long you keep your cluster running,)  pricing of competing Big Data cloud offerings.  With ADLA, you pay for each individual job that is run. Each job run through ADLA is assigned a number of **Analytic Units (AUs)**. Each job is billed based on how many AUs were used and how many hours the job ran. So a simple job that used 10 AUs for one hour would be billed for 10 processing hours.
 
 As a matter of fact, just owning an Azure Data Lake Analytics account doesn't cost anything. You aren't even billed for the account until you run a job. That's pretty unique in the Big Data space.
 
 For more information, see  [Data Lake Analytics Overview](https://docs.microsoft.com/en-us/azure/data-lake-analytics/data-lake-analytics-overview)
 
-## How we are going to use ADLS
+## How we are going to use ADLA
 
-We will create a database in ADLS, and within that database, we will create a stored procedure that will take in a Start Date and an End Date as parameters. When we schedule a  Azure Data Factory pipeline, it will pass in these two parameters.  The stored procedure will use these parameters to determine the folder in the Data Lake to target, and will pick up all the files in that folder, transform it and write the output in an output folder in the Data Lake. There are a number of U-SQL  scripts provided in the source code folder, wrapped within a Visual Studio Solution, which you need to run. The location of the Visual Studio Solution is  in the folder: *CloudworxUSQLApplication*.
+We will create a database in ADLA, and within that database, we will create a stored procedure that will take in a Start Date and an End Date as parameters. When we schedule a  Azure Data Factory pipeline, it will pass in these two parameters.  The stored procedure will use these parameters to determine the folder in the Data Lake to target, and will pick up all the files in that folder, transform it and write the output in an output folder in the Data Lake. There are a number of U-SQL  scripts provided in the source code folder, wrapped within a Visual Studio Solution, which you need to run. The location of the Visual Studio Solution is  in the folder: *CloudworxUSQLApplication*.
 
 ## Copy Assemblies to a Data Lake Folder
 
@@ -104,7 +112,7 @@ The ARM template we deployed creates a Azure Data Lake Analytics Account with a 
 
 ## Create an Azure Data Lake Analytics Database
 
-Open the provided  Visual Studio solution at the location *..\CloudworxUSQLApplication* and Submit the U-SQL script: *1-CreateDB.usql*. This will create a database called AVRO in the ADLS.
+Open the provided  Visual Studio solution at the location *..\CloudworxUSQLApplication* and Submit the U-SQL script: *1-CreateDB.usql*. This will create a database called AVRO in the ADLA.
 
 
 
@@ -145,13 +153,13 @@ CREATE ASSEMBLY [log4net] FROM @"/Assemblies/Avro/log4net.dll";
 
 
 
-If you now browse the ADLS  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:
+If you now browse the ADLA  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:
 
 ![copy_assemblies](/assets/copy_assemblies.PNG)
 
 ## Create the Stored Procedure
 
-Open the provided  Visual Studio solution at the location *..\CloudworxUSQLApplication* and Submit the U-SQL script: *sp.usql*. Once you run this script, you should see a stored procedure created in the ADLS Database Avro, in the "Procedures" folder.
+Open the provided  Visual Studio solution at the location *..\CloudworxUSQLApplication* and Submit the U-SQL script: *sp.usql*. Once you run this script, you should see a stored procedure created in the ADLA Database Avro, in the "Procedures" folder.
 
 
 
@@ -248,13 +256,13 @@ Based on the @DateSliceStart and the @@DateSliceEnd parameters, the stored proce
 
 If you had followed my previous post on Event Logs Ingestion, you would have a *archivefolder* in the Data Lake that contained the raw data. If you have not followed that post, I have provided sample data in the source code folder, in the "Data" folder.  Use the Microsoft Azure Storage Explorer to upload the "archivefolder" to the Data Lake.
 
-![archivefolder](/assets/archivefolder.png)
+![archivefolder](/assets/archivefolder.PNG)
 
 
 
 ## Test the Stored Procedure
 
-In the ADLS, click on the "New Job" button, paste the following script, and click "Submit"
+In the ADLA, click on the "New Job" button, paste the following script, and click "Submit"
 
 ```sql
 Avro.dbo.sp_CreateLogs(System.DateTime.Parse("2018/01/01"),
@@ -526,7 +534,6 @@ Note that we have just scheduled 1 months run (start on Jan 1 and ends on Feb 1)
 
 The pipeline should start running and can be viewed under the *Monitor & Manage* tab in the Data Factory. Very soon, you should see transformed output in the Data Lake output folder.
 
+## Source Code
 
-```html
-Source Code Link: 
-```
+The source code for this blog post is available here: [Source Code Link](https://github.com/hershbhasin/AzureSamples/tree/master/BigData)

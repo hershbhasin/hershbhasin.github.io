@@ -7,7 +7,7 @@ author: "Hersh Bhasin"
 
 # Overview
 
-In the Event Logs Ingestion & Storage post, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :
+In the [Part 1: Data Ingestion](https://hershbhasin.com/2019-05-05/data-ingestion), I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :
 
 ```javascript
 "{Namespace}_{EventHub}_{PartitionId}/{Year}/{Month}/{Day}_{Hour}_{Minute}_{Second}"

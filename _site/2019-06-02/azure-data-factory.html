@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Azure Data Factory | Hersh Bhasin’s Tech Blog</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Azure Data Factory" />
+<meta name="author" content="Hersh Bhasin" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Overview" />
+<meta property="og:description" content="Overview" />
+<link rel="canonical" href="http://localhost:4000/2019-06-02/azure-data-factory" />
+<meta property="og:url" content="http://localhost:4000/2019-06-02/azure-data-factory" />
+<meta property="og:site_name" content="Hersh Bhasin’s Tech Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-02T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2019-06-02/azure-data-factory","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019-06-02/azure-data-factory"},"author":{"@type":"Person","name":"Hersh Bhasin"},"description":"Overview","headline":"Azure Data Factory","dateModified":"2019-06-02T00:00:00-05:00","datePublished":"2019-06-02T00:00:00-05:00","@type":"BlogPosting","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+
+  <!-- RSS -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Hersh Bhasin's Tech Blog" />
+
+  <!-- Google Analytics-->
+  
+</head>
+
+
+  <body>
+
+    <nav class="nav">
+  <div class="nav-container">
+    <a href="/">
+      <h2 class="nav-title">Hersh Bhasin's Tech Blog</h2>
+    </a>
+    <ul>
+      <li><a href="/about">About</a></li>
+      <li><a href="/">Posts</a></li>
+      <li><a href="/archive">Archive</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Hersh Bhasin
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2019-06-02 00:00:00 -0500">June 02, 2019</time>
+    
+  </div>
+
+  <h1 class="post-title">Azure Data Factory</h1>
+  <div class="post-line"></div>
+
+  <h1 id="overview">Overview</h1>
+
+<p>In the Event Logs Ingestion &amp; Storage post, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"{Namespace}_{EventHub}_{PartitionId}/{Year}/{Month}/{Day}_{Hour}_{Minute}_{Second}"</span>
+</code></pre></div></div>
+
+<p>This will result in monthly folders. Say, we had specified a Event Hub partition size of 2. Then, taking the month January as an example,  we will have files dropped into our two partition folders as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_0\2018\01\22_16_30_03.avro
+archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.avro
+</code></pre></div></div>
+
+<p>We can have hundreds of files dropped into the January folder, as for each {Day}<em>{Hour}</em>{Minute}_{Second} combination, we get a file drop.  (You can view the raw data in the source code folder, under a folder called “Data”)</p>
+
+<p>Also, we will have 12 folders created, one for each month.</p>
+
+<p>Now our objective is to automate the extraction and curation of this monthly data by a process that can be scheduled to run once every month.  For this we will use Azure Data Factory</p>
+
+<h1 id="azure-data-factory">Azure Data Factory</h1>
+
+<p><strong>What is Azure Data Factory</strong></p>
+
+<blockquote>
+  <p>Data Factory is a cloud-based data integration service that <strong>automates the movement and transformation of data</strong>. Just like a factory that runs equipment to take raw materials and transform them into finished goods, Data Factory orchestrates existing services that collect raw data and transform it into ready-to-use information.</p>
+</blockquote>
+
+<blockquote>
+  <p>Data Factory allows you to create data-driven workflows to move data between both on-premises and cloud data stores as well as process/transform data using compute services such as Azure HDInsight and Azure Data Lake Analytics. After you create a pipeline that performs the action that you need, you can schedule it to run periodically (hourly, daily, weekly etc.).</p>
+</blockquote>
+
+<p>For more information, see <a href="https://docs.microsoft.com/en-us/azure/data-factory/v1/data-factory-introduction">Overview &amp; Key Concepts</a>.</p>
+
+<p>Using Data Factory, we want to build a pipeline that can run once a month on our monthly  folders in the Data Lake, extract the desired data, (which resides compressed as byte data, and has an Avro format),  transform it as legible CSV data, and finally store the output as CSV files in an output folder in the Data Lake.</p>
+
+<p><img src="/assets/Scheduling.PNG" alt="Scheduling" /></p>
+
+<p>For the purpose of this example, we have set up a monthly run schedule. With Data Factory, we can choose to run jobs at a lower time granularity: say by Day or  by Hour. Also, we can write jobs that summarize or aggregate data. In our example, we are just extracting device logs from byte/AVRO to CSV, without performing any aggregation.</p>
+
+<p>The pipeline we create will report its progress with a calendar. For a daily extraction schedule in the screenshot below, the “Green” in the calendar shows that jobs have been successfully run. The “Orange” shows that it is waiting for data to become available, and the “red “ shows that there was a problem encountered on that day. The administrator can correct the error and rerun the schedule for that day.</p>
+
+<p><img src="/assets/calander.PNG" alt="calander" /></p>
+
+<h1 id="arm-templates">ARM templates</h1>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ARM Template folder: ARMTemplates\DataFactory\datafactory_poc.json. 
+</code></pre></div></div>
+
+<p>You can spin up an environment in Azure using the ARM template linked above. You can run the template in the  Azure portal under <em>All Services/ Template (preview)</em>. This will create the following resources:</p>
+
+<ol>
+  <li>Blob Storage</li>
+  <li>SQL Server</li>
+  <li>Database (DataDb)</li>
+  <li>Azure Data Factory</li>
+  <li>Data Lake</li>
+  <li>Data Lake Analytics</li>
+</ol>
+
+<p><img src="/assets/env.png" alt="env" /></p>
+
+<p>(Note: we will not be using Blob Storage or SQL Server for this POC).</p>
+
+<h1 id="the-azure-data-lake-analytics-account-adls">The Azure Data Lake Analytics Account (ADLS)</h1>
+
+<h2 id="what-is-adls">What is ADLS</h2>
+
+<p>ADLA is a platform that enables processing of extremely large data sets, integration with existing Data Warehousing, and true parallel processing of structured and unstructured data. ADLA is well equipped to handle many of the types of processing we do in the <em>T</em> portion of <em>ETL</em>; that is, transforming data. It provides similar functionality like Hadoop (with Hive and Spark).  However, it is simpler to learn &amp; use:  whereas in Hadoop, you encounter the learning curve of mastering any of its six supported languages – Hive, Pig, Java, Scala, Python, Bash; in ADLS, you just use one: USQL, which is a combination of SQL and C#. Also the pricing of ADALS is per job, which is different from the per hour, (based on how long you keep your cluster running,)  pricing of competing Big Data cloud offerings.  With ADLA, you pay for each individual job that is run. Each job run through ADLA is assigned a number of <strong>Analytic Units (AUs)</strong>. Each job is billed based on how many AUs were used and how many hours the job ran. So a simple job that used 10 AUs for one hour would be billed for 10 processing hours.</p>
+
+<p>As a matter of fact, just owning an Azure Data Lake Analytics account doesn’t cost anything. You aren’t even billed for the account until you run a job. That’s pretty unique in the Big Data space.</p>
+
+<p>For more information, see  <a href="https://docs.microsoft.com/en-us/azure/data-lake-analytics/data-lake-analytics-overview">Data Lake Analytics Overview</a></p>
+
+<h2 id="how-we-are-going-to-use-adls">How we are going to use ADLS</h2>
+
+<p>We will create a database in ADLS, and within that database, we will create a stored procedure that will take in a Start Date and an End Date as parameters. When we schedule a  Azure Data Factory pipeline, it will pass in these two parameters.  The stored procedure will use these parameters to determine the folder in the Data Lake to target, and will pick up all the files in that folder, transform it and write the output in an output folder in the Data Lake. There are a number of U-SQL  scripts provided in the source code folder, wrapped within a Visual Studio Solution, which you need to run. The location of the Visual Studio Solution is  in the folder: <em>CloudworxUSQLApplication</em>.</p>
+
+<h2 id="copy-assemblies-to-a-data-lake-folder">Copy Assemblies to a Data Lake Folder</h2>
+
+<p>To parse the AVRO format of our data, and to de-serialize the resultant JSON payload, we need a number of assemblies uploaded to our database (which we will create in a moment). These assemblies have been provided in <a href="https://github.com/Azure/usql/tree/master/Examples/AvroExamples">Github</a>. However, I have included them in the source code download folder at  the <em>CloudworxUSQLApplication/Lib</em> location.</p>
+
+<p>In the attached Data Lake, create a folder called <em>\Assemblies\Avro</em> and upload the assemblies from the <em>Source Code/CloudworxUSQLApplication/Lib</em> to here.</p>
+
+<p><img src="/assets/assemblies.PNG" alt="assemblies" /></p>
+
+<h2 id="create-azure-data-lake-analytics-data-sources">Create Azure Data Lake Analytics Data Sources</h2>
+
+<p>The ARM template we deployed creates a Azure Data Lake Analytics Account with a Data Source for an Azure Data Lake (Gen1).</p>
+
+<p><strong>Optional</strong>: The screenshot below also shows a Data Source for a blob storage. We will not be using the blob storage for this POC. However the ARM template creates a blob storage and to create a Data Source for it, do the following:</p>
+
+<ul>
+  <li>In the Azure Data Lake Analytics account, browse to its blade in the Azure portal, and under Settings, click Data Sources.</li>
+  <li>Click Add Data Source. Then in the Add Data Source blade, in the Storage Type list, select Azure Storage, and then select your Azure storage account. This adds your Azure storage account as a data source to which the Azure Data Lake Analytics account has access, in addition to its default Azure Data Lake Store.<img src="/assets/data_lake_analytics.PNG" alt="data_lake_analytics" /></li>
+</ul>
+
+<h2 id="create-an-azure-data-lake-analytics-database">Create an Azure Data Lake Analytics Database</h2>
+
+<p>Open the provided  Visual Studio solution at the location <em>..\CloudworxUSQLApplication</em> and Submit the U-SQL script: <em>1-CreateDB.usql</em>. This will create a database called AVRO in the ADLS.</p>
+
+<p><strong>Script: 1-CreateDB.usql</strong></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="n">Avro</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">Avro</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="copy-assemblies-from-data-lake-to-azure-data-lake-analytics-database">Copy Assemblies from Data Lake to Azure Data Lake Analytics Database</h2>
+
+<p>Open the provided  Visual Studio solution at the location <em>..\CloudworxUSQLApplication</em> and Submit the U-SQL script:  <em>2-RegisterAssemblies.usql</em>. You will need to run the script two times. First as it is. Then, uncomment the <em>USE Database AVRO</em> and submit again. This will then copy the assemblies in both the Master and Avro databases.</p>
+
+<p><strong>Script: 2-RegisterAssemblies.usql</strong></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">//</span><span class="n">run</span> <span class="n">this</span> <span class="n">script</span> <span class="mi">2</span> <span class="n">times</span><span class="p">.</span> <span class="k">First</span> <span class="k">as</span> <span class="n">it</span> <span class="k">is</span><span class="p">.</span> <span class="k">Then</span><span class="p">,</span> <span class="n">uncomment</span> <span class="n">the</span> <span class="nv">"USE Database AVRO"</span> <span class="k">and</span> <span class="n">submit</span> <span class="n">again</span><span class="p">.</span>
+<span class="o">//</span><span class="n">This</span> <span class="n">will</span> <span class="k">then</span> <span class="k">copy</span> <span class="n">the</span> <span class="n">assemblies</span> <span class="k">in</span> <span class="k">both</span> <span class="n">the</span> <span class="n">Master</span> <span class="k">and</span> <span class="n">Avro</span> <span class="n">databases</span>
+
+<span class="o">//</span><span class="n">USE</span> <span class="k">DATABASE</span> <span class="n">Avro</span><span class="p">;</span>
+
+
+<span class="k">DROP</span> <span class="n">ASSEMBLY</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="p">[</span><span class="n">Avro</span><span class="p">];</span>
+<span class="k">CREATE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">Avro</span><span class="p">]</span> <span class="k">FROM</span> <span class="o">@</span><span class="nv">"/Assemblies/Avro/Avro.dll"</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="n">ASSEMBLY</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="p">[</span><span class="n">Microsoft</span><span class="p">.</span><span class="n">Analytics</span><span class="p">.</span><span class="n">Samples</span><span class="p">.</span><span class="n">Formats</span><span class="p">];</span>
+<span class="k">CREATE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">Microsoft</span><span class="p">.</span><span class="n">Analytics</span><span class="p">.</span><span class="n">Samples</span><span class="p">.</span><span class="n">Formats</span><span class="p">]</span> <span class="k">FROM</span> <span class="o">@</span><span class="nv">"/Assemblies/Avro/Microsoft.Analytics.Samples.Formats.dll"</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="n">ASSEMBLY</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="p">[</span><span class="n">Newtonsoft</span><span class="p">.</span><span class="n">Json</span><span class="p">];</span>
+<span class="k">CREATE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">Newtonsoft</span><span class="p">.</span><span class="n">Json</span><span class="p">]</span> <span class="k">FROM</span> <span class="o">@</span><span class="nv">"/Assemblies/Avro/Newtonsoft.Json.dll"</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="n">ASSEMBLY</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="p">[</span><span class="n">log4net</span><span class="p">];</span>
+<span class="k">CREATE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">log4net</span><span class="p">]</span> <span class="k">FROM</span> <span class="o">@</span><span class="nv">"/Assemblies/Avro/log4net.dll"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>If you now browse the ADLS  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:</p>
+
+<p><img src="/assets/copy_assemblies.PNG" alt="copy_assemblies" /></p>
+
+<h2 id="create-the-stored-procedure">Create the Stored Procedure</h2>
+
+<p>Open the provided  Visual Studio solution at the location <em>..\CloudworxUSQLApplication</em> and Submit the U-SQL script: <em>sp.usql</em>. Once you run this script, you should see a stored procedure created in the ADLS Database Avro, in the “Procedures” folder.</p>
+
+<p><strong>Script: sp.usql</strong></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="n">Avro</span><span class="p">.</span><span class="n">dbo</span><span class="p">.</span><span class="n">sp_CreateLogs</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> <span class="n">Avro</span><span class="p">.</span><span class="n">dbo</span><span class="p">.</span><span class="n">sp_CreateLogs</span><span class="p">(</span><span class="o">@</span><span class="n">DateSliceStart</span> <span class="n">DateTime</span><span class="p">,</span> <span class="o">@</span><span class="n">DateSliceEnd</span> <span class="n">DateTime</span><span class="p">)</span>
+<span class="k">AS</span>
+<span class="k">BEGIN</span>
+
+    <span class="n">REFERENCE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">Newtonsoft</span><span class="p">.</span><span class="n">Json</span><span class="p">];</span>
+    <span class="n">REFERENCE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">log4net</span><span class="p">];</span>
+    <span class="n">REFERENCE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">Avro</span><span class="p">];</span>
+    <span class="n">REFERENCE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">Microsoft</span><span class="p">.</span><span class="n">Analytics</span><span class="p">.</span><span class="n">Samples</span><span class="p">.</span><span class="n">Formats</span><span class="p">];</span>
+
+
+    <span class="o">//</span><span class="n">These</span> <span class="k">external</span> <span class="k">parameters</span> <span class="n">will</span> <span class="n">be</span> <span class="n">populated</span> <span class="k">by</span> <span class="n">ADF</span> <span class="n">based</span> 
+    <span class="o">//</span><span class="k">on</span> <span class="n">the</span> <span class="n">time</span> <span class="n">slice</span> <span class="n">being</span>  	<span class="n">executed</span><span class="p">.</span>
+    
+    <span class="k">DECLARE</span> <span class="k">EXTERNAL</span> <span class="o">@</span><span class="n">DateSliceStart</span> <span class="n">DateTime</span> <span class="o">=</span> <span class="k">System</span><span class="p">.</span><span class="n">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="nv">"2018/01/01"</span><span class="p">);</span>
+    <span class="k">DECLARE</span> <span class="k">EXTERNAL</span> <span class="o">@</span><span class="n">DateSliceEnd</span> <span class="n">DateTime</span> <span class="o">=</span> <span class="k">System</span><span class="p">.</span><span class="n">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="nv">"2018/03/01"</span><span class="p">);</span>
+
+    <span class="o">//</span><span class="n">These</span> <span class="k">are</span> <span class="n">intermediary</span> <span class="n">variables</span> <span class="n">which</span> <span class="n">inherit</span> <span class="n">the</span> <span class="n">time</span> <span class="n">element</span>
+    <span class="o">//</span><span class="k">from</span> <span class="n">the</span> <span class="n">ADF</span> <span class="n">time</span> 	<span class="n">slice</span><span class="p">.</span>
+    
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">YearNbr</span> <span class="n">int</span> <span class="o">=</span> <span class="o">@</span><span class="n">DateSliceStart</span><span class="p">.</span><span class="k">Year</span><span class="p">;</span>
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">MonthNbr</span> <span class="n">int</span> <span class="o">=</span> <span class="o">@</span><span class="n">DateSliceStart</span><span class="p">.</span><span class="k">Month</span><span class="p">;</span>
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">DayNbr</span> <span class="n">int</span> <span class="o">=</span> <span class="o">@</span><span class="n">DateSliceStart</span><span class="p">.</span><span class="k">Day</span><span class="p">;</span>
+
+    <span class="o">//</span><span class="n">These</span> <span class="k">are</span> <span class="n">used</span> <span class="k">to</span> <span class="n">align</span> <span class="n">the</span> <span class="k">Year</span><span class="o">/</span><span class="k">Month</span><span class="o">/</span><span class="k">Day</span> <span class="n">partitioning</span> <span class="k">of</span> <span class="n">the</span> <span class="k">input</span> <span class="o">&amp;</span> <span class="k">output</span><span class="p">.</span>
+    <span class="o">//</span><span class="n">This</span> <span class="n">technique</span> <span class="n">also</span> <span class="n">allows</span> <span class="n">U</span><span class="o">-</span><span class="k">SQL</span> <span class="k">to</span> <span class="n">dynamically</span> <span class="n">generate</span> <span class="n">different</span> <span class="k">output</span> <span class="n">file</span> 	 <span class="o">//</span><span class="n">path</span> <span class="o">&amp;</span> <span class="n">name</span><span class="p">.</span>
+    
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">YearString</span> <span class="n">string</span> <span class="o">=</span> <span class="o">@</span><span class="n">YearNbr</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">MonthString</span> <span class="n">string</span> <span class="o">=</span> <span class="o">@</span><span class="n">MonthNbr</span><span class="p">.</span><span class="n">ToString</span><span class="p">().</span><span class="n">PadLeft</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'0'</span><span class="p">);</span>
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">DayString</span> <span class="n">string</span> <span class="o">=</span> <span class="o">@</span><span class="n">DayNbr</span><span class="p">.</span><span class="n">ToString</span><span class="p">().</span><span class="n">PadLeft</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'0'</span><span class="p">);</span>
+
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">input_file</span> <span class="o">=</span> 			     <span class="nv">"archivefolder/cloudworxpoceventhubns_cloudworxpoceventhub_0/"</span> <span class="o">+</span> <span class="o">@</span><span class="n">YearString</span> <span class="o">+</span> <span class="nv">"/"</span> <span class="o">+</span> <span class="o">@</span><span class="n">MonthString</span> <span class="o">+</span> <span class="nv">"/{*}.avro"</span><span class="p">;</span>
+
+    <span class="k">DECLARE</span> <span class="o">@</span><span class="n">output_file</span> <span class="n">string</span> <span class="o">=</span> <span class="nv">"/output/"</span> <span class="o">+</span> <span class="o">@</span><span class="n">YearString</span> <span class="o">+</span> <span class="nv">"/"</span> <span class="o">+</span> <span class="o">@</span><span class="n">MonthString</span> <span class="o">+</span> <span class="nv">"/"</span> <span class="o">+</span> <span class="o">@</span><span class="n">YearString</span> <span class="o">+</span> <span class="o">@</span><span class="n">MonthString</span> <span class="o">+</span> <span class="nv">".csv"</span><span class="p">;</span>
+
+   
+
+    <span class="o">@</span><span class="n">rs</span> <span class="o">=</span>
+        <span class="k">EXTRACT</span> <span class="n">Body</span> <span class="n">byte</span><span class="p">[]</span>
+        <span class="k">FROM</span> <span class="o">@</span><span class="n">input_file</span>
+
+        <span class="k">USING</span> <span class="k">new</span> <span class="n">Microsoft</span><span class="p">.</span><span class="n">Analytics</span><span class="p">.</span><span class="n">Samples</span><span class="p">.</span><span class="n">Formats</span><span class="p">.</span><span class="n">ApacheAvro</span><span class="p">.</span><span class="n">AvroExtractor</span><span class="p">(</span><span class="o">@</span><span class="nv">"
+        {
+            </span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">record</span><span class="se">""</span><span class="nv">,
+            </span><span class="se">""</span><span class="nv">name</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">EventData</span><span class="se">""</span><span class="nv">,
+            </span><span class="se">""</span><span class="nv">namespace</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">Microsoft.ServiceBus.Messaging</span><span class="se">""</span><span class="nv">,
+            </span><span class="se">""</span><span class="nv">fields</span><span class="se">""</span><span class="nv">:[
+                {</span><span class="se">""</span><span class="nv">name</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">SequenceNumber</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">long</span><span class="se">""</span><span class="nv">},
+                {</span><span class="se">""</span><span class="nv">name</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">Offset</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">string</span><span class="se">""</span><span class="nv">},
+                {</span><span class="se">""</span><span class="nv">name</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">EnqueuedTimeUtc</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">string</span><span class="se">""</span><span class="nv">},
+                {</span><span class="se">""</span><span class="nv">name</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">SystemProperties</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:{</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">map</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">values</span><span class="se">""</span><span class="nv">:				 [</span><span class="se">""</span><span class="nv">long</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">double</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">string</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">bytes</span><span class="se">""</span><span class="nv">]}},
+                {</span><span class="se">""</span><span class="nv">name</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">Properties</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:{</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">map</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">values</span><span class="se">""</span><span class="nv">:						[</span><span class="se">""</span><span class="nv">long</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">double</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">string</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">bytes</span><span class="se">""</span><span class="nv">]}},
+                {</span><span class="se">""</span><span class="nv">name</span><span class="se">""</span><span class="nv">:</span><span class="se">""</span><span class="nv">Body</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">type</span><span class="se">""</span><span class="nv">:[</span><span class="se">""</span><span class="nv">null</span><span class="se">""</span><span class="nv">,</span><span class="se">""</span><span class="nv">bytes</span><span class="se">""</span><span class="nv">]}
+            ]
+        }
+    "</span><span class="p">);</span>
+
+
+    <span class="o">@</span><span class="n">jsonLogs</span> <span class="o">=</span>
+        <span class="k">SELECT</span> <span class="n">Microsoft</span><span class="p">.</span><span class="n">Analytics</span><span class="p">.</span><span class="n">Samples</span><span class="p">.</span><span class="n">Formats</span><span class="p">.</span><span class="n">Json</span><span class="p">.</span><span class="n">JsonFunctions</span><span class="p">.</span><span class="n">JsonTuple</span><span class="p">(</span><span class="k">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">Body</span><span class="p">),</span> <span class="nv">"..*"</span><span class="p">)</span> <span class="k">AS</span> <span class="n">json</span>
+        <span class="k">FROM</span> <span class="o">@</span><span class="n">rs</span><span class="p">;</span>
+
+    <span class="o">@</span><span class="n">logs</span> <span class="o">=</span>
+        <span class="k">SELECT</span> <span class="n">json</span><span class="p">[</span><span class="nv">"timestamp"</span><span class="p">]</span><span class="k">AS</span> <span class="k">Timestamp</span><span class="p">,</span>
+               <span class="n">json</span><span class="p">[</span><span class="nv">"device"</span><span class="p">]</span><span class="k">AS</span> <span class="n">Device</span><span class="p">,</span>
+               <span class="n">json</span><span class="p">[</span><span class="nv">"category"</span><span class="p">]</span><span class="k">AS</span> <span class="n">Category</span><span class="p">,</span>
+               <span class="n">json</span><span class="p">[</span><span class="nv">"priority"</span><span class="p">]</span><span class="k">AS</span> <span class="n">Priority</span><span class="p">,</span>
+               <span class="n">json</span><span class="p">[</span><span class="nv">"message"</span><span class="p">]</span><span class="k">AS</span> <span class="n">Message</span>
+        <span class="k">FROM</span> <span class="o">@</span><span class="n">jsonLogs</span><span class="p">;</span>
+
+
+
+    <span class="k">OUTPUT</span> <span class="o">@</span><span class="n">logs</span>
+    <span class="k">TO</span> <span class="o">@</span><span class="n">output_file</span>
+    <span class="k">USING</span> <span class="n">Outputters</span><span class="p">.</span><span class="n">Text</span><span class="p">();</span>
+
+<span class="k">END</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Based on the @DateSliceStart and the @@DateSliceEnd parameters, the stored procedure builds the @input_file variable to grab raw data files from the data lake. This stored procedure currently looks at a data ingested from a single Event Hub partition (<em>..\cloudworxpoceventhubns_cloudworxpoceventhub_0</em>).  The stored procedure  could repeat the process for multiple partitions.</p>
+
+<h2 id="upload-the-sample-data-to-the-data-lake">Upload the sample data to the Data Lake</h2>
+
+<p>If you had followed my previous post on Event Logs Ingestion, you would have a <em>archivefolder</em> in the Data Lake that contained the raw data. If you have not followed that post, I have provided sample data in the source code folder, in the “Data” folder.  Use the Microsoft Azure Storage Explorer to upload the “archivefolder” to the Data Lake.</p>
+
+<p><img src="/assets/archivefolder.png" alt="archivefolder" /></p>
+
+<h2 id="test-the-stored-procedure">Test the Stored Procedure</h2>
+
+<p>In the ADLS, click on the “New Job” button, paste the following script, and click “Submit”</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Avro</span><span class="p">.</span><span class="n">dbo</span><span class="p">.</span><span class="n">sp_CreateLogs</span><span class="p">(</span><span class="k">System</span><span class="p">.</span><span class="n">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="nv">"2018/01/01"</span><span class="p">),</span>
+                       <span class="k">System</span><span class="p">.</span><span class="n">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="nv">"2018/01/31"</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>This should create an output\01 folder in the Data Lake and create a .CSV file in this folder with the transformed output.</p>
+
+<p>Now we are done setting up the Data lake; let us set up the Data Factory.</p>
+
+<h1 id="setting-up-the-data-factory-adf">Setting up the Data Factory (ADF)</h1>
+
+<p><em>Note: we are using version 1 of the Azure Data Factory.</em></p>
+
+<p>We are going to use Azure Data Factory to schedule monthly runs of the stored procedure we created above. We need to set up the following in the ADF:</p>
+
+<ol>
+  <li>Linked Service: Linked services are Azure resources the ADF can target. These could be Blobs, SQL Server,  Data Analytics Accounts, Data Lakes. For our POC we will need linked services for our Data Analytics Account (we need to run the U-SQL stored procedure using it), and the Data Lake (our source data and destination output will reside on the Data Lake).</li>
+  <li>Data Sets:  Data Sets are JSON documents that describe (among other things) the structure of the data that our source and destination data will implement, and the Linked Service it will use. We will create two data sets: one for the source data, and one for our transformed data.</li>
+  <li>Pipline:  A Pipeline is a JSON document that describes how the batch transformation will be scheduled, and brings together the input &amp; output data sets.</li>
+</ol>
+
+<h2 id="creating-the-azure-data-lake-analytics-linked-service">Creating the Azure Data Lake Analytics Linked Service</h2>
+
+<p>The ADF must be authorized to access the  Azure Data Lake Analytics Linked Service. In production, you would use <a href="https://docs.microsoft.com/en-us/azure/data-factory/transform-data-using-data-lake-analytics">service principal authorization</a>, but for this POC, you will authorize with your Azure credentials. To do this, follow these steps:</p>
+
+<ol>
+  <li>
+    <p>In the Microsoft Azure portal, browse to the blade for your data factory, and click the Author and deploy tile.</p>
+  </li>
+  <li>
+    <p>In the pane on the left, expand Linked Services, and in the <strong>More</strong> menu, click New compute, and then click Azure Data Lake Analytics to create a new JSON document for an Azure Data Lake Analytics service.</p>
+  </li>
+  <li>
+    <p>In the new JSON document, replace the default code with the following code. Replace <em>pocanalytics123</em> in the document below with the name of your Azure Data Lake Analytics account.</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"adl-analytics"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AzureDataLakeAnalytics"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"typeProperties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"authorization"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;Authorization code is automatically retrieved after 							clicking 'Authorize' and completing the OAuth login&gt;"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"accountName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pocanalytics123"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"sessionId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;OAuth session id from the OAuth authorization session. 						Each session id is unique and may only be used once&gt;"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Click Authorize, and when prompted enter your Microsoft account credentials to sign into your Azure subscription – this will verify your identity and generate the authorization code and session ID in the JSON document.</p>
+  </li>
+  <li>
+    <p>Click Deploy to deploy the linked service definition to your Azure Data Factory.</p>
+  </li>
+</ol>
+
+<h2 id="creating-the-data-lake-linked-service">Creating the Data Lake Linked Service</h2>
+
+<p>Similar to the Analytics Service, the ADF must be authorized to access the  Data Lake  linked service.</p>
+
+<ol>
+  <li>In the Microsoft Azure portal, browse to the blade for your data factory, and click the Author and deploy tile.</li>
+  <li>Click New data store, and then click Azure Data Lake Store to create a new JSON document for an Azure Data Lake Store. In the new JSON document, replace the default code with the following code. Replace <em>wonderfullake1234</em>  with the name of your Azure Data Lake Store.</li>
+</ol>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"adl-store"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AzureDataLakeStore"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"typeProperties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"authorization"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;Click 'Authorize' to allow this data factory 
+          and the activities it runs to access this Data Lake Store with your access 
+          rights&gt;"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"dataLakeStoreUri"</span><span class="p">:</span><span class="w"> 	          </span><span class="s2">"https://wonderfullake1234.azuredatalakestore.net/webhdfs/v1"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"sessionId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;OAuth session id from the OAuth authorization session. 
+          Each session id is unique and may only be used once&gt;"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="create-the-source-data-set">Create the source Data Set</h2>
+
+<ol>
+  <li>
+    <p>In the Microsoft Azure portal, browse to the blade for your data factory, and click the Author and deploy tile.</p>
+  </li>
+  <li>In the More menu, click New dataset, and then click <em>Azure Data Lake Store</em></li>
+  <li>Copy and paste the following document. (Available at: source code\Azure Data Factory\dsRawData.json )</li>
+</ol>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dsRawData"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"structure"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"body"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"String"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">],</span><span class="w">
+        </span><span class="s2">"published"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AzureDataLakeStore"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"linkedServiceName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"adl-store"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"typeProperties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            
+            </span><span class="s2">"folderPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"archivefolder/cloudworxpoceventhubns_cloudworxpoceventhub_0/{Year}/{Month}/"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"format"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TextFormat"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"columnDelimiter"</span><span class="p">:</span><span class="w"> </span><span class="s2">" "</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="s2">"partitionedBy"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="p">{</span><span class="w">
+                    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Year"</span><span class="p">,</span><span class="w">
+                    </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DateTime"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SliceStart"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yyyy"</span><span class="w">
+                    </span><span class="p">}</span><span class="w">
+                </span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="w">
+                    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Month"</span><span class="p">,</span><span class="w">
+                    </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DateTime"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SliceStart"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MM"</span><span class="w">
+                    </span><span class="p">}</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+            </span><span class="p">]</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"availability"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Month"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"interval"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"external"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"validation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"minimumSizeMB"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="create-the-destination-data-set">Create the destination Data Set</h2>
+
+<ol>
+  <li>
+    <p>In the Microsoft Azure portal, browse to the blade for your data factory, and click the Author and deploy tile.</p>
+  </li>
+  <li>In the More menu, click New dataset, and then click <em>Azure Data Lake Store</em></li>
+  <li>Copy and paste the following document. (Available at: source code\Azure Data Factory\dsTransformed.json )</li>
+</ol>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dsTransformed"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"structure"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Timestamp"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"String"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Device"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"String"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Category"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"String"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Message"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"String"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">],</span><span class="w">
+        </span><span class="s2">"published"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AzureDataLakeStore"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"linkedServiceName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"adl-store"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"typeProperties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"summary.csv"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"folderPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"output/summary/{Year}/{Month}"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"format"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TextFormat"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"columnDelimiter"</span><span class="p">:</span><span class="w"> </span><span class="s2">","</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="s2">"partitionedBy"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="p">{</span><span class="w">
+                    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Year"</span><span class="p">,</span><span class="w">
+                    </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DateTime"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SliceStart"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yyyy"</span><span class="w">
+                    </span><span class="p">}</span><span class="w">
+                </span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="w">
+                    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Month"</span><span class="p">,</span><span class="w">
+                    </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DateTime"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SliceStart"</span><span class="p">,</span><span class="w">
+                        </span><span class="s2">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MM"</span><span class="w">
+                    </span><span class="p">}</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+            </span><span class="p">]</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"availability"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Month"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"interval"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre></div></div>
+
+<h2 id="create-the-pipeline">Create the Pipeline</h2>
+
+<ol>
+  <li>
+    <p>In the Microsoft Azure portal, browse to the blade for your data factory, and click the Author and deploy tile.</p>
+  </li>
+  <li>In the Pipelines  section, right- click  and select <em>New pipeline</em>.</li>
+  <li>Copy and paste the following document. (Available at: source code\Azure Data Factory\pipeline.json )</li>
+</ol>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Pipeline Logs"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"activities"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataLakeAnalyticsU-SQL"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"typeProperties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"script"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Avro.dbo.sp_CreateLogs(System.DateTime.Parse(@DateSliceStart), System.DateTime.Parse(@DateSliceEnd));"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"degreeOfParallelism"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"priority"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+              </span><span class="s2">"DateSliceStart"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$$Text.Format('{0:yyyy-MM-ddTHH:mm:ssZ}', SliceStart)"</span><span class="p">,</span><span class="w">
+              </span><span class="s2">"DateSliceEnd"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$$Text.Format('{0:yyyy-MM-ddTHH:mm:ssZ}', SliceEnd)"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+              </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dsRawData"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+          </span><span class="p">],</span><span class="w">
+          </span><span class="s2">"outputs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+              </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dsTransformed"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+          </span><span class="p">],</span><span class="w">
+          </span><span class="s2">"policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"timeout"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01:00:00"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"concurrency"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"executionPriorityOrder"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OldestFirst"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"retry"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"scheduler"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Month"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"interval"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"U-SQL Script to Summarize Logs"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"linkedServiceName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"adl-analytics"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    
+      </span><span class="p">],</span><span class="w">
+      </span><span class="s2">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01T00:00:00Z"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"end"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-02-01T23:59:59Z"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"pipelineMode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Scheduled"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Note that we have just scheduled 1 months run (start on Jan 1 and ends on Feb 1). You can change the end month to 12 for all 12 months.</p>
+
+<h2 id="verify">Verify</h2>
+
+<p>The pipeline should start running and can be viewed under the <em>Monitor &amp; Manage</em> tab in the Data Factory. Very soon, you should see transformed output in the Data Lake output folder.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Source Code Link: 
+</code></pre></div></div>
+
+
+</div>
+
+<div class="pagination">
+  
+  
+    <a href="/2017-03-29/introducing-tale" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+  <span>
+    &copy; <time datetime="2019-06-02 20:49:01 -0500">2019</time> Hersh Bhasin. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+  </span>
+</footer>
+
+  </body>
+</html>

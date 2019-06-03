@@ -1,20 +1,21 @@
+---
+layout: post
+title: "Azure Data Factory"
+author: "Hersh Bhasin"
+---
+
+
 # Overview
-
-```javascript
-Source Code Link: 
-```
-
-
 
 In the Event Logs Ingestion & Storage post, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :
 
-```json
+```javascript
 "{Namespace}_{EventHub}_{PartitionId}/{Year}/{Month}/{Day}_{Hour}_{Minute}_{Second}"
 ```
 
 This will result in monthly folders. Say, we had specified a Event Hub partition size of 2. Then, taking the month January as an example,  we will have files dropped into our two partition folders as follows:
 
-```json
+```
 archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_0\2018\01\22_16_30_03.avro
 archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.avro
 ```
@@ -37,19 +38,19 @@ For more information, see [Overview & Key Concepts](https://docs.microsoft.com/e
 
 Using Data Factory, we want to build a pipeline that can run once a month on our monthly  folders in the Data Lake, extract the desired data, (which resides compressed as byte data, and has an Avro format),  transform it as legible CSV data, and finally store the output as CSV files in an output folder in the Data Lake.
 
-![Scheduling](Scheduling.PNG)
+![Scheduling](/assets/Scheduling.PNG)
 
 For the purpose of this example, we have set up a monthly run schedule. With Data Factory, we can choose to run jobs at a lower time granularity: say by Day or  by Hour. Also, we can write jobs that summarize or aggregate data. In our example, we are just extracting device logs from byte/AVRO to CSV, without performing any aggregation.
 
 The pipeline we create will report its progress with a calendar. For a daily extraction schedule in the screenshot below, the "Green" in the calendar shows that jobs have been successfully run. The "Orange" shows that it is waiting for data to become available, and the "red " shows that there was a problem encountered on that day. The administrator can correct the error and rerun the schedule for that day.
 
-![calander](calander.PNG)
+![calander](/assets/calander.PNG)
 
 
 
 # ARM templates
 
-```json
+```
 ARM Template folder: ARMTemplates\DataFactory\datafactory_poc.json. 
 ```
 
@@ -62,7 +63,7 @@ You can spin up an environment in Azure using the ARM template linked above. You
 5. Data Lake
 6. Data Lake Analytics
 
-![env](env.png)
+![env](/assets/env.png)
 
 (Note: we will not be using Blob Storage or SQL Server for this POC).
 
@@ -88,7 +89,7 @@ To parse the AVRO format of our data, and to de-serialize the resultant JSON pay
 
 In the attached Data Lake, create a folder called *\Assemblies\Avro* and upload the assemblies from the *Source Code/CloudworxUSQLApplication/Lib* to here.
 
-![assemblies](assemblies.PNG)
+![assemblies](/assets/assemblies.PNG)
 
 
 
@@ -99,7 +100,7 @@ The ARM template we deployed creates a Azure Data Lake Analytics Account with a 
 **Optional**: The screenshot below also shows a Data Source for a blob storage. We will not be using the blob storage for this POC. However the ARM template creates a blob storage and to create a Data Source for it, do the following:
 
 - In the Azure Data Lake Analytics account, browse to its blade in the Azure portal, and under Settings, click Data Sources.
-- Click Add Data Source. Then in the Add Data Source blade, in the Storage Type list, select Azure Storage, and then select your Azure storage account. This adds your Azure storage account as a data source to which the Azure Data Lake Analytics account has access, in addition to its default Azure Data Lake Store.![data_lake_analytics](data_lake_analytics.PNG)
+- Click Add Data Source. Then in the Add Data Source blade, in the Storage Type list, select Azure Storage, and then select your Azure storage account. This adds your Azure storage account as a data source to which the Azure Data Lake Analytics account has access, in addition to its default Azure Data Lake Store.![data_lake_analytics](/assets/data_lake_analytics.PNG)
 
 ## Create an Azure Data Lake Analytics Database
 
@@ -146,7 +147,7 @@ CREATE ASSEMBLY [log4net] FROM @"/Assemblies/Avro/log4net.dll";
 
 If you now browse the ADLS  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:
 
-![copy_assemblies](copy_assemblies.PNG)
+![copy_assemblies](/assets/copy_assemblies.PNG)
 
 ## Create the Stored Procedure
 
@@ -247,7 +248,7 @@ Based on the @DateSliceStart and the @@DateSliceEnd parameters, the stored proce
 
 If you had followed my previous post on Event Logs Ingestion, you would have a *archivefolder* in the Data Lake that contained the raw data. If you have not followed that post, I have provided sample data in the source code folder, in the "Data" folder.  Use the Microsoft Azure Storage Explorer to upload the "archivefolder" to the Data Lake.
 
-![archivefolder](archivefolder.png)
+![archivefolder](/assets/archivefolder.png)
 
 
 
@@ -313,7 +314,7 @@ Similar to the Analytics Service, the ADF must be authorized to access the  Data
 1. In the Microsoft Azure portal, browse to the blade for your data factory, and click the Author and deploy tile.
 2. Click New data store, and then click Azure Data Lake Store to create a new JSON document for an Azure Data Lake Store. In the new JSON document, replace the default code with the following code. Replace *wonderfullake1234*  with the name of your Azure Data Lake Store.
 
-```sql
+```json
 {
     "name": "adl-store",
     "properties": {
@@ -471,7 +472,7 @@ Similar to the Analytics Service, the ADF must be authorized to access the  Data
 2. In the Pipelines  section, right- click  and select *New pipeline*.
 3. Copy and paste the following document. (Available at: source code\Azure Data Factory\pipeline.json )
 
-```
+```json
 {
     "name": "Pipeline Logs",
     "properties": {
@@ -524,3 +525,8 @@ Note that we have just scheduled 1 months run (start on Jan 1 and ends on Feb 1)
 ## Verify
 
 The pipeline should start running and can be viewed under the *Monitor & Manage* tab in the Data Factory. Very soon, you should see transformed output in the Data Lake output folder.
+
+
+```html
+Source Code Link: 
+```

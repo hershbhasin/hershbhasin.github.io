@@ -21,8 +21,9 @@ layout: default
   <div class="post-line"></div>
 
   {{ content }}
- 
+  {% if page.comments %} 
   {% include disqus.html %}
+  {% endif %}
 </div>
 
 <div class="pagination">

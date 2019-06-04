@@ -21,7 +21,8 @@ layout: default
   <div class="post-line"></div>
 
   {{ content }}
-
+  {% if page.comments %} • <a href="https://hershbhasin.com{{ page.url }}#disqus_thread">0 Comments</a>{% endif %}
+  {% include disqus.html %}
 </div>
 
 <div class="pagination">
@@ -34,5 +35,3 @@ layout: default
 
   <a href="#" class="top">Top</a>
 </div>
-{% if page.comments %} • <a href="https://hershbhasin.com{{ page.url }}#disqus_thread">0 Comments</a>{% endif %}
-{% include disqus.html %}

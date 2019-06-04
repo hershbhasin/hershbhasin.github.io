@@ -2,6 +2,8 @@
 layout: post
 title: "Scheduling Data Transformation with Azure Data Factory"
 author: "Hersh Bhasin"
+comments: true
+categories: Big Data
 ---
 
 

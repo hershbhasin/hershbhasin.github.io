@@ -1,10 +1,10 @@
 ---
 
 layout: post
-
 title: "Azure VM Gold Images"
-
 author: "Hersh Bhasin"
+comments: true
+categories: Azure VM
 ---
 
 In this article I show how to create  and deploy custom images (also known as Gold Images)  in Azure. A Gold image is a fully patched image that had all our needed software, registry settings, and configurations installed. In a previous  article,   [DSC with Infrastructure-As-Code and Azure Automation is a potent combination](https://hershbhasin.com/2018-12-03/azure-automation-DSC), I outlined the limitations of using a "Gold Image" to provision your Virtual Machines, that keeping the machines cloned from these golden images up-to-date with latest versions of software and patches is non-trivial task, and in that article I outlined a strategy for provisioning virtual machines that are in a continual state of operational readiness using Azure Automation DSC and infrastructure as code. However, some clients do want to continue using Gold Images. There is sometimes a reluctance to change established ways of doing things, or  just paucity of time . To satisfy such clients, we do need to create and provision such "Gold Images", and in this article, I show how.

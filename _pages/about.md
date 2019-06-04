@@ -3,6 +3,7 @@ layout: post
 title: "About"
 author: "Hersh Bhasin"
 permalink: /about/
+comments: false
 ---
 
 ![Hersh](/assets/hb.jpg)

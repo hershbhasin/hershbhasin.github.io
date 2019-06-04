@@ -3,6 +3,7 @@ layout: post
 title: "Technical Books By Hersh Bhasin"
 author: "Hersh Bhasin"
 permalink: /books/
+comments: false
 ---
 
 # ASP.NET Professional Projects

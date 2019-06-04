@@ -3,6 +3,7 @@ layout: post
 title: "Applications by Hersh Bhasin"
 author: "Hersh Bhasin"
 permalink: /apps/
+comments: false
 ---
 
 These are some applications I have created that are being sold on Apple stores.

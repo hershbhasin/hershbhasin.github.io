@@ -2,9 +2,10 @@
 layout: post
 permalink: /categories/
 title: Categories
+comments: false
 ---
 
-
+<!-- 
 <div id="archives">
 {% for category in site.categories %}
   <div class="archive-group">
@@ -21,4 +22,12 @@ title: Categories
     {% endfor %}
   </div>
 {% endfor %}
-</div>
+</div> -->
+{% for category in site.categories %}
+  <h3>{{ category[0] }}</h3>
+  <ul>
+    {% for post in category[1] %}
+      <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endfor %}

@@ -3,6 +3,7 @@ layout: post
 title: "Archive"
 author: "Hersh"
 permalink: /archive/
+comments: false
 ---
 
 ## Blog Posts

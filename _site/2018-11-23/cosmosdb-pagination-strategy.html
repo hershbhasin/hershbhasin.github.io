@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Pagination Strategy for Cosmosdb APIs | Hersh Bhasin @Tech</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Pagination Strategy for Cosmosdb APIs" />
+<meta name="author" content="Hersh Bhasin" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introduction" />
+<meta property="og:description" content="Introduction" />
+<link rel="canonical" href="http://localhost:4000/2018-11-23/cosmosdb-pagination-strategy" />
+<meta property="og:url" content="http://localhost:4000/2018-11-23/cosmosdb-pagination-strategy" />
+<meta property="og:site_name" content="Hersh Bhasin @Tech" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-11-23T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2018-11-23/cosmosdb-pagination-strategy","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018-11-23/cosmosdb-pagination-strategy"},"author":{"@type":"Person","name":"Hersh Bhasin"},"description":"Introduction","headline":"Pagination Strategy for Cosmosdb APIs","dateModified":"2018-11-23T00:00:00-06:00","datePublished":"2018-11-23T00:00:00-06:00","@type":"BlogPosting","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+
+  <!-- RSS -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Hersh Bhasin @Tech" />
+
+  <!-- Google Analytics-->
+  
+</head>
+
+
+  <body>
+
+    <nav class="nav">
+  <div class="nav-container">
+    <a href="/">
+      <h2 class="nav-title">Hersh Bhasin @Tech</h2>
+    </a>
+      <ul>
+        <!-- <li><a href="/">Home</a></li> -->
+        <li><a href="/archive">Archive</a></li> 
+        <li><a href="/categories">Categories</a></li>        
+       <li><a href="/apps">Apps</a></li>
+       <li><a href="/books">Books</a></li>
+       <li><a href="https://blog.hershbhasin.com">Personal Blog</a></li> 
+       <li><a href="/about">About</a></li>   
+     </ul>
+  </div>
+</nav>
+
+   
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Hersh Bhasin
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-11-23 00:00:00 -0600">November 23, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">Pagination Strategy for Cosmosdb APIs</h1>
+  <div class="post-line"></div>
+
+  <h2 id="introduction">Introduction</h2>
+
+<p>In this post, I discuss two approaches for providing pagination functionality to a CosmosDb  Telemetry API that follows the<a href="http://jsonapi.org/examples/#pagination"> JSON API Spec  for Pagination</a>, which specifies that a JSON API may provide “previous”, “next” and “self” links in the response body that the user can follow to get the next/previous page sets.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+   </span><span class="s2">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"total-pages"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+    </span><span class="p">},</span><span class="w"> 
+  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w">
+    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"telemetry"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"speed"</span><span class="p">:</span><span class="w"> </span><span class="mf">34.93</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-83.6948611</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">42.1621701</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"fuel-consumed"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8205</span><span class="p">,</span><span class="w">
+       </span><span class="s2">"rpm"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">1103.90625</span><span class="p">,</span><span class="w">
+       </span><span class="s2">"odometer"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">2892</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    
+  </span><span class="p">}],</span><span class="w"> 
+ </span><span class="s2">"links"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"self"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://abc.com/v1/vehicle/TST20160905US0001/"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"prev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://abc.com/v1/vehicle/TST20160905US0001/?page=previouspage_state_encoded"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"next"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://abc.com/v1/vehicle/TST20160905US0001/?page=nextpage_state_encoded"</span><span class="p">,</span><span class="w">
+   
+  </span><span class="p">}</span><span class="w">
+  
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The two approaches I consider are:</p>
+
+<ul>
+  <li>Pagination using the CosmosDb provided Continuation Tokens</li>
+  <li>Pagination using DateTime spans</li>
+</ul>
+
+<p>The  “prev”  and “next” links above contain the encoded state of the “next” or “previous” page which is build on each API call: each  API request also  builds links for the next and previous pages, based on the strategy we choose. We would like to “silently” substitute the strategy if needed, hence the state is Base 64 encoded, so the user of our API is unaware of what the actual next/prev link looks like. When the user clicks on the prev/next link, the API decodes the appropriate state and navigates.</p>
+
+<h2 id="pagination-using-cosmosdb-continuation-tokens">Pagination using CosmosDb Continuation Tokens</h2>
+
+<p><strong>Building the “Next” link using Continuation Tokens</strong></p>
+
+<ul>
+  <li>When defining the FeedOptions for a query, you restrict the page size (MaxItemCount) to a specific page size</li>
+  <li>When the query executes, CosmosDb provides you with a “RequestContinuation” token for the next page set</li>
+  <li>In your response, you  provide a “Next” link to to the user that contains the RequestContinuation token as a querystring</li>
+  <li>In the next API request, you obtain the RequestContinuation from the querystring and set the FeedOptions with the token</li>
+</ul>
+
+<div class="language-c# highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">spec</span> <span class="p">=</span> <span class="n">SqlQueries</span><span class="p">.</span><span class="nf">Telemetry</span><span class="p">(</span><span class="n">parameters</span><span class="p">.</span><span class="n">Vin</span><span class="p">,</span> <span class="n">parameters</span><span class="p">.</span><span class="n">PageSize</span><span class="p">,</span> <span class="n">parameters</span><span class="p">.</span><span class="n">StartDate</span><span class="p">,</span> <span class="n">parameters</span><span class="p">.</span><span class="n">EndDate</span><span class="p">);</span>
+
+<span class="c1">//use the continuation token if you have it</span>
+<span class="n">FeedOptions</span> <span class="n">feedOptions</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FeedOptions</span><span class="p">();</span>
+<span class="n">feedOptions</span><span class="p">.</span><span class="n">MaxItemCount</span> <span class="p">=</span> <span class="n">parameters</span><span class="p">.</span><span class="n">PageSize</span><span class="p">;</span>
+<span class="n">feedOptions</span><span class="p">.</span><span class="n">RequestContinuation</span> <span class="p">=</span> <span class="nf">GetContinuationToken</span><span class="p">(</span><span class="n">parameters</span><span class="p">);</span>
+
+
+<span class="c1">//query</span>
+<span class="kt">var</span> <span class="n">queryable</span>  <span class="p">=</span> <span class="p">(</span><span class="n">_client</span><span class="p">.</span><span class="nf">CreateDocumentQuery</span><span class="p">(</span><span class="n">_defaultCollectionLink</span><span class="p">,</span>
+        <span class="n">spec</span><span class="p">,</span><span class="n">feedOptions</span><span class="p">)).</span><span class="nf">AsDocumentQuery</span><span class="p">();</span>
+
+<span class="n">FeedResponse</span> <span class="n">documents</span> <span class="p">=</span> <span class="k">await</span> <span class="n">queryable</span><span class="p">.</span><span class="nf">ExecuteNextAsync</span><span class="p">();</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">documents</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">requestList</span> <span class="p">=</span> <span class="n">documents</span><span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+    
+    <span class="n">parameters</span><span class="p">.</span><span class="nf">UpdateLastThreeTokens</span><span class="p">(</span><span class="n">documents</span><span class="p">.</span><span class="n">ResponseContinuation</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>Building the “Previous” link using Continuation Tokens</strong> While the “Next” link  is simple to implement, as on each pass of the query, CosmosDb provides you with a “Next” continuation token, the “previous” link strategy is complicated by the necessity of storing the  continuation token with a specific page number. If from page 10, you want to go to page 9, you will have to use the continuation token for the (n-1) page, which in this example is the token for page 8. Building a “previous” link, with cumulative additions of token/page number combinations, as we navigate from page to page,  would soon become unwieldy.  This would  forces us to use a “stateful” strategy for pagination:  the continuation token, with the associated page number would have to be stored in some storage medium, and maintaining state  is not something we want in a stateless API. The use of continuation tokens is more appropriate for a client side solution and not for an API solution, <strong>Pros &amp; Cons of the Continuation Token  as the Pagination Strategy</strong> <strong>Pros</strong></p>
+
+<ul>
+  <li>Native out of the box CosmosDb solution. Efficient if only “Next” is to be provided.</li>
+</ul>
+
+<p><strong>Cons</strong></p>
+
+<ul>
+  <li>Impractical if “Previous” has to be provided as you have to store the tokens and associated page numbers in a storage medium. Complex coding to implement “Previous”</li>
+  <li>Tied in to a CosmosDb native solution. If we need to move away from CosmosDb, we will have to revisit the pagination strategy.</li>
+</ul>
+
+<h2 id="pagination-using-datetime-spans">Pagination using DateTime spans</h2>
+
+<p>This strategy uses the record timestamp  to build the “next” and “previous” links.  <strong>Building the “Next” link  using DateTime span</strong> The data comes back in the descending order of timestamp.  Using the specified “Page Size” (which becomes the Top n rows in the DocDb SQL query,)  you get the next page load, using the “Beginning-Of-Time” as the start date and the Last Record of current page set as the end date  (which is the minimum timestamp as the data is sorted descending) .<strong>Building the “Previous” link  using DateTime span</strong> The logic is reversed in the “Previous” strategy.  To go back to a previous page set, you  use the timestamp of the first record (max timestamp) of current page set as the start date and the “End-Of-Time” as the end date and you sort the query Ascending. That way the Top n pages of the resultant dataset is the “Previous” page set you need. In code, you sort the dataset descending and return it. <strong>Example Implementation</strong></p>
+
+<div class="language-c# highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span>  <span class="n">SqlQuerySpec</span> <span class="nf">TelemetrySql</span><span class="p">(</span><span class="n">MethodParams</span><span class="p">.</span><span class="n">Telemetry</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="p">{</span>
+
+        <span class="kt">var</span> <span class="n">queryParams</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SqlParameterCollection</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">new</span> <span class="nf">SqlParameter</span><span class="p">(</span><span class="s">"@vin"</span><span class="p">,</span> <span class="n">parameters</span><span class="p">.</span><span class="n">Vin</span><span class="p">),</span>
+            <span class="k">new</span> <span class="nf">SqlParameter</span><span class="p">(</span><span class="s">"@pageSize"</span><span class="p">,</span> <span class="n">parameters</span><span class="p">.</span><span class="n">PageSize</span><span class="p">),</span>
+            <span class="k">new</span> <span class="nf">SqlParameter</span><span class="p">(</span><span class="s">"@startdate"</span><span class="p">,</span> <span class="n">parameters</span><span class="p">.</span><span class="n">StartTime</span><span class="p">.</span><span class="nf">ToDateFromString</span><span class="p">()),</span>
+            <span class="k">new</span> <span class="nf">SqlParameter</span><span class="p">(</span><span class="s">"@enddate"</span><span class="p">,</span> <span class="n">parameters</span><span class="p">.</span><span class="n">EndTime</span><span class="p">.</span><span class="nf">ToDateFromString</span><span class="p">())</span>
+
+        <span class="p">};</span>
+
+        <span class="kt">string</span> <span class="n">BaseSql</span> <span class="p">=</span> <span class="s">@"
+            SELECT Top @pageSize
+            doc.id,
+            doc.timestamp,
+            doc.outsideUseData.ODO,
+            doc.outsideUseData.SP1,  
+            doc.outsideUseData.NE1,
+            doc.outsideUseData.FUGAGE,
+            doc.location.coordinates[0] as longitude ,
+            doc.location.coordinates[1] as latitude,
+            doc.outsideUseData.B_FC
+            FROM doc
+            WHERE (doc.vin = @vin)
+           
+        "</span><span class="p">;</span>
+
+        <span class="c1">//Default Period</span>
+        <span class="kt">string</span> <span class="n">PeriodSql</span> <span class="p">=</span> <span class="s">@"
+            AND doc.timestamp &gt; @startdate
+            AND doc.timestamp &lt;= @enddate
+         "</span><span class="p">;</span>
+
+        <span class="c1">//Default Ordr By</span>
+        <span class="kt">string</span> <span class="n">OrderBy</span> <span class="p">=</span> <span class="s">@"
+         ORDER BY doc.timestamp DESC
+        "</span><span class="p">;</span>
+
+        <span class="c1">//Next</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">parameters</span><span class="p">.</span><span class="n">Direction</span> <span class="p">==</span> <span class="n">DirectionEnum</span><span class="p">.</span><span class="n">Next</span><span class="p">)</span>
+        <span class="p">{</span>
+
+            <span class="n">PeriodSql</span> <span class="p">=</span> <span class="s">@"
+            AND doc.timestamp &gt; @startdate
+            AND doc.timestamp &lt; @enddate
+            "</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">//Previous</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">parameters</span><span class="p">.</span><span class="n">Direction</span> <span class="p">==</span> <span class="n">DirectionEnum</span><span class="p">.</span><span class="n">Previous</span><span class="p">)</span>
+        <span class="p">{</span>
+
+            <span class="n">PeriodSql</span> <span class="p">=</span> <span class="s">@"
+             AND doc.timestamp &gt; @startdate
+             AND doc.timestamp &lt; @enddate
+             "</span><span class="p">;</span>
+            <span class="n">OrderBy</span> <span class="p">=</span> <span class="s">@" ORDER BY doc.timestamp"</span><span class="p">;</span>
+        <span class="p">}</span>
+
+
+        <span class="c1">//Return Spec</span>
+
+        <span class="kt">var</span> <span class="n">spec</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SqlQuerySpec</span><span class="p">();</span>
+        <span class="n">spec</span><span class="p">.</span><span class="n">QueryText</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="nf">Concat</span><span class="p">(</span><span class="n">BaseSql</span><span class="p">,</span> <span class="n">PeriodSql</span><span class="p">,</span> <span class="n">OrderBy</span><span class="p">);</span>
+        <span class="n">spec</span><span class="p">.</span><span class="n">Parameters</span> <span class="p">=</span> <span class="n">queryParams</span><span class="p">;</span>
+
+
+
+        <span class="k">return</span> <span class="n">spec</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>Pros of using DateTime spans</strong></p>
+
+<ul>
+  <li>Stateless solution.</li>
+  <li>Platform Agnostic: It is not bound to CosmosDb. If we need to move to another storage solution (like Hbase etc.) this approach will still work</li>
+</ul>
+
+<p><strong>Cons of using DateTime spans</strong></p>
+
+<ul>
+  <li>Custom solution.  Slightly complex logic for  implementing “previous” .</li>
+  <li>Query degrades as larger duration/ time span is selected.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>CosmosDb does not have a good stateless solution for implementing a “Previous” recordset functionality. To revisit a previous page, the associated continuation token for that page is required to be known. This is not very practical for an API, which is best kept stateless. The client side application can and should maintain state. One solution could be that on each API call, the API payload returns the continuation token to the client, who stores it and sends it back as necessary to the API. However, this is a client specific solution. Another drawback of using continuation tokens is that one is bound to a CosmosDb specific solution. If we need to move to another platform, pagination using CosmosDb continuation tokens will not work. For these reasons, we choose to implement pagination using the DateTime spans approach as described in this article.</p>
+
+   
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'hershbhasin'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-12-03/azure-automation-DSC" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-10-15/cosmosdb-api-security" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+  <span>
+    &copy; <time datetime="2019-06-04 19:26:37 -0500">2019</time> Hersh Bhasin.
+  </span>
+</footer>
+
+    <script id="dsq-count-scr" src="//hershbhasin.disqus.com/count.js" async></script>
+  </body>
+</html>

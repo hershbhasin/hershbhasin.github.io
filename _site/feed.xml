@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-06-02T23:36:56-05:00</updated><id>http://localhost:4000/</id><title type="html">Hersh Bhasin’s Tech Blog</title><subtitle>Hersh Bhasin on Technology</subtitle><author><name>Hersh Bhasin</name><email>hershbhasin63@gmail.com</email></author><entry><title type="html">Azure Data Factory</title><link href="http://localhost:4000/2019-06-02/azure-data-factory" rel="alternate" type="text/html" title="Azure Data Factory" /><published>2019-06-02T00:00:00-05:00</published><updated>2019-06-02T00:00:00-05:00</updated><id>http://localhost:4000/2019-06-02/azure-data-factory</id><content type="html" xml:base="http://localhost:4000/2019-06-02/azure-data-factory">&lt;h1 id=&quot;overview&quot;&gt;Overview&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-06-04T19:26:37-05:00</updated><id>http://localhost:4000/</id><title type="html">Hersh Bhasin @Tech</title><subtitle>Hersh Bhasin on Technology</subtitle><author><name>Hersh Bhasin</name><email>hershbhasin63@gmail.com</email></author><entry><title type="html">Scheduling Data Transformation with Azure Data Factory</title><link href="http://localhost:4000/2019-06-02/azure-data-factory" rel="alternate" type="text/html" title="Scheduling Data Transformation with Azure Data Factory" /><published>2019-06-02T00:00:00-05:00</published><updated>2019-06-02T00:00:00-05:00</updated><id>http://localhost:4000/2019-06-02/azure-data-factory</id><content type="html" xml:base="http://localhost:4000/2019-06-02/azure-data-factory">&lt;h1 id=&quot;overview&quot;&gt;Overview&lt;/h1&gt;
 
-&lt;p&gt;In the Event Logs Ingestion &amp;amp; Storage post, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :&lt;/p&gt;
+&lt;p&gt;In the &lt;a href=&quot;https://hershbhasin.com/2019-05-05/data-ingestion&quot;&gt;Part 1: Data Ingestion&lt;/a&gt;, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :&lt;/p&gt;
 
 &lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s2&quot;&gt;&quot;{Namespace}_{EventHub}_{PartitionId}/{Year}/{Month}/{Day}_{Hour}_{Minute}_{Second}&quot;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -16,6 +16,12 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 &lt;p&gt;Also, we will have 12 folders created, one for each month.&lt;/p&gt;
 
 &lt;p&gt;Now our objective is to automate the extraction and curation of this monthly data by a process that can be scheduled to run once every month.  For this we will use Azure Data Factory&lt;/p&gt;
+
+&lt;p&gt;This is a two part post:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hershbhasin.com/2019-05-05/data-ingestion&quot;&gt;Part 1: Data Ingestion&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hershbhasin.com/2019-06-02/azure-data-factor&quot;&gt;Part 2: Data Curation with Azure Data Factory&lt;/a&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;azure-data-factory&quot;&gt;Azure Data Factory&lt;/h1&gt;
 
@@ -33,13 +39,13 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 &lt;p&gt;Using Data Factory, we want to build a pipeline that can run once a month on our monthly  folders in the Data Lake, extract the desired data, (which resides compressed as byte data, and has an Avro format),  transform it as legible CSV data, and finally store the output as CSV files in an output folder in the Data Lake.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/Scheduling.PNG&quot; alt=&quot;Scheduling&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/adf_1.PNG&quot; alt=&quot;Scheduling&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;For the purpose of this example, we have set up a monthly run schedule. With Data Factory, we can choose to run jobs at a lower time granularity: say by Day or  by Hour. Also, we can write jobs that summarize or aggregate data. In our example, we are just extracting device logs from byte/AVRO to CSV, without performing any aggregation.&lt;/p&gt;
 
 &lt;p&gt;The pipeline we create will report its progress with a calendar. For a daily extraction schedule in the screenshot below, the “Green” in the calendar shows that jobs have been successfully run. The “Orange” shows that it is waiting for data to become available, and the “red “ shows that there was a problem encountered on that day. The administrator can correct the error and rerun the schedule for that day.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/calander.PNG&quot; alt=&quot;calander&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/adf_2.PNG&quot; alt=&quot;calander&quot; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;arm-templates&quot;&gt;ARM templates&lt;/h1&gt;
 
@@ -57,23 +63,23 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
   &lt;li&gt;Data Lake Analytics&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/env.png&quot; alt=&quot;env&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/adf_3.png&quot; alt=&quot;env&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;(Note: we will not be using Blob Storage or SQL Server for this POC).&lt;/p&gt;
 
-&lt;h1 id=&quot;the-azure-data-lake-analytics-account-adls&quot;&gt;The Azure Data Lake Analytics Account (ADLS)&lt;/h1&gt;
+&lt;h1 id=&quot;the-azure-data-lake-analytics-account-adla&quot;&gt;The Azure Data Lake Analytics Account (ADLA)&lt;/h1&gt;
 
-&lt;h2 id=&quot;what-is-adls&quot;&gt;What is ADLS&lt;/h2&gt;
+&lt;h2 id=&quot;what-is-adla&quot;&gt;What is ADLA&lt;/h2&gt;
 
-&lt;p&gt;ADLA is a platform that enables processing of extremely large data sets, integration with existing Data Warehousing, and true parallel processing of structured and unstructured data. ADLA is well equipped to handle many of the types of processing we do in the &lt;em&gt;T&lt;/em&gt; portion of &lt;em&gt;ETL&lt;/em&gt;; that is, transforming data. It provides similar functionality like Hadoop (with Hive and Spark).  However, it is simpler to learn &amp;amp; use:  whereas in Hadoop, you encounter the learning curve of mastering any of its six supported languages – Hive, Pig, Java, Scala, Python, Bash; in ADLS, you just use one: USQL, which is a combination of SQL and C#. Also the pricing of ADALS is per job, which is different from the per hour, (based on how long you keep your cluster running,)  pricing of competing Big Data cloud offerings.  With ADLA, you pay for each individual job that is run. Each job run through ADLA is assigned a number of &lt;strong&gt;Analytic Units (AUs)&lt;/strong&gt;. Each job is billed based on how many AUs were used and how many hours the job ran. So a simple job that used 10 AUs for one hour would be billed for 10 processing hours.&lt;/p&gt;
+&lt;p&gt;ADLA is a platform that enables processing of extremely large data sets, integration with existing Data Warehousing, and true parallel processing of structured and unstructured data. ADLA is well equipped to handle many of the types of processing we do in the &lt;em&gt;T&lt;/em&gt; portion of &lt;em&gt;ETL&lt;/em&gt;; that is, transforming data. It provides similar functionality like Hadoop (with Hive and Spark).  However, it is simpler to learn &amp;amp; use:  whereas in Hadoop, you encounter the learning curve of mastering any of its six supported languages – Hive, Pig, Java, Scala, Python, Bash; in ADLA, you just use one: USQL, which is a combination of SQL and C#. Also the pricing of ADALA is per job, which is different from the per hour, (based on how long you keep your cluster running,)  pricing of competing Big Data cloud offerings.  With ADLA, you pay for each individual job that is run. Each job run through ADLA is assigned a number of &lt;strong&gt;Analytic Units (AUs)&lt;/strong&gt;. Each job is billed based on how many AUs were used and how many hours the job ran. So a simple job that used 10 AUs for one hour would be billed for 10 processing hours.&lt;/p&gt;
 
 &lt;p&gt;As a matter of fact, just owning an Azure Data Lake Analytics account doesn’t cost anything. You aren’t even billed for the account until you run a job. That’s pretty unique in the Big Data space.&lt;/p&gt;
 
 &lt;p&gt;For more information, see  &lt;a href=&quot;https://docs.microsoft.com/en-us/azure/data-lake-analytics/data-lake-analytics-overview&quot;&gt;Data Lake Analytics Overview&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&quot;how-we-are-going-to-use-adls&quot;&gt;How we are going to use ADLS&lt;/h2&gt;
+&lt;h2 id=&quot;how-we-are-going-to-use-adla&quot;&gt;How we are going to use ADLA&lt;/h2&gt;
 
-&lt;p&gt;We will create a database in ADLS, and within that database, we will create a stored procedure that will take in a Start Date and an End Date as parameters. When we schedule a  Azure Data Factory pipeline, it will pass in these two parameters.  The stored procedure will use these parameters to determine the folder in the Data Lake to target, and will pick up all the files in that folder, transform it and write the output in an output folder in the Data Lake. There are a number of U-SQL  scripts provided in the source code folder, wrapped within a Visual Studio Solution, which you need to run. The location of the Visual Studio Solution is  in the folder: &lt;em&gt;CloudworxUSQLApplication&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;We will create a database in ADLA, and within that database, we will create a stored procedure that will take in a Start Date and an End Date as parameters. When we schedule a  Azure Data Factory pipeline, it will pass in these two parameters.  The stored procedure will use these parameters to determine the folder in the Data Lake to target, and will pick up all the files in that folder, transform it and write the output in an output folder in the Data Lake. There are a number of U-SQL  scripts provided in the source code folder, wrapped within a Visual Studio Solution, which you need to run. The location of the Visual Studio Solution is  in the folder: &lt;em&gt;CloudworxUSQLApplication&lt;/em&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;copy-assemblies-to-a-data-lake-folder&quot;&gt;Copy Assemblies to a Data Lake Folder&lt;/h2&gt;
 
@@ -81,7 +87,7 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 &lt;p&gt;In the attached Data Lake, create a folder called &lt;em&gt;\Assemblies\Avro&lt;/em&gt; and upload the assemblies from the &lt;em&gt;Source Code/CloudworxUSQLApplication/Lib&lt;/em&gt; to here.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/assemblies.PNG&quot; alt=&quot;assemblies&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/adf_4.PNG&quot; alt=&quot;assemblies&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;create-azure-data-lake-analytics-data-sources&quot;&gt;Create Azure Data Lake Analytics Data Sources&lt;/h2&gt;
 
@@ -91,12 +97,12 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 &lt;ul&gt;
   &lt;li&gt;In the Azure Data Lake Analytics account, browse to its blade in the Azure portal, and under Settings, click Data Sources.&lt;/li&gt;
-  &lt;li&gt;Click Add Data Source. Then in the Add Data Source blade, in the Storage Type list, select Azure Storage, and then select your Azure storage account. This adds your Azure storage account as a data source to which the Azure Data Lake Analytics account has access, in addition to its default Azure Data Lake Store.&lt;img src=&quot;/assets/data_lake_analytics.PNG&quot; alt=&quot;data_lake_analytics&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;Click Add Data Source. Then in the Add Data Source blade, in the Storage Type list, select Azure Storage, and then select your Azure storage account. This adds your Azure storage account as a data source to which the Azure Data Lake Analytics account has access, in addition to its default Azure Data Lake Store.&lt;img src=&quot;/assets/adf_5.PNG&quot; alt=&quot;data_lake_analytics&quot; /&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;create-an-azure-data-lake-analytics-database&quot;&gt;Create an Azure Data Lake Analytics Database&lt;/h2&gt;
 
-&lt;p&gt;Open the provided  Visual Studio solution at the location &lt;em&gt;..\CloudworxUSQLApplication&lt;/em&gt; and Submit the U-SQL script: &lt;em&gt;1-CreateDB.usql&lt;/em&gt;. This will create a database called AVRO in the ADLS.&lt;/p&gt;
+&lt;p&gt;Open the provided  Visual Studio solution at the location &lt;em&gt;..\CloudworxUSQLApplication&lt;/em&gt; and Submit the U-SQL script: &lt;em&gt;1-CreateDB.usql&lt;/em&gt;. This will create a database called AVRO in the ADLA.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Script: 1-CreateDB.usql&lt;/strong&gt;&lt;/p&gt;
 
@@ -127,13 +133,13 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 &lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ASSEMBLY&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log4net&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&quot;/Assemblies/Avro/log4net.dll&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;If you now browse the ADLS  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:&lt;/p&gt;
+&lt;p&gt;If you now browse the ADLA  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/copy_assemblies.PNG&quot; alt=&quot;copy_assemblies&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/adf_6.PNG&quot; alt=&quot;copy_assemblies&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;create-the-stored-procedure&quot;&gt;Create the Stored Procedure&lt;/h2&gt;
 
-&lt;p&gt;Open the provided  Visual Studio solution at the location &lt;em&gt;..\CloudworxUSQLApplication&lt;/em&gt; and Submit the U-SQL script: &lt;em&gt;sp.usql&lt;/em&gt;. Once you run this script, you should see a stored procedure created in the ADLS Database Avro, in the “Procedures” folder.&lt;/p&gt;
+&lt;p&gt;Open the provided  Visual Studio solution at the location &lt;em&gt;..\CloudworxUSQLApplication&lt;/em&gt; and Submit the U-SQL script: &lt;em&gt;sp.usql&lt;/em&gt;. Once you run this script, you should see a stored procedure created in the ADLA Database Avro, in the “Procedures” folder.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Script: sp.usql&lt;/strong&gt;&lt;/p&gt;
 
@@ -223,11 +229,11 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 &lt;p&gt;If you had followed my previous post on Event Logs Ingestion, you would have a &lt;em&gt;archivefolder&lt;/em&gt; in the Data Lake that contained the raw data. If you have not followed that post, I have provided sample data in the source code folder, in the “Data” folder.  Use the Microsoft Azure Storage Explorer to upload the “archivefolder” to the Data Lake.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/archivefolder.png&quot; alt=&quot;archivefolder&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/adf_7.PNG&quot; alt=&quot;archivefolder&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;test-the-stored-procedure&quot;&gt;Test the Stored Procedure&lt;/h2&gt;
 
-&lt;p&gt;In the ADLS, click on the “New Job” button, paste the following script, and click “Submit”&lt;/p&gt;
+&lt;p&gt;In the ADLA, click on the “New Job” button, paste the following script, and click “Submit”&lt;/p&gt;
 
 &lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;Avro&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp_CreateLogs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DateTime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&quot;2018/01/01&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
                        &lt;span class=&quot;k&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DateTime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&quot;2018/01/31&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
@@ -504,13 +510,17 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 &lt;p&gt;The pipeline should start running and can be viewed under the &lt;em&gt;Monitor &amp;amp; Manage&lt;/em&gt; tab in the Data Factory. Very soon, you should see transformed output in the Data Lake output folder.&lt;/p&gt;
 
-&lt;div class=&quot;language-html highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Source Code Link: 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Overview</summary></entry><entry><title type="html">A Cost Effective Data Ingestion &amp;amp; Curation Pipeline in Azure</title><link href="http://localhost:4000/2019-05-05/data-ingestion" rel="alternate" type="text/html" title="A Cost Effective Data Ingestion &amp; Curation Pipeline in Azure" /><published>2019-05-05T00:00:00-05:00</published><updated>2019-05-05T00:00:00-05:00</updated><id>http://localhost:4000/2019-05-05/data-ingestion</id><content type="html" xml:base="http://localhost:4000/2019-05-05/data-ingestion">&lt;p&gt;##Introduction&lt;/p&gt;
+&lt;h2 id=&quot;source-code&quot;&gt;Source Code&lt;/h2&gt;
+
+&lt;p&gt;The source code for this blog post is available here: &lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/BigData&quot;&gt;Source Code Link&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Overview</summary></entry><entry><title type="html">A Cost Effective Data Ingestion &amp;amp; Curation Pipeline in Azure</title><link href="http://localhost:4000/2019-05-05/data-ingestion" rel="alternate" type="text/html" title="A Cost Effective Data Ingestion &amp; Curation Pipeline in Azure" /><published>2019-05-05T00:00:00-05:00</published><updated>2019-05-05T00:00:00-05:00</updated><id>http://localhost:4000/2019-05-05/data-ingestion</id><content type="html" xml:base="http://localhost:4000/2019-05-05/data-ingestion">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 
 &lt;p&gt;For analytics data, we would need to store large volumes of data. Storage in CosmosDB or SQL Server is very expensive (for example, in CosmosDB there is a storage charge and a RU charge per query). Storage in Data Lake is cheap, and for cost effectiveness, analytics data  can be persisted/archived in a Data Lake. Please refer to the price comparisons section below.&lt;/p&gt;
 
-&lt;h2 id=&quot;source-code&quot;&gt;Source Code&lt;/h2&gt;
-&lt;p&gt;The source code for this blog post is available here: &lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/BigData&quot;&gt;Source Code Link&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;This is a two part post:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hershbhasin.com/2019-05-05/data-ingestion&quot;&gt;Part 1: Data Ingestion&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hershbhasin.com/2019-06-02/azure-data-factory&quot;&gt;Part 2: Data Curation with Azure Data Factory&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;price-comparison-between-cosmosdb-and-data-lake&quot;&gt;Price Comparison between CosmosDb and Data Lake&lt;/h2&gt;
 
@@ -710,172 +720,1000 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 &lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/azure/data-lake-store/data-lake-store-archive-eventhub-capture&quot;&gt;Microsoft Documentation&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">##Introduction</summary></entry><entry><title type="html">Introducing Tale</title><link href="http://localhost:4000/2017-03-29/introducing-tale" rel="alternate" type="text/html" title="Introducing Tale" /><published>2017-03-29T00:00:00-05:00</published><updated>2017-03-29T00:00:00-05:00</updated><id>http://localhost:4000/2017-03-29/introducing-tale</id><content type="html" xml:base="http://localhost:4000/2017-03-29/introducing-tale">&lt;p&gt;Tale is a minimal &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; theme curated for storytellers. It is designed and developed by &lt;a href=&quot;https://github.com/chesterhow/&quot;&gt;myself&lt;/a&gt; for a friend who writes short stories.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/azure/data-lake-store/data-lake-store-archive-eventhub-capture&quot;&gt;Microsoft Documentation&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&quot;tale-features&quot;&gt;Tale features&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;Compatible with GitHub Pages&lt;/li&gt;
-  &lt;li&gt;Responsive design (looks just as good on mobile)&lt;/li&gt;
-  &lt;li&gt;Syntax highlighting, with the help of Pygments&lt;/li&gt;
-  &lt;li&gt;Markdown and HTML text formatting&lt;/li&gt;
-  &lt;li&gt;Pagination of posts&lt;/li&gt;
-&lt;/ul&gt;
+&lt;h2 id=&quot;source-code&quot;&gt;Source Code&lt;/h2&gt;
 
-&lt;p&gt;Head over to the &lt;a href=&quot;/2017-03-16/example-content&quot;&gt;Example Content&lt;/a&gt; post for a showcase of Tale’s text formatting features.&lt;/p&gt;
+&lt;p&gt;The source code for this blog post is available here: &lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/BigData&quot;&gt;Source Code Link&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Embedded Reporting with Azure Power BI Embedded</title><link href="http://localhost:4000/2019-04-07/powerbi-embedded" rel="alternate" type="text/html" title="Embedded Reporting with Azure Power BI Embedded" /><published>2019-04-07T00:00:00-05:00</published><updated>2019-04-07T00:00:00-05:00</updated><id>http://localhost:4000/2019-04-07/powerbi-embedded</id><content type="html" xml:base="http://localhost:4000/2019-04-07/powerbi-embedded">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 
-&lt;h2 id=&quot;browser-support&quot;&gt;Browser Support&lt;/h2&gt;
-&lt;p&gt;Tale works on most if not all modern browsers, including Chrome, Safari and Firefox 👍🏼&lt;/p&gt;
+&lt;p&gt;Power BI Embedded is intended to simplify how ISVs and developers use Power BI capabilities with embedded analytics. In this proof of concept, I will show you how to set up an Azure  Power BI Embedded environment. In an earlier POC: &lt;a href=&quot;https://tech.hershbhasin.com/2019/04/event-streaming-using-azure-stream_2.html&quot;&gt;Event Streaming using Azure Stream Analytics&lt;/a&gt;, I demonstrated the use of Azure Stream Analytics to stream event hub data into a Azure SQL Server database. This POC extends the earlier streaming POC and shows how to build reports off the event hub data, how to host the reports on Azure using PowerBI embedded and finally, how to embed the reports in a custom MVC application.&lt;/p&gt;
 
-&lt;h2 id=&quot;download-or-contribute&quot;&gt;Download or Contribute&lt;/h2&gt;
-&lt;p&gt;Tale is publicly hosted on GitHub, so go ahead and download or fork it at the &lt;a href=&quot;https://github.com/chesterhow/tale&quot;&gt;GitHub repository&lt;/a&gt;. If you spot any bugs or have any suggestions, feel free to create an issue or make a pull request.&lt;/p&gt;
-
-&lt;p&gt;Thanks for checking out Tale!&lt;/p&gt;</content><author><name>Chester</name></author><summary type="html">Tale is a minimal Jekyll theme curated for storytellers. It is designed and developed by myself for a friend who writes short stories.</summary></entry><entry><title type="html">Example Content</title><link href="http://localhost:4000/2017-03-16/example-content" rel="alternate" type="text/html" title="Example Content" /><published>2017-03-16T00:00:00-05:00</published><updated>2017-03-16T00:00:00-05:00</updated><id>http://localhost:4000/2017-03-16/example-content</id><content type="html" xml:base="http://localhost:4000/2017-03-16/example-content">&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas tincidunt ornare nibh, non elementum augue tempus eget. Pellentesque tempus scelerisque iaculis. Nullam interdum ultricies nibh quis sollicitudin. Donec ornare fermentum facilisis. Ut at sem ac sem imperdiet varius a eget tortor. Nam eu augue eget orci semper maximus in eget augue. Mauris ornare, nisl ut suscipit consectetur, mi quam interdum tellus, at rutrum quam eros ultrices mi.&lt;/p&gt;
-
-&lt;h1 id=&quot;headers&quot;&gt;Headers&lt;/h1&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span class=&quot;gh&quot;&gt;# H1&lt;/span&gt;
-&lt;span class=&quot;gu&quot;&gt;## H2&lt;/span&gt;
-&lt;span class=&quot;gu&quot;&gt;### H3&lt;/span&gt;
-&lt;span class=&quot;gu&quot;&gt;#### H4&lt;/span&gt;
-&lt;span class=&quot;gu&quot;&gt;##### H5&lt;/span&gt;
-&lt;span class=&quot;gu&quot;&gt;###### H6&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h1 id=&quot;h1&quot;&gt;H1&lt;/h1&gt;
-&lt;h2 id=&quot;h2&quot;&gt;H2&lt;/h2&gt;
-&lt;h3 id=&quot;h3&quot;&gt;H3&lt;/h3&gt;
-&lt;h4 id=&quot;h4&quot;&gt;H4&lt;/h4&gt;
-&lt;h5 id=&quot;h5&quot;&gt;H5&lt;/h5&gt;
-&lt;h6 id=&quot;h6&quot;&gt;H6&lt;/h6&gt;
-
-&lt;h1 id=&quot;text-formatting&quot;&gt;Text formatting&lt;/h1&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;gs&quot;&gt;**Bold**&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; _Italics_
-&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; ~~Strikethrough~~
-&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;&amp;lt;ins&amp;gt;&lt;/span&gt;Underline&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ins&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;&amp;lt;sup&amp;gt;&lt;/span&gt;Superscript&lt;span class=&quot;nt&quot;&gt;&amp;lt;/sup&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;&amp;lt;sub&amp;gt;&lt;/span&gt;Subscript&lt;span class=&quot;nt&quot;&gt;&amp;lt;/sub&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; Abbreviation: &lt;span class=&quot;nt&quot;&gt;&amp;lt;abbr&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;title=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;HyperText Markup Language&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;HTML&lt;span class=&quot;nt&quot;&gt;&amp;lt;/abbr&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; Citation: &lt;span class=&quot;nt&quot;&gt;&amp;lt;cite&amp;gt;&lt;/span&gt;&lt;span class=&quot;ni&quot;&gt;&amp;amp;mdash;&lt;/span&gt; Chester How&lt;span class=&quot;nt&quot;&gt;&amp;lt;/cite&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Bold&lt;/strong&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Italics&lt;/em&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;del&gt;Strikethrough&lt;/del&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;ins&gt;Underline&lt;/ins&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;sup&gt;Superscript&lt;/sup&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;sub&gt;Subscript&lt;/sub&gt;&lt;/li&gt;
-  &lt;li&gt;Abbreviation: &lt;abbr title=&quot;HyperText Markup Language&quot;&gt;HTML&lt;/abbr&gt;&lt;/li&gt;
-  &lt;li&gt;Citation: &lt;cite&gt;— Chester How&lt;/cite&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&quot;lists&quot;&gt;Lists&lt;/h1&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span class=&quot;p&quot;&gt;1.&lt;/span&gt; Ordered list item 1
-&lt;span class=&quot;p&quot;&gt;2.&lt;/span&gt; Ordered list item 2
-&lt;span class=&quot;p&quot;&gt;3.&lt;/span&gt; Ordered list item 3
-&lt;span class=&quot;p&quot;&gt;
-*&lt;/span&gt; Unordered list item 1
-&lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; Unordered list item 2
-&lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; Unordered list item 3&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;This is a two part post:&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;Ordered list item 1&lt;/li&gt;
-  &lt;li&gt;Ordered list item 2&lt;/li&gt;
-  &lt;li&gt;Ordered list item 3&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://hershbhasin.com/2019-03-09/azure-stream-analytics&quot;&gt;Azure Stream Analytics&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://hershbhasin.com/2019-04-07/powerbi-embedded&quot;&gt;Embedded Reporting with Azure Power BI Embedded&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
+&lt;h2 id=&quot;solution-overview&quot;&gt;Solution Overview&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/powerbi_1.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;report-creation&quot;&gt;Report Creation&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Report should be created in Power BI desktop (&lt;a href=&quot;https://powerbi.microsoft.com/en-us/desktop/&quot;&gt;Free Download)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Data Connectivity mode: should be DirectQuery (so data is always current. We can also explore schedule refreshes if DirectQuery is considered sub optimal)&lt;/li&gt;
+  &lt;li&gt;Azure BI Embedded currently supports only SQL Server &amp;amp; SQL Server  warehouse as data sources (? to confirm)&lt;/li&gt;
+  &lt;li&gt;A PowerBI report is provided under PowerBI/Reports/AuditLog.pbix that connects to the Azure SQL Server database created earlier (devicedb ) in post: &lt;a href=&quot;https://tech.hershbhasin.com/2019/04/event-streaming-using-azure-stream_2.html&quot;&gt;Event Streaming using Azure Stream Analytics&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;hosting-with-power-bi-embedded&quot;&gt;Hosting with Power BI Embedded&lt;/h2&gt;
+
 &lt;ul&gt;
-  &lt;li&gt;Unordered list item 1&lt;/li&gt;
-  &lt;li&gt;Unordered list item 2&lt;/li&gt;
-  &lt;li&gt;Unordered list item 3&lt;/li&gt;
+  &lt;li&gt;Azure AD used to authenticate users and apps
+    &lt;ul&gt;
+      &lt;li&gt;PBI licenses are assigned to Azure AD user accounts&lt;/li&gt;
+      &lt;li&gt;Organization owns a tenant (i.e. directory)&lt;/li&gt;
+      &lt;li&gt;AAD tenant contains user accounts and groups&lt;/li&gt;
+      &lt;li&gt;AAD tenant contains set of registered applications&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;You must register your application with Azure AD
+    &lt;ul&gt;
+      &lt;li&gt;Requirement of calling to Power BI service API&lt;/li&gt;
+      &lt;li&gt;Applications registered as Web app or Native app&lt;/li&gt;
+      &lt;li&gt;Registered applications are assigned GUID for client ID&lt;/li&gt;
+      &lt;li&gt;Application is configured with permissions&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&quot;links&quot;&gt;Links&lt;/h1&gt;
+&lt;ol&gt;
+  &lt;li&gt;Follow this quickstart to set up the PowerBI Hosting environment  &amp;amp; to create a workspace: &lt;a href=&quot;https://docs.microsoft.com/en-us/power-bi/developer/embed-sample-for-customers&quot;&gt;https://docs.microsoft.com/en-us/power-bi/developer/embed-sample-for-customers&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;You will need to create an account on &lt;a href=&quot;https://app.powerbi.com/groups/me/list/dashboards&quot;&gt;https://app.powerbi.com&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;Now, using PowerBI desktop, we can publish the report AuditLog.pbix to the workspace from the Publish tab in PowerBI. The report gets published to your account at powerbi.com&lt;/li&gt;
+  &lt;li&gt;Once published, log into &lt;a href=&quot;https://app.powerbi.com/groups/me/list/dashboards&quot;&gt;https://app.powerbi.com&lt;/a&gt; and under workspace/Datasets/settings/Data source credentials, set your Azure SQL Server credentials  (Basic Authentication Method)&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;Check out tale on &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;GitHub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;](&lt;/span&gt;&lt;span class=&quot;sx&quot;&gt;https://github.com/chesterhow/tale&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;.&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;embedding-a-power-bi-report-in-an-application&quot;&gt;Embedding a Power BI Report in an Application&lt;/h2&gt;
 
-&lt;p&gt;Check out tale on &lt;a href=&quot;https://github.com/chesterhow/tale&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;There is a sample MVC application provided in the PowerBI/App Owns Data folder that will run our PowerBI Report&lt;/p&gt;
 
-&lt;h1 id=&quot;images&quot;&gt;Images&lt;/h1&gt;
+&lt;p&gt;The following items in Web.config need to be filled. Refer to &lt;a href=&quot;https://docs.microsoft.com/en-us/power-bi/developer/embed-sample-for-customers&quot;&gt;https://docs.microsoft.com/en-us/power-bi/developer/embed-sample-for-customers&lt;/a&gt; (section: Embed your content using the sample application) to fill in values for these 5 items&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span class=&quot;p&quot;&gt;![&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;Placeholder image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;](&lt;/span&gt;&lt;span class=&quot;sx&quot;&gt;https://placehold.it/800x400&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;&quot;Placeholder image&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;applicationId&quot;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;a9dd54e0-7f89-4056-9ce4-4d84d0bf1f1b&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;workspaceId&quot;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;252c3628-aab8-4fec-a3da-bbe6f3924905&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;reportId&quot;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;f90ff3b3-fe68-43e1-852d-29d9049dca17&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pbiUsername&quot;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;xxxxxx&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pbiPassword&quot;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;xxxxxx&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;span class=&quot;p&quot;&gt;![&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;Image with caption&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;](&lt;/span&gt;&lt;span class=&quot;sx&quot;&gt;https://placehold.it/700x400&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;&quot;Image with caption&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;ge&quot;&gt;_This is an image with a caption_&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;The report runs within the MVC application on Localhost&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://placehold.it/800x400&quot; alt=&quot;Placeholder image&quot; title=&quot;Placeholder image&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/powerbi_2.PNG&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://placehold.it/700x400&quot; alt=&quot;Image with caption&quot; title=&quot;Image with caption&quot; /&gt;
-&lt;em&gt;This is an image with a caption&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&quot;source-code-download&quot;&gt;Source Code Download&lt;/h2&gt;
 
-&lt;h1 id=&quot;code-and-syntax-highlighting&quot;&gt;Code and Syntax Highlighting&lt;/h1&gt;
-&lt;p&gt;Use back-ticks for &lt;code class=&quot;highlighter-rouge&quot;&gt;inline code&lt;/code&gt;. Multi-line code snippets are supported too through Pygments.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/AzureStreaming&quot;&gt;Source Code&lt;/a&gt;&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// Sample javascript code&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;JavaScript syntax highlighting&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# Sample python code
-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Python syntax highlighting&quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;a href=&quot;https://microsoft.github.io/PowerBI-JavaScript/demo/v2-demo/index.html&quot;&gt;Microsoft Power BI Embedded Playground&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Adding &lt;code class=&quot;highlighter-rouge&quot;&gt;linenos&lt;/code&gt; to the Pygments tag enables line numbers.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/power-bi/developer/embedded-row-level-security&quot;&gt;Row Level Security&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Live Streaming with Azure Stream Analytics</title><link href="http://localhost:4000/2019-03-09/azure-stream-analytics" rel="alternate" type="text/html" title="Live Streaming with Azure Stream Analytics" /><published>2019-03-09T00:00:00-06:00</published><updated>2019-03-09T00:00:00-06:00</updated><id>http://localhost:4000/2019-03-09/azure-stream-analytics</id><content type="html" xml:base="http://localhost:4000/2019-03-09/azure-stream-analytics">&lt;p&gt;Azure Stream Analytics is a Cloud service in Azure that is used to process real time streams of data. The input for live data can be Azure event hub, an IOT hub or an Azure blob store location. As the data arrives in real time, we process it and send the results of that processing to an output sync which could be could be an Azure blob store location, or an Azure data location.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-3
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// Sample javascript code&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;JavaScript syntax highlighting&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;To process the data between the input &amp;amp; output , we define a query. The query is written using standard SQL syntax and we run that query on the data. Once we start our Azure Stream Analytics query, as that data comes in in real time, the query will run against the unbounded stream of data as it arrives and write the results to the output. Various rules can be applied to the data and these rules can be applied before the data is persisted to an output. For example threshold rules can be applied so that only events exceeding certain threshold limits are persisted.&lt;/p&gt;
 
-&lt;h1 id=&quot;blockquotes&quot;&gt;Blockquotes&lt;/h1&gt;
+&lt;p&gt;In this POC, we will take a stream of live events entering a Event Hub and send the results to a Azure SQL Server database. In a later POC, we will use this database for reporting purposes.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span class=&quot;gt&quot;&gt;&amp;gt; Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;This is a two part post:&lt;/p&gt;
 
-&lt;blockquote&gt;
-  &lt;p&gt;Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://hershbhasin.com/2019-03-09/azure-stream-analytics&quot;&gt;Azure Stream Analytics&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://hershbhasin.com/2019-04-07/powerbi-embedded&quot;&gt;Embedded Reporting with Azure Power BI Embedded&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;h1 id=&quot;horizontal-rule--line-break&quot;&gt;Horizontal Rule &amp;amp; Line Break&lt;/h1&gt;
+&lt;h2 id=&quot;create-azure-environment&quot;&gt;Create Azure Environment&lt;/h2&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;Use &lt;span class=&quot;sb&quot;&gt;`&amp;lt;hr&amp;gt;`&lt;/span&gt; for horizontal rules
+&lt;p&gt;In the source, there is a powershell script called reportingpoc.ps1. Run this script to set up the environment in Azure. A Event Hub namespace and a SQL  Server database is created.&lt;/p&gt;
 
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/streaming_1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-and &lt;span class=&quot;sb&quot;&gt;`&amp;lt;br&amp;gt;`&lt;/span&gt; for line breaks.
+&lt;h2 id=&quot;create-database-table&quot;&gt;Create Database table&lt;/h2&gt;
 
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;br&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;In the Azure SQL Database (devicedb), create the following table&lt;/p&gt;
 
-&lt;p&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;hr&amp;gt;&lt;/code&gt; for horizontal rules&lt;/p&gt;
+&lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AuditTable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
 
-&lt;hr /&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;IDENTITY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
 
-&lt;p&gt;and &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;br&amp;gt;&lt;/code&gt; for line breaks.&lt;/p&gt;
+ &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;varchar&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
 
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+ &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;varchar&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
 
-&lt;p&gt;&lt;em&gt;The end&lt;/em&gt;&lt;/p&gt;</content><author><name>Chester</name></author><summary type="html">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas tincidunt ornare nibh, non elementum augue tempus eget. Pellentesque tempus scelerisque iaculis. Nullam interdum ultricies nibh quis sollicitudin. Donec ornare fermentum facilisis. Ut at sem ac sem imperdiet varius a eget tortor. Nam eu augue eget orci semper maximus in eget augue. Mauris ornare, nisl ut suscipit consectetur, mi quam interdum tellus, at rutrum quam eros ultrices mi.</summary></entry><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/2017-03-10/welcome-to-jekyll" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2017-03-10T00:00:00-06:00</published><updated>2017-03-10T00:00:00-06:00</updated><id>http://localhost:4000/2017-03-10/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/2017-03-10/welcome-to-jekyll">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+ &lt;span class=&quot;n&quot;&gt;project&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;varchar&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
 
-&lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+ &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;varchar&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
 
-&lt;p&gt;Jekyll also offers powerful support for code snippets: like these&lt;/p&gt;
+ &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;varchar&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Tom'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints 'Hi, Tom' to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+ &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EventEnqueuedUtcTime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;datetime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-&lt;p&gt;Check out the &lt;a href=&quot;https://jekyllrb.com/docs/home&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://talk.jekyllrb.com/&quot;&gt;Jekyll Talk&lt;/a&gt;.&lt;/p&gt;</content><author><name>Jekyll</name></author><summary type="html">You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.</summary></entry><entry><title type="html">The Case of the Missing Post</title><link href="http://localhost:4000/2017-03-07/the-case-of-the-missing-post" rel="alternate" type="text/html" title="The Case of the Missing Post" /><published>2017-03-07T00:00:00-06:00</published><updated>2017-03-07T00:00:00-06:00</updated><id>http://localhost:4000/2017-03-07/the-case-of-the-missing-post</id><content type="html" xml:base="http://localhost:4000/2017-03-07/the-case-of-the-missing-post">&lt;p&gt;Kitty power! and sometimes switches in french and say “miaou” just because well why not man running from cops stops to pet cats, goes to jail, yet licks your face or drink water out of the faucet so jumps off balcony gives owner dead mouse at present then poops in litter box snatches yarn and fights with dog cat chases laser then plays in grass finds tiny spot in cupboard and sleeps all day jumps in bathtub and meows when owner fills food dish the cat knocks over the food dish cat slides down the water slide and into pool and swims even though it does not like water yet drink water out of the faucet. Pelt around the house and up and down stairs chasing phantoms.&lt;/p&gt;
+ &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;PRIMARY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
 
-&lt;p&gt;Sit in window and stare ooo, a bird! yum. Sit and stare. Sweet beast loves cheeseburgers. Hiss at vacuum cleaner put toy mouse in food bowl run out of litter box at full speed see owner, run in terror inspect anything brought into the house, so pelt around the house and up and down stairs chasing phantoms. Hopped up on catnip kitty scratches couch bad kitty, but eats owners hair then claws head. Lie on your belly and purr when you are asleep kitty power! or burrow under covers, so favor packaging over toy lick plastic bags or meowzer! yet unwrap toilet paper.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://www.catipsum.com/&quot;&gt;Cat Ipsum&lt;/a&gt;&lt;/p&gt;</content><author><name>Chester</name></author><summary type="html">Kitty power! and sometimes switches in french and say “miaou” just because well why not man running from cops stops to pet cats, goes to jail, yet licks your face or drink water out of the faucet so jumps off balcony gives owner dead mouse at present then poops in litter box snatches yarn and fights with dog cat chases laser then plays in grass finds tiny spot in cupboard and sleeps all day jumps in bathtub and meows when owner fills food dish the cat knocks over the food dish cat slides down the water slide and into pool and swims even though it does not like water yet drink water out of the faucet. Pelt around the house and up and down stairs chasing phantoms.</summary></entry><entry><title type="html">The Mystery of the Filler Post</title><link href="http://localhost:4000/2017-03-06/the-mystery-of-the-filler-post" rel="alternate" type="text/html" title="The Mystery of the Filler Post" /><published>2017-03-06T00:00:00-06:00</published><updated>2017-03-06T00:00:00-06:00</updated><id>http://localhost:4000/2017-03-06/the-mystery-of-the-filler-post</id><content type="html" xml:base="http://localhost:4000/2017-03-06/the-mystery-of-the-filler-post">&lt;p&gt;Hornswaggle measured fer yer chains chase run a shot across the bow Chain Shot flogging Pirate Round galleon rope’s end aft. Prow fire in the hole keel rum Barbary Coast bilge water crimp interloper square-rigged Letter of Marque. Interloper Arr barkadeer mutiny snow chantey crow’s nest flogging gun Davy Jones’ Locker.&lt;/p&gt;
+&lt;h3 id=&quot;create-a-stream-analytics-job&quot;&gt;Create a Stream Analytics Job&lt;/h3&gt;
 
-&lt;p&gt;Bilge jolly boat barque topsail interloper chandler spanker scuttle Arr sloop. Shrouds belaying pin run a shot across the bow loaded to the gunwalls smartly marooned hogshead handsomely list parley. Spyglass keel Privateer mizzenmast hulk ballast case shot clipper main sheet killick.&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Add a Stream Analytics Job (from Marketplace)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a input (Select the Event Hub)&lt;/p&gt;
 
-&lt;p&gt;Careen hempen halter Letter of Marque pillage swing the lead take a caulk Sail ho jury mast walk the plank ho. Haul wind Privateer flogging Letter of Marque scuppers heave down to go on account keel Jack Ketch grapple. Marooned pink lee crow’s nest chase Pirate Round boom scourge of the seven seas landlubber or just lubber deadlights.&lt;/p&gt;
+    &lt;p&gt;&lt;img src=&quot;/assets/streaming_2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create an Output by pointing to the SQL Server database&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://pirateipsum.me/&quot;&gt;Pirate Ipsum&lt;/a&gt;&lt;/p&gt;</content><author><name>Chester</name></author><summary type="html">Hornswaggle measured fer yer chains chase run a shot across the bow Chain Shot flogging Pirate Round galleon rope’s end aft. Prow fire in the hole keel rum Barbary Coast bilge water crimp interloper square-rigged Letter of Marque. Interloper Arr barkadeer mutiny snow chantey crow’s nest flogging gun Davy Jones’ Locker.</summary></entry><entry><title type="html">Pagination Post</title><link href="http://localhost:4000/2017-03-05/pagination-post" rel="alternate" type="text/html" title="Pagination Post" /><published>2017-03-05T00:00:00-06:00</published><updated>2017-03-05T00:00:00-06:00</updated><id>http://localhost:4000/2017-03-05/pagination-post</id><content type="html" xml:base="http://localhost:4000/2017-03-05/pagination-post">&lt;p&gt;Hi There
-Here we see &lt;strong&gt;Tale’s&lt;/strong&gt; pagination feature in action. It is set to 5 posts per page by default. Feel free to change this number in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt; file!&lt;/p&gt;</content><author><name>Chester</name></author><summary type="html">Hi There Here we see Tale’s pagination feature in action. It is set to 5 posts per page by default. Feel free to change this number in the _config.yml file!</summary></entry></feed>
+    &lt;p&gt;&lt;img src=&quot;/assets/streaming_3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a SQL Query&lt;/p&gt;
+
+    &lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EventEnqueuedUtcTime&lt;/span&gt; 
+&lt;span class=&quot;k&quot;&gt;INTO&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;output&lt;/span&gt; 
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;input&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;&lt;img src=&quot;/assets/streaming_4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Start the Job&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;send-events-to-the-event-hub&quot;&gt;Send Events to the Event Hub&lt;/h3&gt;
+
+&lt;p&gt;The source code has a console application called “Sample Sender”. After adding the connectionstring for the EventHub in the property EventHubConnectionString (in program.cs), run the application. The application will write 200 random events  as per this sample:&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;device&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Acendo Core 456&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;username&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Sue&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;action&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ABC Integrators&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;project&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Richardson&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The Streaming Analytics job will insert these events in the SQL Server table created earlier&lt;/p&gt;
+
+&lt;h3 id=&quot;source-code&quot;&gt;Source Code&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/AzureStreaming&quot;&gt;Source Code&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;references&quot;&gt;References&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/azure/stream-analytics/&quot;&gt;Stream Analytics Documentation&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Azure Stream Analytics is a Cloud service in Azure that is used to process real time streams of data. The input for live data can be Azure event hub, an IOT hub or an Azure blob store location. As the data arrives in real time, we process it and send the results of that processing to an output sync which could be could be an Azure blob store location, or an Azure data location.</summary></entry><entry><title type="html">Azure Automation Hybrid Runbook Worker</title><link href="http://localhost:4000/2019-02-10/Azure-Automation-Hybrid-Runbook-Worker" rel="alternate" type="text/html" title="Azure Automation Hybrid Runbook Worker" /><published>2019-02-10T00:00:00-06:00</published><updated>2019-02-10T00:00:00-06:00</updated><id>http://localhost:4000/2019-02-10/Azure-Automation-Hybrid-Runbook-Worker</id><content type="html" xml:base="http://localhost:4000/2019-02-10/Azure-Automation-Hybrid-Runbook-Worker">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;A Hybrid Runbook is an Azure automation runbook that runs on a dedicated virtual machine. “Regular” automation runbooks cannot access resources in other clouds or on-premises. The Hybrid Runbook Worker feature of Azure Automation allows you to run runbooks directly on the computer hosting the role and against resources in the environment to manage those local resources. In a client engagement, my automation runbook needed to reach out to a SQL Server datawarehouse to add Azure AD Groups as users in the database. For this, the ip address of the machine running the powershell had to be added to SQL Server firewall rule. That is where an Azure VM  running as a Hybrid Worker became useful. Since the powershell script files ran on the Hybrid Worker machine,  it was simple to add the Hybrid Worker machine’s ip  to the SQL Server firewal rule using the  powershell: &lt;em&gt;New-AzureRmSqlServerFirewallRule.&lt;/em&gt; Once you properly set up a Hybrid Worker machine, following the steps listed below, you get the option to run your runbooks on the Hybrid Worker machine.  When you choose this option, your scripts will run on this designated machine. A thing to watch out is when using custom modules. Normally, when using “regular” runbooks, you import your custom modules as zip files in the modules section of the automation account. When you use the Hybrid Worker option however, your custom modules do not get copied over to the Hybrid Worker machine. Instead you have to copy the modules file over to the machine and put it in the path that powershell can find it. The folder structure that encloses the module needs to be as prescribed in the docs. I have dealt with this in the section “Installing custom modules on the Hybrid Machine”&lt;/p&gt;
+
+&lt;h2 id=&quot;setting-up-a-hybrid-runbook-worker&quot;&gt;Setting up a Hybrid Runbook Worker&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;In the Azure Portal, create an Azure Automation account, note its Resource Group Name &amp;amp; Automation Account Name. Currently the only Automation regions supported for integration with OMS are - &lt;strong&gt;Australia Southeast&lt;/strong&gt;, &lt;strong&gt;East US 2&lt;/strong&gt;, &lt;strong&gt;Southeast Asia&lt;/strong&gt;, and &lt;strong&gt;West Europe&lt;/strong&gt;, so location has to be one of these.&lt;/p&gt;
+
+    &lt;p&gt;Example:&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;Automation Account Name: abcautomation&lt;/li&gt;
+      &lt;li&gt;Resource Group : rg-hb-util&lt;/li&gt;
+      &lt;li&gt;Location : East Us 2 *&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a OMS account there is a free trial available. You should create it in the same region as your automation account.&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;Sign up url: &lt;a href=&quot;https://www.microsoft.com/en-us/cloud-platform/operations-management-suite-trial&quot;&gt;OMS Trial Sign Up Link&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;There will be a prompt to “Select Azure Subscription”, with prompts “Link”, “Create New”. Select &lt;strong&gt;Link&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a Windows 10 RS2 Pro (x64) vm from the marketplace&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;Name : HW1&lt;/li&gt;
+      &lt;li&gt;Give it a public IP : HW1-IP&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Remote into the machine.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;If you try to launch browsers Microsoft Edge &amp;amp; you get “Windows 10 Edge can’t be opened using the built-in administrator account”, follow these steps to allow browser to open on Windows 10.Under Local Policies/Security Options navigate to “User Account Control Admin Approval Mode for the Built-in Administrator account And Enable it. Restart of VM is required. Refer to:https://www.virtualizationhowto.com/2015/07/windows-10-edge-opened-builtin-administrator-account/&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Download powershell script called &lt;a href=&quot;https://www.powershellgallery.com/packages/New-OnPremiseHybridWorker/1.0/Content/New-OnPremiseHybridWorker.ps1&quot;&gt;New-OnPremiseHybridWorker.ps1&lt;/a&gt; from the Powershell Gallery&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The following parameters should be provided to this script&lt;/p&gt;
+
+    &lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ResourceGroupName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;the rg of the automation account&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$SubscriptionID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;your-sub-id&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$WorkspaceName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;a new oms workspace will be created with the name you provide here. It should be unique to your account i.e. a workspace with this name should not already exist.&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$AutomationAccountName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;name of your automation account&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$HybridGroupName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;A named group will be created with the name you provide i.g. Tenant-Provisioning&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;On the box, run the following powershell commands (to enable running scripts) : &lt;strong&gt;Set-ExecutionPolicy RemoteSigned&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Run the powershell called &lt;a href=&quot;https://www.powershellgallery.com/packages/New-OnPremiseHybridWorker/1.0/Content/New-OnPremiseHybridWorker.ps1&quot;&gt;New-OnPremiseHybridWorker.ps1 (from the PowerShell  Gallery&lt;/a&gt; on new vm, providing the parameters specified in 5. Important: run the powershell as &lt;strong&gt;Administrator&lt;/strong&gt; or install of MS   Monitoring Agent will fail. The script will download nuget packages, ask you to log into Azure with your credentials, then set up a OMS workspace and register the vm as a Hybrid   Worker.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;If you go to the automation account in the Azure portal and look under the tab: “Hybrid worker groups”, you will see the group you specified in $HybridGroupName (Point #7)  with Number   of Workers = 1.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;optional-install-required-software-on-the-hybrid-machine&quot;&gt;(Optional) Install Required software on the Hybrid Machine&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;MSOnline (if you want to work with Azure Active Directory) &lt;a href=&quot;http://connect.microsoft.com/site1164/Downloads/DownloadDetails.aspx?DownloadID=59185&quot;&gt;Download Link&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Microsoft Active Directory Authentication Library for Microsoft SQL Server (If you want to work with SQL Server) &lt;a href=&quot;https://www.microsoft.com/en-us/download/confirmation.aspx?id=48742&quot;&gt;Download link&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;If you get : Unable to load adalsql.dll then refer to : &lt;a href=&quot;https://stackoverflow.com/questions/45578395/unable-to-load-adalsql-dll-error-when-calling-invoke-sqlcmd&quot;&gt;https://stackoverflow.com/questions/45578395/unable-to-load-adalsql-dll-error-when-calling-invoke-sqlcmd.&lt;/a&gt; You basically need&lt;a href=&quot;https://stackoverflow.com/questions/45578395/unable-to-load-adalsql-dll-error-when-calling-invoke-sqlcmd&quot;&gt; &lt;/a&gt;to uninstall &amp;amp; reinstall  &lt;a href=&quot;https://www.microsoft.com/en-us/download/confirmation.aspx?id=48742&quot;&gt;Microsoft Active Directory Authentication Library for Microsoft SQL Server&lt;/a&gt; &lt;a href=&quot;https://stackoverflow.com/questions/45578395/unable-to-load-adalsql-dll-error-when-calling-invoke-sqlcmd&quot;&gt; &lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;installing--custom-modules-on-the-hybrid-machine&quot;&gt;Installing  Custom Modules on the Hybrid Machine&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;If you have a  custom module called “ XYZ.Tenant.Management.psm1” that you want to use in your Runbooks, then…&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;This should be put into a folder called “XYZ.Tenant.Management” Refer to Rules For Installing Modules Docs: &lt;a href=&quot;https://msdn.microsoft.com/en-us/library/dd878350&quot;&gt;https://msdn.microsoft.com/en-us/library/dd878350&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;This folder should be copied to the powershell path on the Hybrid worker vm&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;
+        &lt;p&gt;This path is usually : C:Program FilesWindowsPowerShellModules&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;To find the path you can run this:&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$Env&lt;/span&gt;:PSModulePath
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Environment]::GetEnvironmentVariable&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;PSModulePath&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/azure/automation/automation-hybrid-runbook-worker&quot;&gt;Microsoft Documentation of Hybrid Runbook Worker&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Azure VM Gold Images</title><link href="http://localhost:4000/2019-01-15/vm-gold-images" rel="alternate" type="text/html" title="Azure VM Gold Images" /><published>2019-01-15T00:00:00-06:00</published><updated>2019-01-15T00:00:00-06:00</updated><id>http://localhost:4000/2019-01-15/vm-gold-images</id><content type="html" xml:base="http://localhost:4000/2019-01-15/vm-gold-images">&lt;p&gt;In this article I show how to create  and deploy custom images (also known as Gold Images)  in Azure. A Gold image is a fully patched image that had all our needed software, registry settings, and configurations installed. In a previous  article,   &lt;a href=&quot;https://hershbhasin.com/2018-12-03/azure-automation-DSC&quot;&gt;DSC with Infrastructure-As-Code and Azure Automation is a potent combination&lt;/a&gt;, I outlined the limitations of using a “Gold Image” to provision your Virtual Machines, that keeping the machines cloned from these golden images up-to-date with latest versions of software and patches is non-trivial task, and in that article I outlined a strategy for provisioning virtual machines that are in a continual state of operational readiness using Azure Automation DSC and infrastructure as code. However, some clients do want to continue using Gold Images. There is sometimes a reluctance to change established ways of doing things, or  just paucity of time . To satisfy such clients, we do need to create and provision such “Gold Images”, and in this article, I show how.&lt;/p&gt;
+
+&lt;h2 id=&quot;1-create-a-windows-vm&quot;&gt;1. Create a Windows VM&lt;/h2&gt;
+
+&lt;p&gt;Run the provided script: Create-Windows-Vm.ps1 or create a VM from the Azure Portal&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;rg-hb-image&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;EastUS&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$storageAccountName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;hbbaseimagestorage&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$vnetName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;iaas-net&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$subnetAddress&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;10.0.1.0/24&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$vnetAddress&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;10.0.0.0/16&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$nicName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;vm1-nic&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$vmName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;win-base&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$diskName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;os-disk&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#Login&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+
+Login-AzureRmAccount
+
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#Resource Group&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+New-AzureRmResourceGroup -Name &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; -Location &lt;span class=&quot;nv&quot;&gt;$location&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#Storage&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+
+New-AzureRmStorageAccount -Name &lt;span class=&quot;nv&quot;&gt;$storageAccountName&lt;/span&gt; -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;`&lt;/span&gt;
+                          -Type Standard_LRS -Location &lt;span class=&quot;nv&quot;&gt;$location&lt;/span&gt;
+
+
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#Network&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$subnet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;New-AzureRmVirtualNetworkSubnetConfig -Name frontendSubnet -AddressPrefix &lt;span class=&quot;nv&quot;&gt;$subnetAddress&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$vnet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmVirtualNetwork -Name &lt;span class=&quot;nv&quot;&gt;$vnetName&lt;/span&gt; -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; -Location &lt;span class=&quot;nv&quot;&gt;$location&lt;/span&gt;  -AddressPrefix &lt;span class=&quot;nv&quot;&gt;$vnetAddress&lt;/span&gt; -Subnet &lt;span class=&quot;nv&quot;&gt;$subnet&lt;/span&gt;
+                   
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#pip&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$pip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmPublicIpAddress -Name &lt;span class=&quot;nv&quot;&gt;$nicName&lt;/span&gt; -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;`&lt;/span&gt;
+                                  -Location &lt;span class=&quot;nv&quot;&gt;$location&lt;/span&gt; -AllocationMethod Dynamic
+
+
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#nic&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$nic&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmNetworkInterface -Name &lt;span class=&quot;nv&quot;&gt;$nicName&lt;/span&gt; -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;`&lt;/span&gt;
+                                   -Location &lt;span class=&quot;nv&quot;&gt;$location&lt;/span&gt; -SubnetId &lt;span class=&quot;nv&quot;&gt;$vnet&lt;/span&gt;.Subnets[0].Id -PublicIpAddressId &lt;span class=&quot;nv&quot;&gt;$pip&lt;/span&gt;.Id
+
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#vm&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###################################################&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmVMConfig -VMName &lt;span class=&quot;nv&quot;&gt;$vmName&lt;/span&gt; -VMSize &lt;span class=&quot;s2&quot;&gt;&quot;Basic_A1&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;#set admin credentials on the box&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$cred&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Get-Credential&lt;/span&gt; -Message &lt;span class=&quot;s2&quot;&gt;&quot;Admin credentials&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Set&lt;/span&gt;-AzureRmVMOperatingSystem -VM &lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt; -Windows -ComputerName &lt;span class=&quot;nv&quot;&gt;$vmName&lt;/span&gt; -Credential &lt;span class=&quot;nv&quot;&gt;$cred&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;`&lt;/span&gt;
+                                 -ProvisionVMAgent -EnableAutoUpdate
+
+&lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Set&lt;/span&gt;-AzureRmVMSourceImage -VM &lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt; -PublisherName &lt;span class=&quot;s2&quot;&gt;&quot;MicrosoftWindowsServer&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;`&lt;/span&gt;
+                             -Offer &lt;span class=&quot;s2&quot;&gt;&quot;WindowsServer&quot;&lt;/span&gt; -Skus &lt;span class=&quot;s2&quot;&gt;&quot;2012-R2-Datacenter&quot;&lt;/span&gt; -Version &lt;span class=&quot;s2&quot;&gt;&quot;latest&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;Add-AzureRmVMNetworkInterface -VM &lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt; -Id &lt;span class=&quot;nv&quot;&gt;$nic&lt;/span&gt;.Id
+
+
+&lt;span class=&quot;nv&quot;&gt;$storageAcc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;Get-AzureRmStorageAccount -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; -Name &lt;span class=&quot;nv&quot;&gt;$storageAccountName&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$osDiskUri&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$storageAcc&lt;/span&gt;.PrimaryEndpoints.Blob.ToString&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;vhds/&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$diskName&lt;/span&gt;  + &lt;span class=&quot;s2&quot;&gt;&quot;.vhd&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Set&lt;/span&gt;-AzureRmVMOSDisk -VM &lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt; -Name &lt;span class=&quot;nv&quot;&gt;$diskName&lt;/span&gt; -VhdUri &lt;span class=&quot;nv&quot;&gt;$osDiskUri&lt;/span&gt; -CreateOption fromImage
+
+New-AzureRmVM -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; -Location &lt;span class=&quot;nv&quot;&gt;$location&lt;/span&gt; -VM &lt;span class=&quot;nv&quot;&gt;$vm&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;2-extract-a-customgold-image&quot;&gt;2. Extract a Custom(Gold) Image&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;Warning: Once you generalize a vm, you cannot start it. You will then have to clone it from the resulting image.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Provided script file : Extract-VM-Image.ps1&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;RDP into the box from where image is to be extracted&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Navigate to C:WindowsSystem32sysprep and run&lt;/p&gt;
+
+    &lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;.sysprep.exe
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;select : “enter System Out-of-Box-Experience (OOBE)” in the ensuing dialogue&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;Click “Generalize”&lt;/li&gt;
+      &lt;li&gt;Shutdown Options : Shutdown&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Check Status&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Get-AzureRmVm -ResourceGroupName $resourceGroup -Name $vmName -Status
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;It will say “Vm Stopped”. We should deallocate it as we are still being charged for compute.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Deallocate the VM&lt;/p&gt;
+
+    &lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Stop-AzureRmVm  -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; -Name &lt;span class=&quot;nv&quot;&gt;$vmName&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;then check state again: it should say “Vm deallocated”&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Run Set-AzureRmVm with the Generalized option so that Azure knows that the machine is in a good state to take a image.&lt;/p&gt;
+
+    &lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;Set&lt;/span&gt;-AzureRmVm -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; -Name &lt;span class=&quot;nv&quot;&gt;$vmName&lt;/span&gt; -Generalized
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;Check the status again and we see that the displayStatus is “Vm generalized”&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now we can save the image to a storage account&lt;/p&gt;
+
+    &lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Save-AzureRmVMImage -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$resourceGroup&lt;/span&gt; -Name &lt;span class=&quot;nv&quot;&gt;$vmName&lt;/span&gt; -DestinationContainerName &lt;span class=&quot;s2&quot;&gt;&quot;vm-images&quot;&lt;/span&gt; -VHDNamePrefix &lt;span class=&quot;s2&quot;&gt;&quot;win-web-app&quot;&lt;/span&gt; -Path &lt;span class=&quot;s2&quot;&gt;&quot;win-web-app.json&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;This will create a image in the same storage account as the current disk file, in a new container specified by the “DestinationContainerName” parameter&lt;/li&gt;
+      &lt;li&gt;Azure generates a random file name based on the “VHDNamePrefix” parameter&lt;/li&gt;
+      &lt;li&gt;Azure will save a local copy of the generated ARM template at the location specified by the “Path” parameter. The template will contain the full URI to the new disk image. In the resulting arm template, note the image/uri location, which we will use to create vms from this image. You will provide this location in Section 3.3&lt;/li&gt;
+    &lt;/ol&gt;
+
+    &lt;h1 id=&quot;3-save-it-in-azure-as-a-managed-image&quot;&gt;3. Save it in Azure as a Managed Image&lt;/h1&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;In the Azure Portal, click New&lt;/li&gt;
+      &lt;li&gt;Select “Image”&lt;/li&gt;
+      &lt;li&gt;In the “Create Image” window, enter the image/uri location you noted in 2.7.3 above.&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You can now query the image with this powershell:&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Get-AzureRmImage -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$ImageRGName&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;To get all images in the subscription&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Get-AzureRmImage
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;To get the id of the image&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$VMImageId = (Get-AzureRmImage -ResourceGroupName $ImageRGName -ImageName $ImageName).id
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;4-create-a-vm-from-the-gold-image&quot;&gt;4. Create a VM from the Gold Image&lt;/h2&gt;
+
+&lt;p&gt;Run provide script : Create-VM-From-Image.ps1&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$VMNameSuffix&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Inf&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$SrcUri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$VmSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Standard_A1&quot;&lt;/span&gt; 
+&lt;span class=&quot;nv&quot;&gt;$LocalMachineAdminAcctPwd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Password123456&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$RgLocation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;eastus&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;#Landlord&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$VNetName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;myvnet&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;#Image&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ImageRGName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;rg-images&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ImageName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;MyImage&quot;&lt;/span&gt;
+
+
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Login Runbook&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;#Login-AzureRmAccount&lt;/span&gt;
+
+Import-AzureRmContext -Path &lt;span class=&quot;s2&quot;&gt;&quot;c:tempazureprofile.json&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#  Varianbles&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$businessunit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;yyABDC&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$UseCase&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;  &lt;span class=&quot;s2&quot;&gt;&quot;wqOPSCA&quot;&lt;/span&gt; 
+&lt;span class=&quot;nv&quot;&gt;$RGLocation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;eastus&quot;&lt;/span&gt; 
+
+
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Global Varianbles&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+
+
+&lt;span class=&quot;nv&quot;&gt;$tenant&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Tenant_&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$TenantName&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$businessunit&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;+&lt;span class=&quot;s2&quot;&gt;&quot;-&quot;&lt;/span&gt;+&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$UseCase&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$RGNames&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; @&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;RGLocation&quot;&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$RGLocation&lt;/span&gt;;
+            &lt;span class=&quot;s2&quot;&gt;&quot;RGNameVM&quot;&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$tenant&lt;/span&gt;+&lt;span class=&quot;nv&quot;&gt;$businessunit&lt;/span&gt;+&lt;span class=&quot;s2&quot;&gt;&quot;_&quot;&lt;/span&gt;+&lt;span class=&quot;nv&quot;&gt;$UseCase&lt;/span&gt;+&lt;span class=&quot;s2&quot;&gt;&quot;_VM&quot;&lt;/span&gt;;
+           
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Varianbles&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;########################################################&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$VMName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TenantName&lt;/span&gt;+ &lt;span class=&quot;s2&quot;&gt;&quot;-&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$VMNameSuffix&lt;/span&gt;;
+
+&lt;span class=&quot;nv&quot;&gt;$PIPName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TenantName&lt;/span&gt;+&lt;span class=&quot;s2&quot;&gt;&quot;_&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$VMName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_Public_IP_Address&quot;&lt;/span&gt;;
+
+&lt;span class=&quot;nv&quot;&gt;$NICName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TenantName&lt;/span&gt;+&lt;span class=&quot;s2&quot;&gt;&quot;_&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$VMName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_Network_Interface&quot;&lt;/span&gt;;
+
+&lt;span class=&quot;nv&quot;&gt;$PIPLockName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TenantName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$VMName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_Public_IP_Address_Lock&quot;&lt;/span&gt;;
+
+&lt;span class=&quot;nv&quot;&gt;$NICLockName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TenantName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$VMName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_Network_Interface_Lock&quot;&lt;/span&gt;;
+
+&lt;span class=&quot;nv&quot;&gt;$VMLockName&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TenantName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$VMName&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;_VM_Lock&quot;&lt;/span&gt;;
+
+&lt;span class=&quot;nv&quot;&gt;$ComputerName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$businessunit&lt;/span&gt; + &lt;span class=&quot;s2&quot;&gt;&quot;-&quot;&lt;/span&gt; + &lt;span class=&quot;nv&quot;&gt;$VMName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.Substring&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0,14&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;
+
+
+&lt;span class=&quot;nv&quot;&gt;$pip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmPublicIpAddress -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$RGNames&lt;/span&gt;.RGNameVM -Name &lt;span class=&quot;nv&quot;&gt;$PIPName&lt;/span&gt; -Location &lt;span class=&quot;nv&quot;&gt;$RGLocation&lt;/span&gt; -AllocationMethod Dynamic
+
+&lt;span class=&quot;c1&quot;&gt;#subnet&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$subnet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;New-AzureRmVirtualNetworkSubnetConfig -Name frontendSubnet -AddressPrefix 10.0.1.0/24
+
+&lt;span class=&quot;c1&quot;&gt;#vnet&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$vnet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmVirtualNetwork -Name &lt;span class=&quot;nv&quot;&gt;$vnetName&lt;/span&gt; -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$RGNames&lt;/span&gt;.RGNameVM -Location &lt;span class=&quot;nv&quot;&gt;$RGLocation&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;`&lt;/span&gt;
+                                  -AddressPrefix 10.0.0.0/16 -Subnet &lt;span class=&quot;nv&quot;&gt;$subnet&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$nic&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmNetworkInterface -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$RGNames&lt;/span&gt;.RGNameVM -Name &lt;span class=&quot;nv&quot;&gt;$NICName&lt;/span&gt; -SubnetId &lt;span class=&quot;nv&quot;&gt;$vnet&lt;/span&gt;.Subnets[0].Id  -Location &lt;span class=&quot;nv&quot;&gt;$RGNames&lt;/span&gt;.RGLocation -PublicIpAddressId &lt;span class=&quot;nv&quot;&gt;$pip&lt;/span&gt;.Id
+
+&lt;span class=&quot;c1&quot;&gt;#image&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$VMImageId&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Get-AzureRmImage -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$ImageRGName&lt;/span&gt; -ImageName &lt;span class=&quot;nv&quot;&gt;$ImageName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.id
+
+
+&lt;span class=&quot;c1&quot;&gt;#vm&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; New-AzureRmVMConfig -VMName &lt;span class=&quot;nv&quot;&gt;$VmName&lt;/span&gt; -VMSize &lt;span class=&quot;s2&quot;&gt;&quot;Standard_A1&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;#Creds&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$Secure_String_Pwd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;ConvertTo-SecureString&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$LocalMachineAdminAcctPwd&lt;/span&gt; -AsPlainText -Force
+&lt;span class=&quot;nv&quot;&gt;$cred&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;New-Object &lt;/span&gt;System.Management.Automation.PSCredential &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;“SuperAdmin”, &lt;span class=&quot;nv&quot;&gt;$Secure_String_Pwd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;#os&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Set&lt;/span&gt;-AzureRmVMOperatingSystem -VM &lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; -Windows -ComputerName &lt;span class=&quot;nv&quot;&gt;$ComputerName&lt;/span&gt; -Credential &lt;span class=&quot;nv&quot;&gt;$cred&lt;/span&gt; -ProvisionVMAgent -EnableAutoUpdate  
+
+&lt;span class=&quot;c1&quot;&gt;#nic&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; Add-AzureRmVMNetworkInterface -VM &lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; -Id &lt;span class=&quot;nv&quot;&gt;$nic&lt;/span&gt;.Id
+
+
+&lt;span class=&quot;c1&quot;&gt;#image&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$VMImageId&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Get-AzureRmImage -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$ImageRGName&lt;/span&gt; -ImageName &lt;span class=&quot;nv&quot;&gt;$ImageName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.id
+
+&lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Set&lt;/span&gt;-AzureRmVMSourceImage -VM &lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; -Id &lt;span class=&quot;nv&quot;&gt;$VMImageId&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Set&lt;/span&gt;-AzureRmVMOSDisk -VM &lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt; -StorageAccountType StandardLRS -DiskSizeInGB 128 -CreateOption FromImage -Caching ReadWrite
+
+
+New-AzureRmVM -ResourceGroupName &lt;span class=&quot;nv&quot;&gt;$RGNames&lt;/span&gt;.RGNameVM -Location &lt;span class=&quot;nv&quot;&gt;$RGNames&lt;/span&gt;.RGLocation -VM &lt;span class=&quot;nv&quot;&gt;$NewVm&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And there you are.  A gold image and a vm cloned from said gold image.&lt;/p&gt;
+
+&lt;p&gt;## Source Code&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/Gold%20Images&quot;&gt;Source Code Download&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">In this article I show how to create and deploy custom images (also known as Gold Images) in Azure. A Gold image is a fully patched image that had all our needed software, registry settings, and configurations installed. In a previous article, DSC with Infrastructure-As-Code and Azure Automation is a potent combination, I outlined the limitations of using a “Gold Image” to provision your Virtual Machines, that keeping the machines cloned from these golden images up-to-date with latest versions of software and patches is non-trivial task, and in that article I outlined a strategy for provisioning virtual machines that are in a continual state of operational readiness using Azure Automation DSC and infrastructure as code. However, some clients do want to continue using Gold Images. There is sometimes a reluctance to change established ways of doing things, or just paucity of time . To satisfy such clients, we do need to create and provision such “Gold Images”, and in this article, I show how.</summary></entry><entry><title type="html">DSC with Infrastructure-As-Code and Azure Automation is a potent combination</title><link href="http://localhost:4000/2018-12-03/azure-automation-DSC" rel="alternate" type="text/html" title="DSC with Infrastructure-As-Code and  Azure Automation is a potent combination" /><published>2018-12-03T00:00:00-06:00</published><updated>2018-12-03T00:00:00-06:00</updated><id>http://localhost:4000/2018-12-03/azure-automation-DSC</id><content type="html" xml:base="http://localhost:4000/2018-12-03/azure-automation-DSC">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;This article shows how DSC, infrastructure-as-code and Azure Automation play together by presenting a fully automated sample of a vm that is provisioned  using an ARM template and  a DSC extension, deployed using an Azure Automation Runbook, whose state is managed using DSC. This is a powerful combination indeed, and I have attempted to build up to this automated sample by showing how one would provision the vm and add it to DSC manually. I have also tried to show the business value that DSC, infrastructure-as-code and automation brings to the traditional ways of provisioning and managing the state of servers.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-problems-we-are-trying-to-solve&quot;&gt;The Problems we are trying to solve&lt;/h2&gt;
+
+&lt;p&gt;When we provision a new virtual machine, we often require  software preinstalled on it, or  have some required network settings, some required features , some configuration settings, or some registry setting  present on it. We would like to avoid manually installing and configuring these pieces of software and settings. Once we provision these machines with these set of “desired” features, something like a thermostat should exists on these machines that maintains them in this golden state, and prevent what we call “configuration drift”. Our server documentation should be “auto-documenting”. There should be a magical document that keeps itself up to date with any changes we make on our servers. We should be able to version our servers, and be able to go back to a prior version if necessary. Infrastructure as code, Desired State Configuration (DSC), and automation,used together, fulfills these needs for state management, versioning and auto-documenting for virtual machines. In the past we had our “golden image”, which was a fully patched image that had all our needed software, registry settings, and configurations installed. However, keeping the machines cloned from these golden images up-to-date with latest versions of software and patches was a non-trivial task. This is where infrastructure-as-code plays its part. With script, be it an ARM template, a Powershell script, or a Terraform script, we can create our servers in code, doing away with these “golden images”. And, to keep these scripted machines in a state of continual deployment readiness, up-to-date with the required installs, patches and configuration settings, we use a process called Desired State Configuration (DSC). The underlying idea of a DSC Pull model (there is a Push model also, which is beyond the scope of this post), is this: that there is a server somewhere that holds a magical document called a “DSC Configuration Document”, in which we list out the  state we want our servers to continually be in. Then, on the virtual machine that requires its state to be maintained, there exists a agent called a Local Configuration Manager (LCM) that constantly polls the DSC server and “pulls” down this magic DSC Configuration document , reads it, and applies the instructions in this document to the machine it manages. Since it is constantly polling the pull server, it reapplies any fresh instructions, or reverts back the machine to the “golden state”, if someone inadvertently or maliciously attempts to change the machine’s utopia. Auto-Documentation is an attribute of this magical DSC Configuration document. In the past, when we were standing up hard physical servers from our “gold images”, the knowledge of building these servers was often codified in elaborate forms, and updating these documents was never optimal. The person who owned that knowledge was like a key man. Instead of being a static build form, the DSC Configuration  document is a functional document that first describes  how the server is to be built , and then  makes the server take on  the state it describes.  The DSC Configuration document makes versioning of servers easy. Versions of the configuration documents can be source controlled and we can always go back to earlier state if something fails. We can easily look at history of our server changes in source control. And, Automation makes the setting up of a DSC server trivial. There is no setting up to do as an automation account in Azure automatically provisions a DSC pull server.&lt;/p&gt;
+
+&lt;h2 id=&quot;create-an-azure-automation-account&quot;&gt;Create an Azure Automation Account&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create an Azure Automation account from portal.azure.com&lt;/li&gt;
+  &lt;li&gt;A DSC pull server will also be created. You will see a section called “CONFIGURATION MANAGEMENT” with three navigation links. These are:
+    &lt;ol&gt;
+      &lt;li&gt;DSC nodes&lt;/li&gt;
+      &lt;li&gt;DSC configurations&lt;/li&gt;
+      &lt;li&gt;DSC node configurationspic : dsc-1&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I will call these links “DSC Sections” , and since they are so similar in their names, will refer to them in full.&lt;/p&gt;
+
+&lt;h2 id=&quot;create-a-dsc-configuration-file&quot;&gt;Create a DSC Configuration file&lt;/h2&gt;
+
+&lt;p&gt;A DSC Config file is a simple text file that has instructions as in the examples below. A few sample DSC Config files have been provided in the source code download, in the Configuration folder.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;CreateFileDemo.ps1&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This file shows how to refer to a Automation Variable called “DownloadPackagesPath” and then to write it out to a text file on the server at the path specified in the “DestinationPath.” Automation variables allow us to pass in input variables to the DSC Configuration files. You create a Variable from the “Variables” link on the Automation account and enter the Name, Type &amp;amp; Value. In this case we created a variable called “DownloadPackagesPath” with the value of some file share path.&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;Configuration &lt;/span&gt;CreateFileDemo
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+   &lt;span class=&quot;nv&quot;&gt;$samplestr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; Get-AutomationVariable –Name &lt;span class=&quot;s1&quot;&gt;'DownloadPackagesPath'&lt;/span&gt;
+
+    Node &lt;span class=&quot;s2&quot;&gt;&quot;localhost&quot;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+       
+        File CreateFile &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            DestinationPath &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'C:myTest.txt'&lt;/span&gt;
+            Ensure &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Present&quot;&lt;/span&gt;
+            Contents &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$samplestr&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+       
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here are the instructions to import &amp;amp; compile this sample file:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;From this code download, import the file called CreateFileDemo.ps1 to the &lt;strong&gt;DSC Configurations&lt;/strong&gt; section in your-automation-account (or paste the above into a text file and import).&lt;/li&gt;
+  &lt;li&gt;When Imported, click on it, compile it by choosing Compile on the Toolbar. Let it default for the ComputerName (“Default will be used”).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Instead of repeating the Microsoft documentation, I point you to the relevant quick-start document on the MS site. It is a simple click-thru guide and it is here: &lt;a href=&quot;https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started&quot;&gt;https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;creating-and-onboarding-a-machine-manually&quot;&gt;Creating and Onboarding a machine manually&lt;/h2&gt;
+
+&lt;p&gt;The basic steps are: you create a virtual machine and add the machine to the DSC Node of the automation account. Once added, it will be automatically managed by the DSC Server, based on state specified in the DSC Configuration file. Later, I will show how to automatically provision a vm and add it to the DSC Server using an ARM template with the DSC extension. However to get a quick feel of how the DSC stuff works, you can provision a vm manually from the Azure portal and manually add it to the DSC Nodes section of the automation account. Instead of repeating the Microsoft documentation, I point you to the relevant quick-start document on the MS site. It is a simple click-thru guide and it is here: &lt;a href=&quot;https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started&quot;&gt;https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;seeing-the-dsc-maintain-state&quot;&gt;Seeing the DSC maintain state&lt;/h2&gt;
+
+&lt;p&gt;Once the machine is onboarded, and a valid and compiled DSC Configuration exists, the LSM on the virtual machine will pull the Configuration file and apply it. The machine you onboarded should appear in the DSC Nodes section with a status of “Compliant”. If you remote into the virtual machine, you should see the file c:myTest.txt.&lt;/p&gt;
+
+&lt;h2 id=&quot;a-more-complex-dsc-configuration&quot;&gt;A more complex DSC Configuration&lt;/h2&gt;
+
+&lt;p&gt;Suppose you want a software called FireEye to be installed on all your DSC managed servers. You would create a Azure file share. You will upload the FireEye installer files to this file share. You will create a Automation Credential Asset ( similar to how we created the variable asset DownloadPackagesPath) by clicking the Credentials Link on the automation account called (say) DSCPackageStorage as follows: &lt;strong&gt;Credential Asset&lt;/strong&gt; Name: DSCPackageStorage Username: AZUREfile-storage-name (this is the name of the storage account, prefixed by “AZURE”) Password: Key of the file storage &lt;strong&gt;Variable Asset&lt;/strong&gt; We created the Variable Asset &lt;strong&gt;DownloadPackagePath&lt;/strong&gt; earlier. Now in the value, enter the path to your folder where you uploaded your install files for FireEye The following DSC Configuration copies the install files from the file share to a local c:packages folder, using the specified credentials and the sourcePath specified in the DownloadPackagePath automation variable. Once copied locally, the software FireEye gets installed.&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;Configuration &lt;/span&gt;DownloadInstallPackages
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;nv&quot;&gt;$storageCredential&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; Get-AutomationPSCredential -Name &lt;span class=&quot;s2&quot;&gt;&quot;DSCPackageStorage&quot;&lt;/span&gt;
+   &lt;span class=&quot;nv&quot;&gt;$sourcePath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; Get-AutomationVariable –Name &lt;span class=&quot;s1&quot;&gt;'DownloadPackagesPath'&lt;/span&gt;
+
+    Node &lt;span class=&quot;s2&quot;&gt;&quot;localhost&quot;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+       
+        File DirectoryCopy
+        &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            Ensure &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Present&quot;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# You can also set Ensure to &quot;Absent&quot;&lt;/span&gt;
+            &lt;span class=&quot;nb&quot;&gt;Type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Directory&quot;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Default is &quot;File&quot;.&lt;/span&gt;
+            Checksum &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;ModifiedDate&quot;&lt;/span&gt;
+            MatchSource &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$true&lt;/span&gt;
+            Force &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$true&lt;/span&gt;
+            Recurse &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$true&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Ensure presence of subdirectories, too&lt;/span&gt;
+            Credential &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$storageCredential&lt;/span&gt;
+            SourcePath &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$sourcePath&lt;/span&gt;
+            DestinationPath &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;C:Packages&quot;&lt;/span&gt;    
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        Log AfterDirectoryCopy
+        &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;# The message below gets written to the Microsoft-Windows-Desired State         Configuration/Analytic log&lt;/span&gt;
+            Message &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Finished running the file resource with ID DirectoryCopy&quot;&lt;/span&gt;
+            DependsOn &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;[File]DirectoryCopy&quot;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# This means run &quot;DirectoryCopy&quot; first.&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+       
+        Package Install_FireEye
+        &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            Ensure &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Present&quot;&lt;/span&gt;
+            Name &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;xagt&quot;&lt;/span&gt;
+            DependsOn &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;[File]DirectoryCopy&quot;&lt;/span&gt;
+            Path &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;C:PackagesFireEyexagtSetup_21.33.7_universal.msi&quot;&lt;/span&gt;
+            Arguments &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/q&quot;&lt;/span&gt;
+            ProductId &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;55E1EF02-DA68-46D3-8659-6A29822F65C1&quot;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;assigning-the-new-configuration-to-virtual-machines&quot;&gt;Assigning the new Configuration to Virtual Machines&lt;/h2&gt;
+
+&lt;p&gt;Upload and compile this configuration file as explained before, Once the DSC configurations node says “Completed” for the configuration:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Go to “DSC nodes” menu&lt;/li&gt;
+  &lt;li&gt;Click on a virtual machine&lt;/li&gt;
+  &lt;li&gt;Click on “Assign node configurations”&lt;/li&gt;
+  &lt;li&gt;Select &amp;amp; apply the new configuration in the “Assign Node Configuration” blade&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;to-jump-start-the-configuration&quot;&gt;To jump start the Configuration&lt;/h2&gt;
+
+&lt;p&gt;The DSC will normally wait for the time specified for the poll frequency. To immediately apply the state, on the virtual machine, run the following powershell.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Update-DSCConfiguration
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;use-an-arm-template-with-a-dsc-extension-to-automatically-provision-a-vm-and-register-it-with-dsc&quot;&gt;Use an ARM template with a DSC extension to automatically provision a VM and register it with DSC&lt;/h2&gt;
+
+&lt;p&gt;In the source code download, in the deployment folder, I have provided a powershell script file called CreateStorage.ps1 and an arm template called vmautomation_dsc.json. This arm template will create a virtual machine in the vnet and subnet provided as parameters. The ARM template also includes a DSC extension resource that will automatically add the created VM to the automation DSC pull server so that it can be managed by it. To point it to the automation DSC server, we will provide the arm template with parameters that identify the DSC Server (the server key and url. We will come to it in a minute).We will wrap all this logic in a powershell RunBook. We want to create a blob storage and upload this template to this blog. If you run the CreateStorage.ps1 powershell, it will automatically create a blob storage account and upload the arm template to it. Here are the steps to run it. Run the deploymentCreateStorage.ps1 file in the project. &lt;strong&gt;It expects Parameters&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;ResourceGroup : The resource group the automation account was created under (Step1)&lt;/li&gt;
+  &lt;li&gt;Location: [Enter your region - example: SouthCentralUS]&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;This will&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Creates a blog storage account,&lt;/li&gt;
+  &lt;li&gt;create a container&lt;/li&gt;
+  &lt;li&gt;Give public access to the container&lt;/li&gt;
+  &lt;li&gt;upload the ARM template “vmautomation_dsc.json” to the blob storage. This is the ARM template for creating the VM + associated resources. It also has the DSC extension &amp;amp; will register the VM as a node in the DSC server, when run later by the Run Book “DeployVm”&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Make note of the path of the template file&lt;/strong&gt; You will need to provide the path of the template file as a parameter when running Run Book DeployVM . Path will be something like: &lt;a href=&quot;https://dccteststorage.blob.core.windows.net/abcarmtemplate/vmautomation_dsc.json&quot;&gt;https://dccteststorage.blob.core.windows.net/abcarmtemplate/vmautomation_dsc.json&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;import-run-books-in-automation-account&quot;&gt;Import Run Books in Automation Account&lt;/h2&gt;
+
+&lt;p&gt;In the “RunBooks” tab of the automation account, click “Add a runbook” and import the following runbooks provided in the Runbooks folder of the source code provided.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;ol&gt;
+      &lt;li&gt;RunDeploy.ps1 : a helper file to pass in the parameters to DeployVm.ps1&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;There a number of variables passed in but the important ones are&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$RegistrationKey&lt;/span&gt; : Key of the DSC automation account &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;found on the Keys section of the automation account&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$RegistrationUrl&lt;/span&gt;: URL of the automation account, found also &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;the Keys section of the automation account
+
+&lt;span class=&quot;nv&quot;&gt;$NodeConfigurationName&lt;/span&gt;:  The name of the DSC &lt;span class=&quot;nb&quot;&gt;configuration &lt;/span&gt;under the &lt;span class=&quot;s2&quot;&gt;&quot;DSC nodes configuration&quot;&lt;/span&gt; section. &lt;span class=&quot;k&quot;&gt;For &lt;/span&gt;example: CreateFileDemo.localhost &lt;span class=&quot;k&quot;&gt;if using &lt;/span&gt;the simple  &lt;span class=&quot;nb&quot;&gt;configuration &lt;/span&gt;used above &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;the quickstart
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;DeployVm.ps1: the main file that creates the VM by calling the ARM template&lt;/li&gt;
+  &lt;li&gt;Publish the run book DeployVm.ps1&lt;/li&gt;
+  &lt;li&gt;Run the runbook called RunDeploy.ps1. Once the VM is provisioned, you should see it appear under the DSC nodes section of the automation account and reported as “Compliant”&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Using Infrastructure as code to script out virtual machine creation, DSC to maintain its state, and automation to instantiate the vm provisioning is a potent combination , one that can give great power to your server deployments and management.&lt;/p&gt;
+
+&lt;h2 id=&quot;source-code&quot;&gt;Source Code&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/hershbhasin/AzureSamples/tree/master/DSC&quot;&gt;Source Code Download&lt;/a&gt;&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Pagination Strategy for Cosmosdb APIs</title><link href="http://localhost:4000/2018-11-23/cosmosdb-pagination-strategy" rel="alternate" type="text/html" title="Pagination Strategy for Cosmosdb APIs" /><published>2018-11-23T00:00:00-06:00</published><updated>2018-11-23T00:00:00-06:00</updated><id>http://localhost:4000/2018-11-23/cosmosdb-pagination-strategy</id><content type="html" xml:base="http://localhost:4000/2018-11-23/cosmosdb-pagination-strategy">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In this post, I discuss two approaches for providing pagination functionality to a CosmosDb  Telemetry API that follows the&lt;a href=&quot;http://jsonapi.org/examples/#pagination&quot;&gt; JSON API Spec  for Pagination&lt;/a&gt;, which specifies that a JSON API may provide “previous”, “next” and “self” links in the response body that the user can follow to get the next/previous page sets.&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;meta&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;total-pages&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+  &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;data&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;telemetry&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;attributes&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;speed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;34.93&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;longitude&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;-83.6948611&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;latitude&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;42.1621701&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;fuel-consumed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.8205&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+       &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;rpm&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1103.90625&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+       &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;odometer&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2892&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+ &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;links&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;self&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://abc.com/v1/vehicle/TST20160905US0001/&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;prev&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://abc.com/v1/vehicle/TST20160905US0001/?page=previouspage_state_encoded&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;next&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://abc.com/v1/vehicle/TST20160905US0001/?page=nextpage_state_encoded&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The two approaches I consider are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Pagination using the CosmosDb provided Continuation Tokens&lt;/li&gt;
+  &lt;li&gt;Pagination using DateTime spans&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The  “prev”  and “next” links above contain the encoded state of the “next” or “previous” page which is build on each API call: each  API request also  builds links for the next and previous pages, based on the strategy we choose. We would like to “silently” substitute the strategy if needed, hence the state is Base 64 encoded, so the user of our API is unaware of what the actual next/prev link looks like. When the user clicks on the prev/next link, the API decodes the appropriate state and navigates.&lt;/p&gt;
+
+&lt;h2 id=&quot;pagination-using-cosmosdb-continuation-tokens&quot;&gt;Pagination using CosmosDb Continuation Tokens&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Building the “Next” link using Continuation Tokens&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;When defining the FeedOptions for a query, you restrict the page size (MaxItemCount) to a specific page size&lt;/li&gt;
+  &lt;li&gt;When the query executes, CosmosDb provides you with a “RequestContinuation” token for the next page set&lt;/li&gt;
+  &lt;li&gt;In your response, you  provide a “Next” link to to the user that contains the RequestContinuation token as a querystring&lt;/li&gt;
+  &lt;li&gt;In the next API request, you obtain the RequestContinuation from the querystring and set the FeedOptions with the token&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SqlQueries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Telemetry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Vin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PageSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StartDate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EndDate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;//use the continuation token if you have it&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;FeedOptions&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feedOptions&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;FeedOptions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;feedOptions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MaxItemCount&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PageSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;feedOptions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RequestContinuation&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetContinuationToken&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+
+&lt;span class=&quot;c1&quot;&gt;//query&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queryable&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;CreateDocumentQuery&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_defaultCollectionLink&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;feedOptions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;AsDocumentQuery&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;FeedResponse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;documents&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queryable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ExecuteNextAsync&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;documents&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;requestList&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;documents&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;UpdateLastThreeTokens&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;documents&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ResponseContinuation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Building the “Previous” link using Continuation Tokens&lt;/strong&gt; While the “Next” link  is simple to implement, as on each pass of the query, CosmosDb provides you with a “Next” continuation token, the “previous” link strategy is complicated by the necessity of storing the  continuation token with a specific page number. If from page 10, you want to go to page 9, you will have to use the continuation token for the (n-1) page, which in this example is the token for page 8. Building a “previous” link, with cumulative additions of token/page number combinations, as we navigate from page to page,  would soon become unwieldy.  This would  forces us to use a “stateful” strategy for pagination:  the continuation token, with the associated page number would have to be stored in some storage medium, and maintaining state  is not something we want in a stateless API. The use of continuation tokens is more appropriate for a client side solution and not for an API solution, &lt;strong&gt;Pros &amp;amp; Cons of the Continuation Token  as the Pagination Strategy&lt;/strong&gt; &lt;strong&gt;Pros&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Native out of the box CosmosDb solution. Efficient if only “Next” is to be provided.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Cons&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Impractical if “Previous” has to be provided as you have to store the tokens and associated page numbers in a storage medium. Complex coding to implement “Previous”&lt;/li&gt;
+  &lt;li&gt;Tied in to a CosmosDb native solution. If we need to move away from CosmosDb, we will have to revisit the pagination strategy.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;pagination-using-datetime-spans&quot;&gt;Pagination using DateTime spans&lt;/h2&gt;
+
+&lt;p&gt;This strategy uses the record timestamp  to build the “next” and “previous” links.  &lt;strong&gt;Building the “Next” link  using DateTime span&lt;/strong&gt; The data comes back in the descending order of timestamp.  Using the specified “Page Size” (which becomes the Top n rows in the DocDb SQL query,)  you get the next page load, using the “Beginning-Of-Time” as the start date and the Last Record of current page set as the end date  (which is the minimum timestamp as the data is sorted descending) .&lt;strong&gt;Building the “Previous” link  using DateTime span&lt;/strong&gt; The logic is reversed in the “Previous” strategy.  To go back to a previous page set, you  use the timestamp of the first record (max timestamp) of current page set as the start date and the “End-Of-Time” as the end date and you sort the query Ascending. That way the Top n pages of the resultant dataset is the “Previous” page set you need. In code, you sort the dataset descending and return it. &lt;strong&gt;Example Implementation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;SqlQuerySpec&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TelemetrySql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MethodParams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Telemetry&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queryParams&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SqlParameterCollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SqlParameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@vin&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Vin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SqlParameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@pageSize&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PageSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SqlParameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@startdate&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StartTime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToDateFromString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()),&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SqlParameter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@enddate&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EndTime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToDateFromString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+
+        &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BaseSql&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&quot;
+            SELECT Top @pageSize
+            doc.id,
+            doc.timestamp,
+            doc.outsideUseData.ODO,
+            doc.outsideUseData.SP1,  
+            doc.outsideUseData.NE1,
+            doc.outsideUseData.FUGAGE,
+            doc.location.coordinates[0] as longitude ,
+            doc.location.coordinates[1] as latitude,
+            doc.outsideUseData.B_FC
+            FROM doc
+            WHERE (doc.vin = @vin)
+           
+        &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;//Default Period&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PeriodSql&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&quot;
+            AND doc.timestamp &amp;gt; @startdate
+            AND doc.timestamp &amp;lt;= @enddate
+         &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;//Default Ordr By&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OrderBy&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&quot;
+         ORDER BY doc.timestamp DESC
+        &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;//Next&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Direction&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DirectionEnum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;PeriodSql&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&quot;
+            AND doc.timestamp &amp;gt; @startdate
+            AND doc.timestamp &amp;lt; @enddate
+            &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;//Previous&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Direction&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DirectionEnum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Previous&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;PeriodSql&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&quot;
+             AND doc.timestamp &amp;gt; @startdate
+             AND doc.timestamp &amp;lt; @enddate
+             &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;OrderBy&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&quot; ORDER BY doc.timestamp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+
+        &lt;span class=&quot;c1&quot;&gt;//Return Spec&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SqlQuerySpec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QueryText&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Concat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BaseSql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PeriodSql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OrderBy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parameters&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queryParams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+
+
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Pros of using DateTime spans&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Stateless solution.&lt;/li&gt;
+  &lt;li&gt;Platform Agnostic: It is not bound to CosmosDb. If we need to move to another storage solution (like Hbase etc.) this approach will still work&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Cons of using DateTime spans&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Custom solution.  Slightly complex logic for  implementing “previous” .&lt;/li&gt;
+  &lt;li&gt;Query degrades as larger duration/ time span is selected.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;CosmosDb does not have a good stateless solution for implementing a “Previous” recordset functionality. To revisit a previous page, the associated continuation token for that page is required to be known. This is not very practical for an API, which is best kept stateless. The client side application can and should maintain state. One solution could be that on each API call, the API payload returns the continuation token to the client, who stores it and sends it back as necessary to the API. However, this is a client specific solution. Another drawback of using continuation tokens is that one is bound to a CosmosDb specific solution. If we need to move to another platform, pagination using CosmosDb continuation tokens will not work. For these reasons, we choose to implement pagination using the DateTime spans approach as described in this article.&lt;/p&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Security Strategy for CosmosDB APIs</title><link href="http://localhost:4000/2018-10-15/cosmosdb-api-security" rel="alternate" type="text/html" title="Security Strategy for CosmosDB APIs" /><published>2018-10-15T00:00:00-05:00</published><updated>2018-10-15T00:00:00-05:00</updated><id>http://localhost:4000/2018-10-15/cosmosdb-api-security</id><content type="html" xml:base="http://localhost:4000/2018-10-15/cosmosdb-api-security">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In a recent engagement I had to devise a way to secure a Json Api that surfaced data from a Azure CosmosDb collection. The use case was that a API consumer should first be &lt;em&gt;authenticated&lt;/em&gt; by suitable means and once his/her identity was established, &lt;em&gt;authorized&lt;/em&gt; to only query a subset of data to which he/she had rights to. This right was established by an array of unique record keys that the consumer was allowed to see. Since the data that the API surfaced was car telemetry data, and the unique key was vehicle VIN, the user was to be restricted to a set of VINs.&lt;/p&gt;
+
+&lt;h2 id=&quot;authorization-approach&quot;&gt;Authorization Approach&lt;/h2&gt;
+
+&lt;p&gt;Azure Api Management (APIM) was used as the authorization mechanism. I will discuss the detailed APIM approach later in this post, but in brief, APIM allows one to publish APIs to which the users subscribe via the APIM developer portal. When they subscribe, they are issued a subscription token and the user passes this token in the header of each API call.&lt;/p&gt;
+
+&lt;p&gt;With APIM policies it is possible to extract the users subscribed email, by looking up the subscription token he/she supplies. As I explain later, this email will be used for authorization purposes (what VINS does the user have rights to based on his rights, given that the user is identified by his email?) I could have used the subscription token itself as the lookup key, however a user can regenerate his subscription key. The email is more immutable.&lt;/p&gt;
+
+&lt;h2 id=&quot;authentication-approaches-considered&quot;&gt;Authentication Approaches Considered&lt;/h2&gt;
+
+&lt;p&gt;I considered the following approaches:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;App: Service Logic&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The app service logic is responsible for enforcing authorization.&lt;/li&gt;
+  &lt;li&gt;Store authorized vehicle list for each customer.&lt;/li&gt;
+  &lt;li&gt;Explicitly apply filter to query &amp;amp; constrain results to authorized vehicle VINs only.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;CosmosDb: By Partition Key&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The collection is partitioned by VIN. Partition permissions are granted for each customer based on authorized vehicles.&lt;/li&gt;
+  &lt;li&gt;Store authorized vehicle list for each customer.&lt;/li&gt;
+  &lt;li&gt;Grant/revoke user-specific permissions for each authorized partition key (VIN).&lt;/li&gt;
+  &lt;li&gt;Utilize user-specific permission tokens when querying DocumentDB to enforce authorization policies.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;CosmosDb: By Collection&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A collection is created for each customer. Customer access is limited to the authorized collection.&lt;/li&gt;
+  &lt;li&gt;Store authorized vehicle list for each customer.&lt;/li&gt;
+  &lt;li&gt;Store vehicle data in the appropriate collection (potentially multiple/duplicate) based on authorization list.&lt;/li&gt;
+  &lt;li&gt;App service will need to query the appropriate collection based on the customer. Could be facilitated by collection authorization keys.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;choice-of-authentication-approach&quot;&gt;Choice of Authentication Approach&lt;/h2&gt;
+
+&lt;p&gt;I found the first approach App:Service logic to be most flexible. I created an “Auth” CosmosDb collection which had a json document per user that had an array of VINS that he had access to. The document looked like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+   &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Vins&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;TEST-VXFA50-609060&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;TEST-VXFA50-609061&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+   &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;first_client@go.com&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The “id” is the email of the user which is extracted by a Policy on the APIM and passed in the header of the request by APIM. This is discussed in the Authorization section below. The API extracts the email from the header and makes a query to CosmosDb “Auth” collection and gets the list of VINs the user identified by the email has access to, and matches it with the VIN that was requested by the user in the current API request. This is how authentication was established.&lt;/p&gt;
+
+&lt;h2 id=&quot;authorization-approach-1&quot;&gt;Authorization Approach&lt;/h2&gt;
+
+&lt;p&gt;Azure API Management was used to publish APIs. APIs are published using the Publisher Portal and once they are published, consumers of the API subscribe to the APIs via a developer portal. As part of the registration process, they provide a email. They obtain a subscription token at the developer portal, which they pass in the header of each API call.&lt;/p&gt;
+
+&lt;p&gt;An APIM Policy can be applied to the API using the Publisher portal that can intercept and transform the request or the response of the API. I used a APIM Policy to extract the email of the user and pass it in the subsequent header of the API request (the request-email header). I also added a check in Policy so that a user could not spoof the system by manually adding a header called request-header.&lt;/p&gt;
+
+&lt;p&gt;In the policy below, I am checking for a header called request-email and if it exists, someone is trying to hack my API so I return a 400 Bad Request , else I set the request-email header with the user email.&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;policies&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;inbound&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;choose&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;when&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;condition=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@(context.Request.Headers.GetValueOrDefault(&quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;request-email&quot;,&quot;&quot;).Length&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;0)&quot;&amp;gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;return-response&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;response-variable-name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;existing response variable&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+                    &lt;span class=&quot;nt&quot;&gt;&amp;lt;set-status&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;code=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;400&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;reason=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Bad Request&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+                    &lt;span class=&quot;nt&quot;&gt;&amp;lt;set-header&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Bad-Request&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;exists-action=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;override&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+                        &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;error=&quot;Bad request&quot;&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+                    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/set-header&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;nt&quot;&gt;&amp;lt;/return-response&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/when&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/choose&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;set-header&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;request-email&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;exists-action=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;override&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;@(context.User.Email)&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/set-header&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/inbound&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;backend&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;base&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/backend&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;outbound&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;base&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/outbound&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/policies&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Hersh Bhasin</name></author><summary type="html">Introduction</summary></entry></feed>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>DSC with Infrastructure-As-Code and Azure Automation is a potent combination | Hersh Bhasin @Tech</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="DSC with Infrastructure-As-Code and Azure Automation is a potent combination" />
+<meta name="author" content="Hersh Bhasin" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introduction" />
+<meta property="og:description" content="Introduction" />
+<link rel="canonical" href="http://localhost:4000/2018-12-03/azure-automation-DSC" />
+<meta property="og:url" content="http://localhost:4000/2018-12-03/azure-automation-DSC" />
+<meta property="og:site_name" content="Hersh Bhasin @Tech" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-12-03T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/2018-12-03/azure-automation-DSC","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018-12-03/azure-automation-DSC"},"author":{"@type":"Person","name":"Hersh Bhasin"},"description":"Introduction","headline":"DSC with Infrastructure-As-Code and Azure Automation is a potent combination","dateModified":"2018-12-03T00:00:00-06:00","datePublished":"2018-12-03T00:00:00-06:00","@type":"BlogPosting","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+
+  <!-- RSS -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Hersh Bhasin @Tech" />
+
+  <!-- Google Analytics-->
+  
+</head>
+
+
+  <body>
+
+    <nav class="nav">
+  <div class="nav-container">
+    <a href="/">
+      <h2 class="nav-title">Hersh Bhasin @Tech</h2>
+    </a>
+      <ul>
+        <!-- <li><a href="/">Home</a></li> -->
+        <li><a href="/archive">Archive</a></li> 
+        <li><a href="/categories">Categories</a></li>        
+       <li><a href="/apps">Apps</a></li>
+       <li><a href="/books">Books</a></li>
+       <li><a href="https://blog.hershbhasin.com">Personal Blog</a></li> 
+       <li><a href="/about">About</a></li>   
+     </ul>
+  </div>
+</nav>
+
+   
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Hersh Bhasin
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-12-03 00:00:00 -0600">December 03, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">DSC with Infrastructure-As-Code and  Azure Automation is a potent combination</h1>
+  <div class="post-line"></div>
+
+  <h2 id="introduction">Introduction</h2>
+
+<p>This article shows how DSC, infrastructure-as-code and Azure Automation play together by presenting a fully automated sample of a vm that is provisioned  using an ARM template and  a DSC extension, deployed using an Azure Automation Runbook, whose state is managed using DSC. This is a powerful combination indeed, and I have attempted to build up to this automated sample by showing how one would provision the vm and add it to DSC manually. I have also tried to show the business value that DSC, infrastructure-as-code and automation brings to the traditional ways of provisioning and managing the state of servers.</p>
+
+<h2 id="the-problems-we-are-trying-to-solve">The Problems we are trying to solve</h2>
+
+<p>When we provision a new virtual machine, we often require  software preinstalled on it, or  have some required network settings, some required features , some configuration settings, or some registry setting  present on it. We would like to avoid manually installing and configuring these pieces of software and settings. Once we provision these machines with these set of “desired” features, something like a thermostat should exists on these machines that maintains them in this golden state, and prevent what we call “configuration drift”. Our server documentation should be “auto-documenting”. There should be a magical document that keeps itself up to date with any changes we make on our servers. We should be able to version our servers, and be able to go back to a prior version if necessary. Infrastructure as code, Desired State Configuration (DSC), and automation,used together, fulfills these needs for state management, versioning and auto-documenting for virtual machines. In the past we had our “golden image”, which was a fully patched image that had all our needed software, registry settings, and configurations installed. However, keeping the machines cloned from these golden images up-to-date with latest versions of software and patches was a non-trivial task. This is where infrastructure-as-code plays its part. With script, be it an ARM template, a Powershell script, or a Terraform script, we can create our servers in code, doing away with these “golden images”. And, to keep these scripted machines in a state of continual deployment readiness, up-to-date with the required installs, patches and configuration settings, we use a process called Desired State Configuration (DSC). The underlying idea of a DSC Pull model (there is a Push model also, which is beyond the scope of this post), is this: that there is a server somewhere that holds a magical document called a “DSC Configuration Document”, in which we list out the  state we want our servers to continually be in. Then, on the virtual machine that requires its state to be maintained, there exists a agent called a Local Configuration Manager (LCM) that constantly polls the DSC server and “pulls” down this magic DSC Configuration document , reads it, and applies the instructions in this document to the machine it manages. Since it is constantly polling the pull server, it reapplies any fresh instructions, or reverts back the machine to the “golden state”, if someone inadvertently or maliciously attempts to change the machine’s utopia. Auto-Documentation is an attribute of this magical DSC Configuration document. In the past, when we were standing up hard physical servers from our “gold images”, the knowledge of building these servers was often codified in elaborate forms, and updating these documents was never optimal. The person who owned that knowledge was like a key man. Instead of being a static build form, the DSC Configuration  document is a functional document that first describes  how the server is to be built , and then  makes the server take on  the state it describes.  The DSC Configuration document makes versioning of servers easy. Versions of the configuration documents can be source controlled and we can always go back to earlier state if something fails. We can easily look at history of our server changes in source control. And, Automation makes the setting up of a DSC server trivial. There is no setting up to do as an automation account in Azure automatically provisions a DSC pull server.</p>
+
+<h2 id="create-an-azure-automation-account">Create an Azure Automation Account</h2>
+
+<ol>
+  <li>Create an Azure Automation account from portal.azure.com</li>
+  <li>A DSC pull server will also be created. You will see a section called “CONFIGURATION MANAGEMENT” with three navigation links. These are:
+    <ol>
+      <li>DSC nodes</li>
+      <li>DSC configurations</li>
+      <li>DSC node configurationspic : dsc-1</li>
+    </ol>
+  </li>
+</ol>
+
+<p>I will call these links “DSC Sections” , and since they are so similar in their names, will refer to them in full.</p>
+
+<h2 id="create-a-dsc-configuration-file">Create a DSC Configuration file</h2>
+
+<p>A DSC Config file is a simple text file that has instructions as in the examples below. A few sample DSC Config files have been provided in the source code download, in the Configuration folder.</p>
+
+<p><strong>CreateFileDemo.ps1</strong></p>
+
+<p>This file shows how to refer to a Automation Variable called “DownloadPackagesPath” and then to write it out to a text file on the server at the path specified in the “DestinationPath.” Automation variables allow us to pass in input variables to the DSC Configuration files. You create a Variable from the “Variables” link on the Automation account and enter the Name, Type &amp; Value. In this case we created a variable called “DownloadPackagesPath” with the value of some file share path.</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Configuration </span>CreateFileDemo
+<span class="o">{</span>
+
+   <span class="nv">$samplestr</span> <span class="o">=</span> Get-AutomationVariable –Name <span class="s1">'DownloadPackagesPath'</span>
+
+    Node <span class="s2">"localhost"</span>
+    <span class="o">{</span>
+       
+        File CreateFile <span class="o">{</span>
+            DestinationPath <span class="o">=</span> <span class="s1">'C:myTest.txt'</span>
+            Ensure <span class="o">=</span> <span class="s2">"Present"</span>
+            Contents <span class="o">=</span> <span class="nv">$samplestr</span>
+        <span class="o">}</span>
+       
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Here are the instructions to import &amp; compile this sample file:</p>
+
+<ol>
+  <li>From this code download, import the file called CreateFileDemo.ps1 to the <strong>DSC Configurations</strong> section in your-automation-account (or paste the above into a text file and import).</li>
+  <li>When Imported, click on it, compile it by choosing Compile on the Toolbar. Let it default for the ComputerName (“Default will be used”).</li>
+</ol>
+
+<p>Instead of repeating the Microsoft documentation, I point you to the relevant quick-start document on the MS site. It is a simple click-thru guide and it is here: <a href="https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started">https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started</a></p>
+
+<h2 id="creating-and-onboarding-a-machine-manually">Creating and Onboarding a machine manually</h2>
+
+<p>The basic steps are: you create a virtual machine and add the machine to the DSC Node of the automation account. Once added, it will be automatically managed by the DSC Server, based on state specified in the DSC Configuration file. Later, I will show how to automatically provision a vm and add it to the DSC Server using an ARM template with the DSC extension. However to get a quick feel of how the DSC stuff works, you can provision a vm manually from the Azure portal and manually add it to the DSC Nodes section of the automation account. Instead of repeating the Microsoft documentation, I point you to the relevant quick-start document on the MS site. It is a simple click-thru guide and it is here: <a href="https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started">https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started</a></p>
+
+<h2 id="seeing-the-dsc-maintain-state">Seeing the DSC maintain state</h2>
+
+<p>Once the machine is onboarded, and a valid and compiled DSC Configuration exists, the LSM on the virtual machine will pull the Configuration file and apply it. The machine you onboarded should appear in the DSC Nodes section with a status of “Compliant”. If you remote into the virtual machine, you should see the file c:myTest.txt.</p>
+
+<h2 id="a-more-complex-dsc-configuration">A more complex DSC Configuration</h2>
+
+<p>Suppose you want a software called FireEye to be installed on all your DSC managed servers. You would create a Azure file share. You will upload the FireEye installer files to this file share. You will create a Automation Credential Asset ( similar to how we created the variable asset DownloadPackagesPath) by clicking the Credentials Link on the automation account called (say) DSCPackageStorage as follows: <strong>Credential Asset</strong> Name: DSCPackageStorage Username: AZUREfile-storage-name (this is the name of the storage account, prefixed by “AZURE”) Password: Key of the file storage <strong>Variable Asset</strong> We created the Variable Asset <strong>DownloadPackagePath</strong> earlier. Now in the value, enter the path to your folder where you uploaded your install files for FireEye The following DSC Configuration copies the install files from the file share to a local c:packages folder, using the specified credentials and the sourcePath specified in the DownloadPackagePath automation variable. Once copied locally, the software FireEye gets installed.</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Configuration </span>DownloadInstallPackages
+<span class="o">{</span>
+   <span class="nv">$storageCredential</span> <span class="o">=</span> Get-AutomationPSCredential -Name <span class="s2">"DSCPackageStorage"</span>
+   <span class="nv">$sourcePath</span> <span class="o">=</span> Get-AutomationVariable –Name <span class="s1">'DownloadPackagesPath'</span>
+
+    Node <span class="s2">"localhost"</span>
+    <span class="o">{</span>
+       
+        File DirectoryCopy
+        <span class="o">{</span>
+            Ensure <span class="o">=</span> <span class="s2">"Present"</span>  <span class="c1"># You can also set Ensure to "Absent"</span>
+            <span class="nb">Type</span> <span class="o">=</span> <span class="s2">"Directory"</span> <span class="c1"># Default is "File".</span>
+            Checksum <span class="o">=</span> <span class="s2">"ModifiedDate"</span>
+            MatchSource <span class="o">=</span> <span class="nv">$true</span>
+            Force <span class="o">=</span> <span class="nv">$true</span>
+            Recurse <span class="o">=</span> <span class="nv">$true</span> <span class="c1"># Ensure presence of subdirectories, too</span>
+            Credential <span class="o">=</span> <span class="nv">$storageCredential</span>
+            SourcePath <span class="o">=</span> <span class="nv">$sourcePath</span>
+            DestinationPath <span class="o">=</span> <span class="s2">"C:Packages"</span>    
+        <span class="o">}</span>
+        Log AfterDirectoryCopy
+        <span class="o">{</span>
+            <span class="c1"># The message below gets written to the Microsoft-Windows-Desired State         Configuration/Analytic log</span>
+            Message <span class="o">=</span> <span class="s2">"Finished running the file resource with ID DirectoryCopy"</span>
+            DependsOn <span class="o">=</span> <span class="s2">"[File]DirectoryCopy"</span> <span class="c1"># This means run "DirectoryCopy" first.</span>
+        <span class="o">}</span>
+       
+        Package Install_FireEye
+        <span class="o">{</span>
+            Ensure <span class="o">=</span> <span class="s2">"Present"</span>
+            Name <span class="o">=</span> <span class="s2">"xagt"</span>
+            DependsOn <span class="o">=</span> <span class="s2">"[File]DirectoryCopy"</span>
+            Path <span class="o">=</span> <span class="s2">"C:PackagesFireEyexagtSetup_21.33.7_universal.msi"</span>
+            Arguments <span class="o">=</span> <span class="s2">"/q"</span>
+            ProductId <span class="o">=</span> <span class="s2">"55E1EF02-DA68-46D3-8659-6A29822F65C1"</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="assigning-the-new-configuration-to-virtual-machines">Assigning the new Configuration to Virtual Machines</h2>
+
+<p>Upload and compile this configuration file as explained before, Once the DSC configurations node says “Completed” for the configuration:</p>
+
+<ol>
+  <li>Go to “DSC nodes” menu</li>
+  <li>Click on a virtual machine</li>
+  <li>Click on “Assign node configurations”</li>
+  <li>Select &amp; apply the new configuration in the “Assign Node Configuration” blade</li>
+</ol>
+
+<h2 id="to-jump-start-the-configuration">To jump start the Configuration</h2>
+
+<p>The DSC will normally wait for the time specified for the poll frequency. To immediately apply the state, on the virtual machine, run the following powershell.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Update-DSCConfiguration
+</code></pre></div></div>
+
+<h2 id="use-an-arm-template-with-a-dsc-extension-to-automatically-provision-a-vm-and-register-it-with-dsc">Use an ARM template with a DSC extension to automatically provision a VM and register it with DSC</h2>
+
+<p>In the source code download, in the deployment folder, I have provided a powershell script file called CreateStorage.ps1 and an arm template called vmautomation_dsc.json. This arm template will create a virtual machine in the vnet and subnet provided as parameters. The ARM template also includes a DSC extension resource that will automatically add the created VM to the automation DSC pull server so that it can be managed by it. To point it to the automation DSC server, we will provide the arm template with parameters that identify the DSC Server (the server key and url. We will come to it in a minute).We will wrap all this logic in a powershell RunBook. We want to create a blob storage and upload this template to this blog. If you run the CreateStorage.ps1 powershell, it will automatically create a blob storage account and upload the arm template to it. Here are the steps to run it. Run the deploymentCreateStorage.ps1 file in the project. <strong>It expects Parameters</strong></p>
+
+<ol>
+  <li>ResourceGroup : The resource group the automation account was created under (Step1)</li>
+  <li>Location: [Enter your region - example: SouthCentralUS]</li>
+</ol>
+
+<p><strong>This will</strong>:</p>
+
+<ol>
+  <li>Creates a blog storage account,</li>
+  <li>create a container</li>
+  <li>Give public access to the container</li>
+  <li>upload the ARM template “vmautomation_dsc.json” to the blob storage. This is the ARM template for creating the VM + associated resources. It also has the DSC extension &amp; will register the VM as a node in the DSC server, when run later by the Run Book “DeployVm”</li>
+</ol>
+
+<p><strong>Make note of the path of the template file</strong> You will need to provide the path of the template file as a parameter when running Run Book DeployVM . Path will be something like: <a href="https://dccteststorage.blob.core.windows.net/abcarmtemplate/vmautomation_dsc.json">https://dccteststorage.blob.core.windows.net/abcarmtemplate/vmautomation_dsc.json</a></p>
+
+<h2 id="import-run-books-in-automation-account">Import Run Books in Automation Account</h2>
+
+<p>In the “RunBooks” tab of the automation account, click “Add a runbook” and import the following runbooks provided in the Runbooks folder of the source code provided.</p>
+
+<ol>
+  <li>
+    <ol>
+      <li>RunDeploy.ps1 : a helper file to pass in the parameters to DeployVm.ps1</li>
+    </ol>
+  </li>
+</ol>
+
+<p>There a number of variables passed in but the important ones are</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$RegistrationKey</span> : Key of the DSC automation account <span class="o">(</span>found on the Keys section of the automation account<span class="o">)</span>
+
+<span class="nv">$RegistrationUrl</span>: URL of the automation account, found also <span class="k">in </span>the Keys section of the automation account
+
+<span class="nv">$NodeConfigurationName</span>:  The name of the DSC <span class="nb">configuration </span>under the <span class="s2">"DSC nodes configuration"</span> section. <span class="k">For </span>example: CreateFileDemo.localhost <span class="k">if using </span>the simple  <span class="nb">configuration </span>used above <span class="k">in </span>the quickstart
+</code></pre></div></div>
+
+<ol>
+  <li>DeployVm.ps1: the main file that creates the VM by calling the ARM template</li>
+  <li>Publish the run book DeployVm.ps1</li>
+  <li>Run the runbook called RunDeploy.ps1. Once the VM is provisioned, you should see it appear under the DSC nodes section of the automation account and reported as “Compliant”</li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Using Infrastructure as code to script out virtual machine creation, DSC to maintain its state, and automation to instantiate the vm provisioning is a potent combination , one that can give great power to your server deployments and management.</p>
+
+<h2 id="source-code">Source Code</h2>
+
+<p><a href="https://github.com/hershbhasin/AzureSamples/tree/master/DSC">Source Code Download</a></p>
+
+   
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'hershbhasin'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  
+</div>
+
+<div class="pagination">
+  
+    <a href="/2019-01-15/vm-gold-images" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-11-23/cosmosdb-pagination-strategy" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+  <span>
+    &copy; <time datetime="2019-06-04 19:26:37 -0500">2019</time> Hersh Bhasin.
+  </span>
+</footer>
+
+    <script id="dsq-count-scr" src="//hershbhasin.disqus.com/count.js" async></script>
+  </body>
+</html>

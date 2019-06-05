@@ -6,20 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Begin Jekyll SEO tag v2.5.0 -->
-<title>Azure Data Factory | Hersh Bhasin’s Tech Blog</title>
+<title>Scheduling Data Transformation with Azure Data Factory | Hersh Bhasin @Tech</title>
 <meta name="generator" content="Jekyll v3.8.5" />
-<meta property="og:title" content="Azure Data Factory" />
+<meta property="og:title" content="Scheduling Data Transformation with Azure Data Factory" />
 <meta name="author" content="Hersh Bhasin" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Overview" />
 <meta property="og:description" content="Overview" />
 <link rel="canonical" href="http://localhost:4000/2019-06-02/azure-data-factory" />
 <meta property="og:url" content="http://localhost:4000/2019-06-02/azure-data-factory" />
-<meta property="og:site_name" content="Hersh Bhasin’s Tech Blog" />
+<meta property="og:site_name" content="Hersh Bhasin @Tech" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-06-02T00:00:00-05:00" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/2019-06-02/azure-data-factory","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019-06-02/azure-data-factory"},"author":{"@type":"Person","name":"Hersh Bhasin"},"description":"Overview","headline":"Azure Data Factory","dateModified":"2019-06-02T00:00:00-05:00","datePublished":"2019-06-02T00:00:00-05:00","@type":"BlogPosting","@context":"http://schema.org"}</script>
+{"url":"http://localhost:4000/2019-06-02/azure-data-factory","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019-06-02/azure-data-factory"},"author":{"@type":"Person","name":"Hersh Bhasin"},"description":"Overview","headline":"Scheduling Data Transformation with Azure Data Factory","dateModified":"2019-06-02T00:00:00-05:00","datePublished":"2019-06-02T00:00:00-05:00","@type":"BlogPosting","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -33,7 +33,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 
   <!-- RSS -->
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Hersh Bhasin's Tech Blog" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Hersh Bhasin @Tech" />
 
   <!-- Google Analytics-->
   
@@ -45,16 +45,21 @@
     <nav class="nav">
   <div class="nav-container">
     <a href="/">
-      <h2 class="nav-title">Hersh Bhasin's Tech Blog</h2>
+      <h2 class="nav-title">Hersh Bhasin @Tech</h2>
     </a>
-    <ul>
-      <li><a href="/about">About</a></li>
-      <li><a href="/">Posts</a></li>
-      <li><a href="/archive">Archive</a></li>
-    </ul>
+      <ul>
+        <!-- <li><a href="/">Home</a></li> -->
+        <li><a href="/archive">Archive</a></li> 
+        <li><a href="/categories">Categories</a></li>        
+       <li><a href="/apps">Apps</a></li>
+       <li><a href="/books">Books</a></li>
+       <li><a href="https://blog.hershbhasin.com">Personal Blog</a></li> 
+       <li><a href="/about">About</a></li>   
+     </ul>
   </div>
 </nav>
 
+   
 
     <main>
       <div class="post">
@@ -70,12 +75,12 @@
     
   </div>
 
-  <h1 class="post-title">Azure Data Factory</h1>
+  <h1 class="post-title">Scheduling Data Transformation with Azure Data Factory</h1>
   <div class="post-line"></div>
 
   <h1 id="overview">Overview</h1>
 
-<p>In the Event Logs Ingestion &amp; Storage post, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :</p>
+<p>In the <a href="https://hershbhasin.com/2019-05-05/data-ingestion">Part 1: Data Ingestion</a>, I demonstrated ingesting events into a Azure Event Hub and then archiving the data in Avro format into a Data Lake. The Event Hub capture was set to accumulate data by month, by specifying the capture format as :</p>
 
 <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"{Namespace}_{EventHub}_{PartitionId}/{Year}/{Month}/{Day}_{Hour}_{Minute}_{Second}"</span>
 </code></pre></div></div>
@@ -91,6 +96,12 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 <p>Also, we will have 12 folders created, one for each month.</p>
 
 <p>Now our objective is to automate the extraction and curation of this monthly data by a process that can be scheduled to run once every month.  For this we will use Azure Data Factory</p>
+
+<p>This is a two part post:</p>
+
+<p><a href="https://hershbhasin.com/2019-05-05/data-ingestion">Part 1: Data Ingestion</a></p>
+
+<p><a href="https://hershbhasin.com/2019-06-02/azure-data-factor">Part 2: Data Curation with Azure Data Factory</a></p>
 
 <h1 id="azure-data-factory">Azure Data Factory</h1>
 
@@ -108,13 +119,13 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 <p>Using Data Factory, we want to build a pipeline that can run once a month on our monthly  folders in the Data Lake, extract the desired data, (which resides compressed as byte data, and has an Avro format),  transform it as legible CSV data, and finally store the output as CSV files in an output folder in the Data Lake.</p>
 
-<p><img src="/assets/Scheduling.PNG" alt="Scheduling" /></p>
+<p><img src="/assets/adf_1.PNG" alt="Scheduling" /></p>
 
 <p>For the purpose of this example, we have set up a monthly run schedule. With Data Factory, we can choose to run jobs at a lower time granularity: say by Day or  by Hour. Also, we can write jobs that summarize or aggregate data. In our example, we are just extracting device logs from byte/AVRO to CSV, without performing any aggregation.</p>
 
 <p>The pipeline we create will report its progress with a calendar. For a daily extraction schedule in the screenshot below, the “Green” in the calendar shows that jobs have been successfully run. The “Orange” shows that it is waiting for data to become available, and the “red “ shows that there was a problem encountered on that day. The administrator can correct the error and rerun the schedule for that day.</p>
 
-<p><img src="/assets/calander.PNG" alt="calander" /></p>
+<p><img src="/assets/adf_2.PNG" alt="calander" /></p>
 
 <h1 id="arm-templates">ARM templates</h1>
 
@@ -132,23 +143,23 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
   <li>Data Lake Analytics</li>
 </ol>
 
-<p><img src="/assets/env.png" alt="env" /></p>
+<p><img src="/assets/adf_3.png" alt="env" /></p>
 
 <p>(Note: we will not be using Blob Storage or SQL Server for this POC).</p>
 
-<h1 id="the-azure-data-lake-analytics-account-adls">The Azure Data Lake Analytics Account (ADLS)</h1>
+<h1 id="the-azure-data-lake-analytics-account-adla">The Azure Data Lake Analytics Account (ADLA)</h1>
 
-<h2 id="what-is-adls">What is ADLS</h2>
+<h2 id="what-is-adla">What is ADLA</h2>
 
-<p>ADLA is a platform that enables processing of extremely large data sets, integration with existing Data Warehousing, and true parallel processing of structured and unstructured data. ADLA is well equipped to handle many of the types of processing we do in the <em>T</em> portion of <em>ETL</em>; that is, transforming data. It provides similar functionality like Hadoop (with Hive and Spark).  However, it is simpler to learn &amp; use:  whereas in Hadoop, you encounter the learning curve of mastering any of its six supported languages – Hive, Pig, Java, Scala, Python, Bash; in ADLS, you just use one: USQL, which is a combination of SQL and C#. Also the pricing of ADALS is per job, which is different from the per hour, (based on how long you keep your cluster running,)  pricing of competing Big Data cloud offerings.  With ADLA, you pay for each individual job that is run. Each job run through ADLA is assigned a number of <strong>Analytic Units (AUs)</strong>. Each job is billed based on how many AUs were used and how many hours the job ran. So a simple job that used 10 AUs for one hour would be billed for 10 processing hours.</p>
+<p>ADLA is a platform that enables processing of extremely large data sets, integration with existing Data Warehousing, and true parallel processing of structured and unstructured data. ADLA is well equipped to handle many of the types of processing we do in the <em>T</em> portion of <em>ETL</em>; that is, transforming data. It provides similar functionality like Hadoop (with Hive and Spark).  However, it is simpler to learn &amp; use:  whereas in Hadoop, you encounter the learning curve of mastering any of its six supported languages – Hive, Pig, Java, Scala, Python, Bash; in ADLA, you just use one: USQL, which is a combination of SQL and C#. Also the pricing of ADALA is per job, which is different from the per hour, (based on how long you keep your cluster running,)  pricing of competing Big Data cloud offerings.  With ADLA, you pay for each individual job that is run. Each job run through ADLA is assigned a number of <strong>Analytic Units (AUs)</strong>. Each job is billed based on how many AUs were used and how many hours the job ran. So a simple job that used 10 AUs for one hour would be billed for 10 processing hours.</p>
 
 <p>As a matter of fact, just owning an Azure Data Lake Analytics account doesn’t cost anything. You aren’t even billed for the account until you run a job. That’s pretty unique in the Big Data space.</p>
 
 <p>For more information, see  <a href="https://docs.microsoft.com/en-us/azure/data-lake-analytics/data-lake-analytics-overview">Data Lake Analytics Overview</a></p>
 
-<h2 id="how-we-are-going-to-use-adls">How we are going to use ADLS</h2>
+<h2 id="how-we-are-going-to-use-adla">How we are going to use ADLA</h2>
 
-<p>We will create a database in ADLS, and within that database, we will create a stored procedure that will take in a Start Date and an End Date as parameters. When we schedule a  Azure Data Factory pipeline, it will pass in these two parameters.  The stored procedure will use these parameters to determine the folder in the Data Lake to target, and will pick up all the files in that folder, transform it and write the output in an output folder in the Data Lake. There are a number of U-SQL  scripts provided in the source code folder, wrapped within a Visual Studio Solution, which you need to run. The location of the Visual Studio Solution is  in the folder: <em>CloudworxUSQLApplication</em>.</p>
+<p>We will create a database in ADLA, and within that database, we will create a stored procedure that will take in a Start Date and an End Date as parameters. When we schedule a  Azure Data Factory pipeline, it will pass in these two parameters.  The stored procedure will use these parameters to determine the folder in the Data Lake to target, and will pick up all the files in that folder, transform it and write the output in an output folder in the Data Lake. There are a number of U-SQL  scripts provided in the source code folder, wrapped within a Visual Studio Solution, which you need to run. The location of the Visual Studio Solution is  in the folder: <em>CloudworxUSQLApplication</em>.</p>
 
 <h2 id="copy-assemblies-to-a-data-lake-folder">Copy Assemblies to a Data Lake Folder</h2>
 
@@ -156,7 +167,7 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 <p>In the attached Data Lake, create a folder called <em>\Assemblies\Avro</em> and upload the assemblies from the <em>Source Code/CloudworxUSQLApplication/Lib</em> to here.</p>
 
-<p><img src="/assets/assemblies.PNG" alt="assemblies" /></p>
+<p><img src="/assets/adf_4.PNG" alt="assemblies" /></p>
 
 <h2 id="create-azure-data-lake-analytics-data-sources">Create Azure Data Lake Analytics Data Sources</h2>
 
@@ -166,12 +177,12 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 <ul>
   <li>In the Azure Data Lake Analytics account, browse to its blade in the Azure portal, and under Settings, click Data Sources.</li>
-  <li>Click Add Data Source. Then in the Add Data Source blade, in the Storage Type list, select Azure Storage, and then select your Azure storage account. This adds your Azure storage account as a data source to which the Azure Data Lake Analytics account has access, in addition to its default Azure Data Lake Store.<img src="/assets/data_lake_analytics.PNG" alt="data_lake_analytics" /></li>
+  <li>Click Add Data Source. Then in the Add Data Source blade, in the Storage Type list, select Azure Storage, and then select your Azure storage account. This adds your Azure storage account as a data source to which the Azure Data Lake Analytics account has access, in addition to its default Azure Data Lake Store.<img src="/assets/adf_5.PNG" alt="data_lake_analytics" /></li>
 </ul>
 
 <h2 id="create-an-azure-data-lake-analytics-database">Create an Azure Data Lake Analytics Database</h2>
 
-<p>Open the provided  Visual Studio solution at the location <em>..\CloudworxUSQLApplication</em> and Submit the U-SQL script: <em>1-CreateDB.usql</em>. This will create a database called AVRO in the ADLS.</p>
+<p>Open the provided  Visual Studio solution at the location <em>..\CloudworxUSQLApplication</em> and Submit the U-SQL script: <em>1-CreateDB.usql</em>. This will create a database called AVRO in the ADLA.</p>
 
 <p><strong>Script: 1-CreateDB.usql</strong></p>
 
@@ -202,13 +213,13 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 <span class="k">CREATE</span> <span class="n">ASSEMBLY</span> <span class="p">[</span><span class="n">log4net</span><span class="p">]</span> <span class="k">FROM</span> <span class="o">@</span><span class="nv">"/Assemblies/Avro/log4net.dll"</span><span class="p">;</span>
 </code></pre></div></div>
 
-<p>If you now browse the ADLS  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:</p>
+<p>If you now browse the ADLA  with the Data Explorer, you should have copied the assemblies to both the master and the Avro databases:</p>
 
-<p><img src="/assets/copy_assemblies.PNG" alt="copy_assemblies" /></p>
+<p><img src="/assets/adf_6.PNG" alt="copy_assemblies" /></p>
 
 <h2 id="create-the-stored-procedure">Create the Stored Procedure</h2>
 
-<p>Open the provided  Visual Studio solution at the location <em>..\CloudworxUSQLApplication</em> and Submit the U-SQL script: <em>sp.usql</em>. Once you run this script, you should see a stored procedure created in the ADLS Database Avro, in the “Procedures” folder.</p>
+<p>Open the provided  Visual Studio solution at the location <em>..\CloudworxUSQLApplication</em> and Submit the U-SQL script: <em>sp.usql</em>. Once you run this script, you should see a stored procedure created in the ADLA Database Avro, in the “Procedures” folder.</p>
 
 <p><strong>Script: sp.usql</strong></p>
 
@@ -298,11 +309,11 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 <p>If you had followed my previous post on Event Logs Ingestion, you would have a <em>archivefolder</em> in the Data Lake that contained the raw data. If you have not followed that post, I have provided sample data in the source code folder, in the “Data” folder.  Use the Microsoft Azure Storage Explorer to upload the “archivefolder” to the Data Lake.</p>
 
-<p><img src="/assets/archivefolder.png" alt="archivefolder" /></p>
+<p><img src="/assets/adf_7.PNG" alt="archivefolder" /></p>
 
 <h2 id="test-the-stored-procedure">Test the Stored Procedure</h2>
 
-<p>In the ADLS, click on the “New Job” button, paste the following script, and click “Submit”</p>
+<p>In the ADLA, click on the “New Job” button, paste the following script, and click “Submit”</p>
 
 <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Avro</span><span class="p">.</span><span class="n">dbo</span><span class="p">.</span><span class="n">sp_CreateLogs</span><span class="p">(</span><span class="k">System</span><span class="p">.</span><span class="n">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="nv">"2018/01/01"</span><span class="p">),</span>
                        <span class="k">System</span><span class="p">.</span><span class="n">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="nv">"2018/01/31"</span><span class="p">));</span>
@@ -579,10 +590,24 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
 <p>The pipeline should start running and can be viewed under the <em>Monitor &amp; Manage</em> tab in the Data Factory. Very soon, you should see transformed output in the Data Lake output folder.</p>
 
-<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Source Code Link: 
-</code></pre></div></div>
+<h2 id="source-code">Source Code</h2>
 
+<p>The source code for this blog post is available here: <a href="https://github.com/hershbhasin/AzureSamples/tree/master/BigData">Source Code Link</a></p>
 
+   
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'hershbhasin'; // required: replace example with your forum shortname
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  
 </div>
 
 <div class="pagination">
@@ -598,9 +623,10 @@ archivefolder\cloudworxpoceventhubns_cloudworxpoceventhub_1\2018\01\22_16_30_03.
 
     <footer>
   <span>
-    &copy; <time datetime="2019-06-02 23:36:56 -0500">2019</time> Hersh Bhasin. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+    &copy; <time datetime="2019-06-04 19:26:37 -0500">2019</time> Hersh Bhasin.
   </span>
 </footer>
 
+    <script id="dsq-count-scr" src="//hershbhasin.disqus.com/count.js" async></script>
   </body>
 </html>

@@ -3,7 +3,7 @@ layout: post
 title: "Azure Automation Hybrid Runbook Worker"
 author: "Hersh Bhasin"
 comments: true
-categories: Azure Automation
+categories: Azure-Automation
 ---
 
 ##  Introduction

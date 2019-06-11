@@ -1,10 +1,10 @@
 ---
-published: false
----
 layout: post
 title: Azure AZ 300 Test Preparation
 author: Hersh Bhasin
 category: Test Prep
+---
+
 ## Links for preparing for AZ 300 Azure Certification
 
 [AZ Syllabus (Microsoft)](https://www.microsoft.com/en-us/learning/exam-az-300.aspx)

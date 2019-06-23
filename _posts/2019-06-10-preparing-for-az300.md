@@ -19,27 +19,27 @@ I will be checking off the items that are covered by edX training.
 
 **Create and configure a Virtual Machine (VM) for Windows and Linux**
 
-- [ ] Create and configure a Virtual Machine (VM) for Windows and Linux
-- [ ] configure high availability
-- [ ] configure monitoring, networking, storage, and virtual machine size
-- [ ] deploy and configure scale sets
+- [x] Create and configure a Virtual Machine (VM) for Windows and Linux
+- [x] configure high availability
+- [x] configure monitoring, networking, storage, and virtual machine size
+- [x] deploy and configure scale sets
 
 **Automate deployment of Virtual Machines (VMs)**
 
-- [ ] Modify Azure Resource Manager template
-- [ ] configure location of new VMs
-- [ ] configure VHD template
-- [ ] deploy from template
-- [ ] save a deployment as an Azure Resource Manager template
-- [ ] deploy Windows and Linux VMs
+- [x] Modify Azure Resource Manager template
+- [x] configure location of new VMs
+- [x] configure VHD template
+- [x] deploy from template
+- [x] save a deployment as an Azure Resource Manager template
+- [x] deploy Windows and Linux VMs
 
 **Implement solutions that use virtual machines (VM)**
 
 [edx: Automating Azure Workloads](https://www.edx.org/course/automating-azure-workloads-3)
 
-- [ ] provision VMs
-- [ ] create Azure Resource Manager templates
-- [ ] configure Azure Disk Encryption for VMs
+- [x] provision VMs
+- [x] create Azure Resource Manager templates
+- [x] configure Azure Disk Encryption for VMs
 
 ### Microsoft Azure Virtual Networks
 

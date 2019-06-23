@@ -2,7 +2,7 @@
 layout: post
 title: Azure AZ 300 Test Preparation
 author: Hersh Bhasin
-category: Test Prep
+category: AZ-300
 ---
 
 # Proposed Strategy for preparing for AZ300
@@ -16,6 +16,8 @@ I will be checking off the items that are covered by edX training.
 ### Virtual Machines
 
 [Edx: Virtual Machines](https://www.edx.org/course/microsoft-azure-virtual-machines-3)
+
+[Hersh's Study Notes](https://hershbhasin.com/2019-06-15/az300-vm)
 
 **Create and configure a Virtual Machine (VM) for Windows and Linux**
 

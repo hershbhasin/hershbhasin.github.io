@@ -4,7 +4,7 @@ layout: post
 title: "AZ 300 Azure Virtual Networks Study Notes"
 author: "Hersh Bhasin"
 comments: true
-categories: paas, AZ 300
+categories: paas AZ-300 Virtual-Networks
 published: true
 
 ---

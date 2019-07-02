@@ -141,29 +141,6 @@ You can further divide your network by using subnets for logical and security is
 
 You must also sub-divide the VMs and cloud services in your VNet by providing one or more subnets. The range you specify for a subnet must be completely contained within its parent VNet’s address space. Within each subnet, the first three IP addresses and the last IP address are reserved and cannot be used for VMs or cloud services. The smallest subnets that are supported use a 29-bit subnet mask.
 
-
-
-# Name Resolution (DNS)
-
-Name resolution is the process by which a computer name is resolved to an IP address. A computer can use the IP address to connect to the named computer by using the IP address, which the user may find difficult to remember.
-
-The Domain Name System (DNS) enables clients to resolve user-friendly fully qualified domain names (FQDNs), such as www.adatum.com, to IP addresses. Azure provides a DNS system to support many name resolution scenarios. However, in some cases, such as hybrid connection you might need to configure an external DNS system to provide name resolution for virtual machines on a virtual network.
-
-Names of resources that are created in Azure can be resolved by using Azure-provided name resolution or by using a customer provided DNS server. For example, a VM can use the Azure-provided DNS to resolve the name of any other VM in the same virtual network. However, in a hybrid scenario where your on-premises network is connected to an Azure virtual network through a VPN or ExpressRoute circuit, an on-premises computer cannot resolve the name of a VM in an Azure virtual network until you configure the DNS servers with a record for the VM. Furthermore, resources created in the same virtual network and deployed with Azure Resource Manager (ARM) share the same DNS suffix; therefore, in most cases name resolution by using FQDN is not required. For virtual networks that are deployed by using the Azure classic deployment model, the DNS suffix is shared among VMs that belong to the same cloud service. Therefore, name resolution between VMs that belong to different cloud services in the same virtual network require the use of FQDN.
-
-![](..\assets\vnet7.PNG)
-
-If you are planning to use your own DNS system, you must ensure that all computers can reach a DNS server for registering and resolving IP addresses. You can either deploy DNS on a VM in the Azure VNet or have VM register their addresses with an on-premises DNS server. Your DNS server must meet the following requirements:
-
-- The server must support Dynamic DNS (DDNS) registration.
-- The server must have record scavenging switched off. Because DHCP leases in an Azure VNet are infinite, record scavenging can remove records that have not been renewed but are still correct.
-- The server must have DNS recursion enabled.
-- The server must be accessible on TCP/UDP port 53 from all clients.
-
-Note: *If two VMs are deployed in different IaaS cloud services but not in a VNet, they cannot communicate at all, even by using DIPs. Therefore name resolution is not applicable.*
-
-
-
 # Network interface card
 
 VMs communicate with other VMs and other resources on the network by using virtual network interface cards (NICs). Virtual NICs configure VMs with private and optional public IP address. VMs can have more than one NIC for different network configurations.
@@ -252,11 +229,17 @@ Subnet, then NIC is evaluated for NSG
 
 There are different options to distribute network traffic using Microsoft Azure. These options work differently from each other, have different feature sets,  and support different scenarios. They can each be used in isolation or in combination. These are:
 
--  Azure Load Balancer
-- Application Gateway
-- Traffic Manager
+Note: Reverse Proxy/Reverse Nat/ or port translation means: Example listen on port 80 but internally go to port 8888
+
+![](..\assets\vnet16.PNG)
+
+![](..\assets\vnet17.PNG)
+
+![](..\assets\vnet18.PNG)
 
 ## Azure Load Balancer
+
+(Typically used for VM Scale Sets)
 
 To increase availability and scalability, you can create two or more VMs that publish the same application. For example, if three VMs host the same website, you might want to distribute incoming traffic between them and ensure that if one VM fails, traffic is distributed automatically to the other two. You can use an Azure load balancer to enable this traffic distribution between VMs. In this configuration, a single endpoint is shared between multiple VMs or services. For example, you can spread the load of web request traffic across multiple web servers.
 
@@ -266,23 +249,13 @@ You can use two types of Azure load balancers:
 
 *Internal load balancer*. Internal Load Balancer only directs traffic to resources that are inside a virtual network or that use a VPN to access Azure infrastructure. In this respect, internal Load Balancer differs from a public Load Balancer. Azure infrastructure restricts access to the load-balanced frontend IP addresses of a virtual network. Frontend IP addresses and virtual networks are never directly exposed to an internet endpoint. Internal line-of-business applications run in Azure and are accessed from within Azure or from on-premises resources.
 
-## Application Gateway
+![](..\assets\vnet19.PNG)
 
-Application gateways provide load-balanced solutions for network traffic that is based on the HTTP protocol. They use routing rules as application-level policies that can offload Secure Sockets Layer (SSL) processing from load-balanced VMs. In addition, you can use application gateways for a cookie-based session affinity scenario.
-
-Microsoft Azure Application Gateway provides an Azure-managed HTTP load-balancing solution based on layer-7 load balancing.
-
-Application load balancing enables IT administrators and developers to create routing rules for network traffic based on HTTP. The Application Gateway service is highly available and metered.
-
-Application Gateway supports layer-7 application delivery for the following:
-
-- HTTP load balancing
-- Cookie-based session affinity
-- [Secure Sockets Layer (SSL) offload](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-ssl-arm/)
-- [URL-based content routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-url-route-overview/)
-- [Multi-site routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-multi-site-overview/)
+![](..\assets\vnet20.PNG)
 
 ## Traffic Manager
+
+(Load Balancer for Azure Regions)
 
 Microsoft Azure Traffic Manager is another load-balancing solution that is included within Azure. You can use Traffic Manager to load balance between endpoints that are located in :
 
@@ -300,3 +273,67 @@ Traffic Manager works by using the Domain Name System (DNS) to direct end-user r
 
 Traffic Manager supports a range of traffic-routing methods to suit different application needs. Traffic Manager provides endpoint health checks and automatic endpoint failover, enabling you to build high-availability applications that are resilient to failure, including the failure of an entire Azure region.
 
+![](..\assets\vnet21.PNG)
+
+![](..\assets\vnet22.PNG)
+
+## Application Gateway
+
+One of the common uses for Application Gateway is in the situation when I have multiple web servers configured for http and I don't want to put certificates on all of them. I would then have a Application Gateway listening on the SSL port and transfer the request over http to underlying web servers; when response comes from underlying web servers, the process is reversed. 
+
+Application gateways provide load-balanced solutions for network traffic that is based on the HTTP protocol. They use routing rules as application-level policies that can offload Secure Sockets Layer (SSL) processing from load-balanced VMs. In addition, you can use application gateways for a cookie-based session affinity scenario.
+
+Microsoft Azure Application Gateway provides an Azure-managed HTTP load-balancing solution based on layer-7 load balancing.
+
+Application load balancing enables IT administrators and developers to create routing rules for network traffic based on HTTP. The Application Gateway service is highly available and metered.
+
+Application Gateway supports layer-7 application delivery for the following:
+
+- HTTP load balancing
+- Cookie-based session affinity
+- [Secure Sockets Layer (SSL) offload](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-ssl-arm/)
+- [URL-based content routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-url-route-overview/)
+- [Multi-site routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-multi-site-overview/)
+
+![](..\assets\vnet23.PNG)
+
+![](..\assets\vnet24.PNG)
+
+# Name Resolution (DNS)
+
+Refer: https://docs.microsoft.com/en-us/azure/dns/dns-delegate-domain-azure-dns
+
+Name resolution is the process by which a computer name is resolved to an IP address. A computer can use the IP address to connect to the named computer by using the IP address, which the user may find difficult to remember.
+
+The Domain Name System (DNS) enables clients to resolve user-friendly fully qualified domain names (FQDNs), such as www.adatum.com, to IP addresses. Azure provides a DNS system to support many name resolution scenarios. However, in some cases, such as hybrid connection you might need to configure an external DNS system to provide name resolution for virtual machines on a virtual network.
+
+Names of resources that are created in Azure can be resolved by using Azure-provided name resolution or by using a customer provided DNS server. For example, a VM can use the Azure-provided DNS to resolve the name of any other VM in the same virtual network. However, in a hybrid scenario where your on-premises network is connected to an Azure virtual network through a VPN or ExpressRoute circuit, an on-premises computer cannot resolve the name of a VM in an Azure virtual network until you configure the DNS servers with a record for the VM. Furthermore, resources created in the same virtual network and deployed with Azure Resource Manager (ARM) share the same DNS suffix; therefore, in most cases name resolution by using FQDN is not required. For virtual networks that are deployed by using the Azure classic deployment model, the DNS suffix is shared among VMs that belong to the same cloud service. Therefore, name resolution between VMs that belong to different cloud services in the same virtual network require the use of FQDN.
+
+![](..\assets\vnet7.PNG)
+
+If you are planning to use your own DNS system, you must ensure that all computers can reach a DNS server for registering and resolving IP addresses. You can either deploy DNS on a VM in the Azure VNet or have VM register their addresses with an on-premises DNS server. Your DNS server must meet the following requirements:
+
+- The server must support Dynamic DNS (DDNS) registration.
+- The server must have record scavenging switched off. Because DHCP leases in an Azure VNet are infinite, record scavenging can remove records that have not been renewed but are still correct.
+- The server must have DNS recursion enabled.
+- The server must be accessible on TCP/UDP port 53 from all clients.
+
+Note: *If two VMs are deployed in different IaaS cloud services but not in a VNet, they cannot communicate at all, even by using DIPs. Therefore name resolution is not applicable.*
+
+![](..\assets\vnet11.PNG)
+
+![](..\assets\vnet12.PNG)
+
+
+
+In above example, www.contoso.com is the DNS Zone, The two IP addresses are the Record Set
+
+
+
+DNS Zones:  Examples: sales.contoso.com, production.contoso.com  (Subdomains?)
+
+Record Sets: Example DNS Round Robin; poor man's load balancer; create copies of same web app that run on different IPs, create entries for the app and have the DNS server hand out the app, alternating in a Round Robin.
+
+![](..\assets\vnet13.PNG)
+
+![](..\assets\vnet14.PNG)

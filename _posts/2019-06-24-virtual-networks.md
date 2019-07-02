@@ -5,7 +5,7 @@ title: "AZ 300 Azure Virtual Networks Study Notes"
 author: "Hersh Bhasin"
 comments: true
 categories: paas AZ-300 Virtual-Networks
-published: true
+published: false
 
 ---
 
@@ -337,3 +337,25 @@ Record Sets: Example DNS Round Robin; poor man's load balancer; create copies of
 ![](..\assets\vnet13.PNG)
 
 ![](..\assets\vnet14.PNG)
+
+### Resolution and Delegation
+
+There are two types of DNS servers:
+
+- An *authoritative* DNS server hosts DNS zones. It answers DNS queries for records in those zones only.
+
+- A *recursive* DNS server does not host DNS zones. It answers all DNS queries by calling authoritative DNS servers to gather the data it needs.
+
+  > Azure DNS provides an authoritative DNS service. It does not provide a recursive DNS service. Cloud Services and VMs in Azure are automatically configured to use a recursive DNS that is provided separately as part of Azure's infrastructure.
+
+DNS clients in PCs or mobile devices typically call a recursive DNS server to perform any DNS queries the client applications need.
+
+When a recursive DNS server receives a query for a DNS record such as ‘www.contoso.com’, it first needs to find the name server hosting the zone for the ‘contoso.com’ domain. To do this, it starts at the root name servers, and from there finds the name servers hosting the ‘com’ zone. It then queries the ‘com’ name servers to find the name servers hosting the ‘contoso.com’ zone. Finally, it is able to query these name servers for ‘www.contoso.com’.
+
+This is called resolving the DNS name. Strictly speaking, DNS resolution includes additional steps such as following CNAMEs, but that’s not important to understanding how DNS delegation works.
+
+How does a parent zone ‘point’ to the name servers for a child zone? It does this using a special type of DNS record called an NS record (NS stands for ‘name server’). For example, the root zone contains NS records for 'com' and shows the name servers for the ‘com’ zone. In turn, the ‘com’ zone contains NS records for ‘contoso.com’, which shows the name servers for the ‘contoso.com’ zone. Setting up the NS records for a child zone in a parent zone is called delegating the domain.
+
+![](..\assets\vnet25.PNG)
+
+Each delegation actually has two copies of the NS records; one in the parent zone pointing to the child, and another in the child zone itself. The ‘contoso.com’ zone contains the NS records for ‘contoso.com’ (in addition to the NS records in ‘com’). These are called authoritative NS records and they sit at the apex of the child zone.

@@ -5,7 +5,7 @@ title: "AZ 300 Azure Virtual Networks Study Notes"
 author: "Hersh Bhasin"
 comments: true
 categories: paas AZ-300 Virtual-Networks
-published: false
+published: true
 
 ---
 
@@ -225,83 +225,12 @@ Some important things to keep in mind while implementing network security groups
 
 Subnet, then NIC is evaluated for NSG
 
-# Distributing Network Traffic
-
-There are different options to distribute network traffic using Microsoft Azure. These options work differently from each other, have different feature sets,  and support different scenarios. They can each be used in isolation or in combination. These are:
-
-Note: Reverse Proxy/Reverse Nat/ or port translation means: Example listen on port 80 but internally go to port 8888
-
-![](..\assets\vnet16.PNG)
-
-![](..\assets\vnet17.PNG)
-
-![](..\assets\vnet18.PNG)
-
-## Azure Load Balancer
-
-(Typically used for VM Scale Sets)
-
-To increase availability and scalability, you can create two or more VMs that publish the same application. For example, if three VMs host the same website, you might want to distribute incoming traffic between them and ensure that if one VM fails, traffic is distributed automatically to the other two. You can use an Azure load balancer to enable this traffic distribution between VMs. In this configuration, a single endpoint is shared between multiple VMs or services. For example, you can spread the load of web request traffic across multiple web servers.
-
-You can use two types of Azure load balancers:
-
-*Public load balancer*. A public load balancer maps the public IP address and port number of incoming traffic to the private IP address and port number of the virtual machine and vice versa for the response traffic from the virtual machine.
-
-*Internal load balancer*. Internal Load Balancer only directs traffic to resources that are inside a virtual network or that use a VPN to access Azure infrastructure. In this respect, internal Load Balancer differs from a public Load Balancer. Azure infrastructure restricts access to the load-balanced frontend IP addresses of a virtual network. Frontend IP addresses and virtual networks are never directly exposed to an internet endpoint. Internal line-of-business applications run in Azure and are accessed from within Azure or from on-premises resources.
-
-![](..\assets\vnet19.PNG)
-
-![](..\assets\vnet20.PNG)
-
-## Traffic Manager
-
-(Load Balancer for Azure Regions)
-
-Microsoft Azure Traffic Manager is another load-balancing solution that is included within Azure. You can use Traffic Manager to load balance between endpoints that are located in :
-
-1. different Azure regions, 
-2. at hosted providers, 
-3. or in on-premises datacenters.
-
-These endpoints can include Azure VMs and Azure websites. You can configure this load-balancing service to support priority or to ensure that users connect to an endpoint that is close to their physical location for faster response.
-
-Microsoft Azure Traffic Manager allows you to control the distribution of user traffic to your service endpoints running in different datacenters around the world.
-
-Service endpoints supported by Traffic Manager include Azure VMs, Web Apps, and cloud services. You can also use Traffic Manager with external, non-Azure endpoints.
-
-Traffic Manager works by using the Domain Name System (DNS) to direct end-user requests to the most appropriate endpoint, based on the configured traffic-routing method and current view of endpoint health. Clients then connect to the appropriate service endpoint directly.
-
-Traffic Manager supports a range of traffic-routing methods to suit different application needs. Traffic Manager provides endpoint health checks and automatic endpoint failover, enabling you to build high-availability applications that are resilient to failure, including the failure of an entire Azure region.
-
-![](..\assets\vnet21.PNG)
-
-![](..\assets\vnet22.PNG)
-
-## Application Gateway
-
-One of the common uses for Application Gateway is in the situation when I have multiple web servers configured for http and I don't want to put certificates on all of them. I would then have a Application Gateway listening on the SSL port and transfer the request over http to underlying web servers; when response comes from underlying web servers, the process is reversed. 
-
-Application gateways provide load-balanced solutions for network traffic that is based on the HTTP protocol. They use routing rules as application-level policies that can offload Secure Sockets Layer (SSL) processing from load-balanced VMs. In addition, you can use application gateways for a cookie-based session affinity scenario.
-
-Microsoft Azure Application Gateway provides an Azure-managed HTTP load-balancing solution based on layer-7 load balancing.
-
-Application load balancing enables IT administrators and developers to create routing rules for network traffic based on HTTP. The Application Gateway service is highly available and metered.
-
-Application Gateway supports layer-7 application delivery for the following:
-
-- HTTP load balancing
-- Cookie-based session affinity
-- [Secure Sockets Layer (SSL) offload](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-ssl-arm/)
-- [URL-based content routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-url-route-overview/)
-- [Multi-site routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-multi-site-overview/)
-
-![](..\assets\vnet23.PNG)
-
-![](..\assets\vnet24.PNG)
 
 # Name Resolution (DNS)
 
 Refer: https://docs.microsoft.com/en-us/azure/dns/dns-delegate-domain-azure-dns
+
+DNS domains in Azure DNS are hosted on Azure’s global network of DNS name servers. Azure DNS uses **Anycast networking** so that each DNS query is answered by the closest available DNS server. This provides both fast performance and high availability for your domain.
 
 Name resolution is the process by which a computer name is resolved to an IP address. A computer can use the IP address to connect to the named computer by using the IP address, which the user may find difficult to remember.
 
@@ -359,3 +288,222 @@ How does a parent zone ‘point’ to the name servers for a child zone? It does
 ![](..\assets\vnet25.PNG)
 
 Each delegation actually has two copies of the NS records; one in the parent zone pointing to the child, and another in the child zone itself. The ‘contoso.com’ zone contains the NS records for ‘contoso.com’ (in addition to the NS records in ‘com’). These are called authoritative NS records and they sit at the apex of the child zone.
+
+### Delegating a Domain to Azure DNS
+
+Once you create your DNS zone in Azure DNS, you need to set up NS records in the parent zone to make Azure DNS the authoritative source for name resolution for your zone. For domains purchased from a registrar, your registrar will offer the option to set up these NS records.
+
+For example, suppose you purchase the domain ‘contoso.com’ and create a zone with the name ‘contoso.com’ in Azure DNS. As the owner of the domain, your registrar will offer you the option to configure the name server addresses (that is, the NS records) for your domain. The registrar will store these NS records in the parent domain, in this case ‘.com’. Clients around the world will then be directed to your domain in Azure DNS zone when trying to resolve DNS records in ‘contoso.com’.
+
+For example, suppose you purchase the domain ‘contoso.com’ and create a zone with the name ‘contoso.com’ in Azure DNS. As the owner of the domain, your registrar will offer you the option to configure the name server addresses (that is, the NS records) for your domain. The registrar will store these NS records in the parent domain, in this case ‘.com’. Clients around the world will then be directed to your domain in Azure DNS zone when trying to resolve DNS records in ‘contoso.com’.
+
+### Finding the Name Server Names
+
+Before you can delegate your DNS zone to Azure DNS, you first need to know the name server names for your zone. Azure DNS allocates name servers from a pool each time a zone is created.
+
+The easiest way to see the name servers assigned to your zone is via the Azure porta (Properties)l. In this example, the zone ‘contoso.net’ has been assigned name servers ‘ns1-01.azure-dns.com’, ‘ns2-01.azure-dns.net’, ‘ns3-01.azure-dns.org’, and ‘ns4-01.azure-dns.info’:
+
+Azure DNS automatically creates authoritative NS records in your zone containing the assigned name servers. To see the name server names via Azure PowerShell or Azure CLI, you simply need to retrieve these records.
+
+```powershell
+ $zone = Get-AzureRmDnsZone –Name contoso.net –ResourceGroupName MyResourceGroup
+ Get-AzureRmDnsRecordSet –Name “@” –RecordType NS –Zone $zone
+```
+
+### Setting Up Delegation
+
+Each registrar has their own DNS management tools to change the name server records for a domain. In the registrar’s DNS management page, edit the NS records and replace the NS records with the ones Azure DNS created.
+
+When delegating a domain to Azure DNS, you must use the name server names provided by Azure DNS. You should always use all 4 name server names, regardless of the name of your domain. Domain delegation does not require the name server name to use the same top-level domain as your domain.
+
+You should not use 'glue records' to point to the Azure DNS name server IP addresses, since these IP addresses may change in future. Delegations using name server names in your own zone, sometimes called 'vanity name servers', are not currently supported in Azure DNS.
+
+### Delegating Sub-Domains in Azure DNS
+
+If you want to set up a separate child zone, you can delegate a sub-domain in Azure DNS. For example, having set up and delegated ‘contoso.com’ in Azure DNS, suppose you would like to set up a separate child zone, ‘partners.contoso.com’.
+
+Setting up a sub-domain follows a similar process as a normal delegation. The only difference is that in step 3 the NS records must be created in the parent zone ‘contoso.com’ in Azure DNS, rather than being set up via a domain registrar.
+
+1. Create the child zone ‘partners.contoso.com’ in Azure DNS.
+2. Look up the authoritative NS records in the child zone to obtain the name servers hosting the child zone in Azure DNS.
+3. Delegate the child zone by configuring NS records in the parent zone pointing to the child zone.
+
+### To delegate a sub-domain
+
+The following PowerShell example demonstrates how this works. The same steps can be executed via the Azure Portal, or via the cross-platform Azure CLI.
+
+#### Step 1. Create the parent and child zones
+
+First, we create the parent and child zones. These can be in same resource group or different resource groups.
+
+```
+$parent = New-AzureRmDnsZone -Name contoso.com -ResourceGroupName RG1
+$child = New-AzureRmDnsZone -Name partners.contoso.com -ResourceGroupName RG1
+```
+
+#### Step 2. Retrieve NS records
+
+Next, we retrieve the authoritative NS records from child zone as shown in the next example. This contains the name servers assigned to the child zone.
+
+```
+$child_ns_recordset = Get-AzureRmDnsRecordSet -Zone $child -Name "@" -RecordType NS
+```
+
+#### Step 3. Delegate the child zone
+
+Create corresponding NS record set in the parent zone to complete the delegation. Note that the record set name in the parent zone matches the child zone name, in this case "partners".
+
+```
+$parent_ns_recordset = New-AzureRmDnsRecordSet -Zone $parent -Name "partners" -RecordType NS -Ttl 3600
+$parent_ns_recordset.Records = $child_ns_recordset.Records
+Set-AzureRmDnsRecordSet -RecordSet $parent_ns_recordset
+```
+
+### To Verify Name Resolution is Working
+
+After completing the delegation, you can verify that name resolution is working by using a tool such as ‘nslookup’ to query the SOA record for your zone (which is also automatically created when the zone is created).
+
+Note that you do not have to specify the Azure DNS name servers, since the normal DNS resolution process will find the name servers automatically if the delegation has been set up correctly.
+
+```
+nslookup –type=SOA contoso.com
+
+Server: ns1-04.azure-dns.com
+Address: 208.76.47.4
+
+contoso.com
+primary name server = ns1-04.azure-dns.com
+responsible mail addr = msnhst.microsoft.com
+serial = 1
+refresh = 900 (15 mins)
+retry = 300 (5 mins)
+expire = 604800 (7 days)
+default TTL = 300 (5 mins)
+```
+
+### DNS Record Types
+
+An Azure DNS zone can support all common DNS record types, such as A, AAAA, CNAME, MX, NS, SOA, SRV and TXT. The following table describes the function of each type of record.
+
+![](..\assets\vnet26.PNG)
+# Distributing Network Traffic
+
+There are different options to distribute network traffic using Microsoft Azure. These options work differently from each other, have different feature sets,  and support different scenarios. They can each be used in isolation or in combination. These are:
+
+Note: Reverse Proxy/Reverse Nat/ or port translation means: Example listen on port 80 but internally go to port 8888
+
+![](..\assets\vnet16.PNG)
+
+![](..\assets\vnet17.PNG)
+
+![](..\assets\vnet18.PNG)
+
+## Azure Load Balancer
+
+(Typically used for VM Scale Sets)
+
+To increase availability and scalability, you can create two or more VMs that publish the same application. For example, if three VMs host the same website, you might want to distribute incoming traffic between them and ensure that if one VM fails, traffic is distributed automatically to the other two. You can use an Azure load balancer to enable this traffic distribution between VMs. In this configuration, a single endpoint is shared between multiple VMs or services. For example, you can spread the load of web request traffic across multiple web servers.
+
+You can use two types of Azure load balancers:
+
+*Public load balancer*. A public load balancer maps the public IP address and port number of incoming traffic to the private IP address and port number of the virtual machine and vice versa for the response traffic from the virtual machine.
+
+*Internal load balancer*. Internal Load Balancer only directs traffic to resources that are inside a virtual network or that use a VPN to access Azure infrastructure. In this respect, internal Load Balancer differs from a public Load Balancer. Azure infrastructure restricts access to the load-balanced frontend IP addresses of a virtual network. Frontend IP addresses and virtual networks are never directly exposed to an internet endpoint. Internal line-of-business applications run in Azure and are accessed from within Azure or from on-premises resources.
+
+![](..\assets\vnet19.PNG)
+
+![](..\assets\vnet20.PNG)
+
+### Hash-Based Distribution
+
+The load balancer uses a hash-based distribution algorithm. By default, it uses a 5-tuple (source IP, source port, destination IP, destination port, and protocol type) hash to map traffic to available servers. It provides stickiness only *within* a transport session. Packets in the same TCP or UDP session will be directed to the same datacenter IP instance behind the load-balanced endpoint. When the client closes and reopens the connection or starts a new session from the same source IP, the source port changes. This may cause the traffic to go to a different datacenter IP endpoint.
+
+![](..\assets\vnet27.PNG)
+
+### Port Forwarding
+
+The load balancer gives you control over how inbound communication is managed. This communication can include traffic that's initiated from Internet hosts or virtual machines in other cloud services or virtual networks. This control is represented by an endpoint (also called an input endpoint).
+
+An endpoint listens on a public port and forwards traffic to an internal port. You can map the same ports for an internal or external endpoint or use a different port for them. For example, you can have a web server configured to listen to port 81 while the public endpoint mapping is port 80. The creation of a public endpoint triggers the creation of a load balancer instance.
+
+The default use and configuration of endpoints on a virtual machine that you create by using the Azure portal are for the Remote Desktop Protocol (RDP) and remote Windows PowerShell session traffic. You can use these endpoints to remotely administer the virtual machine over the Internet.
+
+### Service Monitoring
+
+The load balancer can probe the health of the various server instances. When a probe fails to respond, the load balancer stops sending new connections to the unhealthy instances. Existing connections are not impacted.
+
+Three types of probes are supported:
+
+- Guest agent probe (on PaaS VMs only)
+- HTTP custom probe
+- TCP custom probe
+
+
+
+## Traffic Manager
+
+(Load Balancer for Azure Regions)
+
+**The most important point to understand is that Traffic Manager works at the DNS level.** Traffic Manager uses DNS to direct end users to particular service endpoints, based on the chosen traffic-routing method and the current endpoint health. Clients then connect to the selected endpoint **directly**. Traffic Manager is not a proxy, and does not see the traffic passing between the client and the service.
+
+
+
+Microsoft Azure Traffic Manager is another load-balancing solution that is included within Azure. You can use Traffic Manager to load balance between endpoints that are located in :
+
+1. different Azure regions, 
+2. at hosted providers, 
+3. or in on-premises datacenters.
+
+These endpoints can include Azure VMs and Azure websites. You can configure this load-balancing service to support priority or to ensure that users connect to an endpoint that is close to their physical location for faster response.
+
+Microsoft Azure Traffic Manager allows you to control the distribution of user traffic to your service endpoints running in different datacenters around the world.
+
+Service endpoints supported by Traffic Manager include Azure VMs, Web Apps, and cloud services. You can also use Traffic Manager with external, non-Azure endpoints.
+
+Traffic Manager works by using the Domain Name System (DNS) to direct end-user requests to the most appropriate endpoint, based on the configured traffic-routing method and current view of endpoint health. Clients then connect to the appropriate service endpoint directly.
+
+Traffic Manager supports a range of traffic-routing methods to suit different application needs. Traffic Manager provides endpoint health checks and automatic endpoint failover, enabling you to build high-availability applications that are resilient to failure, including the failure of an entire Azure region.
+
+![](..\assets\vnet21.PNG)
+
+![](..\assets\vnet22.PNG)
+
+
+
+### Traffic Manager Example
+
+Contoso Corp have developed a new partner portal. The URL for this portal will be https://partners.contoso.com/login.aspx. The application is hosted in Azure, and to improve availability and maximize global performance, they wish to deploy the application to 3 regions worldwide and use Traffic Manager to distribute end users to their closest available endpoint.
+
+To achieve this configuration:
+
+- They deploy 3 instances of their service. The DNS names of these deployments are ‘contoso-us.cloudapp.net’, ’contoso-eu.cloudapp.net’, and ‘contoso-asia.cloudapp.net’.
+
+- They then create a Traffic Manager profile, named ‘contoso.trafficmanager.net’, which is configured to use the ‘Performance’ traffic-routing method across the 3 endpoints named above.
+
+- Finally, they configure their vanity domain, ‘partners.contoso.com’ to point to ‘contoso.trafficmanager.net’, using a DNS CNAME record.
+
+  
+
+![](..\assets\vnet28.PNG)
+
+## Application Gateway
+
+One of the common uses for Application Gateway is in the situation when I have multiple web servers configured for http and I don't want to put certificates on all of them. I would then have a Application Gateway listening on the SSL port and transfer the request over http to underlying web servers; when response comes from underlying web servers, the process is reversed. 
+
+Application gateways provide load-balanced solutions for network traffic that is based on the HTTP protocol. They use routing rules as application-level policies that can offload Secure Sockets Layer (SSL) processing from load-balanced VMs. In addition, you can use application gateways for a cookie-based session affinity scenario.
+
+Microsoft Azure Application Gateway provides an Azure-managed HTTP load-balancing solution based on layer-7 load balancing.
+
+Application load balancing enables IT administrators and developers to create routing rules for network traffic based on HTTP. The Application Gateway service is highly available and metered.
+
+Application Gateway supports layer-7 application delivery for the following:
+
+- HTTP load balancing
+- Cookie-based session affinity
+- [Secure Sockets Layer (SSL) offload](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-ssl-arm/)
+- [URL-based content routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-url-route-overview/)
+- [Multi-site routing](https://azure.microsoft.com/en-us/documentation/articles/application-gateway-multi-site-overview/)
+
+![](..\assets\vnet23.PNG)
+
+![](..\assets\vnet24.PNG)

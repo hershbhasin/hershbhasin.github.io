@@ -5,7 +5,7 @@ title: "AZ 300 Azure Virtual Networks Study Notes"
 author: "Hersh Bhasin"
 comments: true
 categories: paas AZ-300 Virtual-Networks
-published: false
+published: true
 
 ---
 
@@ -507,3 +507,25 @@ Application Gateway supports layer-7 application delivery for the following:
 ![](..\assets\vnet23.PNG)
 
 ![](..\assets\vnet24.PNG)
+
+# Intersite Connectivity
+
+![](..\assets\vnet29.PNG)
+
+![](..\assets\vnet30.PNG)
+
+![](..\assets\vnet31.PNG)
+
+## A Gateway Subnet is added to a subnet and a VPN Gateway is deployed to a Gateway Subnet
+
+![](..\assets\vnet32.PNG)
+
+![](..\assets\vnet33.PNG)
+
+![](..\assets\vnet34.PNG)
+
+![vnet36](..\assets\vnet36.PNG)
+
+![vnet36](..\assets\vnet37.PNG)
+
+![vnet36](..\assets\vnet38.PNG)

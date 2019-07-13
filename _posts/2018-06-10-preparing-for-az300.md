@@ -49,14 +49,14 @@ I will be checking off the items that are covered by edX training.
 
 **Create connectivity between virtual networks**
 
-- [ ] create and configure VNET peering
+- [x] create and configure VNET peering
 - [ ] create and configure VNET to VNET
-- [ ] verify virtual network connectivity
-- [ ] create virtual network gateway
+- [x] verify virtual network connectivity
+- [x] create virtual network gateway
 
 **Implement and manage virtual networking**
 
-- [ ] configure private and public IP addresses, network routes, network interface, subnets, and virtual network
+- [x] configure private and public IP addresses, network routes, network interface, subnets, and virtual network
 
 ### Microsoft Azure Identity
 
@@ -158,12 +158,16 @@ No edx course available for this.
 
 **Design and develop apps that run in containers**
 
-- [ ] configure diagnostic settings on resources
-- [ ] create a container image by using a Docker file
-- [ ] create an Azure Kubernetes Service
-- [ ] publish an image to the Azure Container Registry
-- [ ] implement an application that runs on an Azure Container Instance
-- [ ] manage container settings by using code
+[Pluralsight course: Azure Kubernetes Service (AKS) - The Big Picture](https://app.pluralsight.com/library/courses/azure-container-service-big-picture)
+
+[Hersh's Study Notes: Azure Kubernetes Service (AKS) - The Big Picture](https://hershbhasin.com/2018-06-27/aks)
+
+- [x] configure diagnostic settings on resources
+- [x] create a container image by using a Docker file
+- [x] create an Azure Kubernetes Service
+- [x] publish an image to the Azure Container Registry
+- [x] implement an application that runs on an Azure Container Instance
+- [x] manage container settings by using code
 
 # Implement authentication and secure data (5-10%)
 

@@ -17,7 +17,7 @@ I will be checking off the items that are covered by edX training.
 
 [Edx: Virtual Machines](https://www.edx.org/course/microsoft-azure-virtual-machines-3)
 
-[Hersh's Study Notes](https://hershbhasin.com/2019-06-15/az300-vm)
+[Hersh's Study Notes](https://hershbhasin.com/2018-06-15/az300-vm)
 
 **Create and configure a Virtual Machine (VM) for Windows and Linux**
 
@@ -46,6 +46,10 @@ I will be checking off the items that are covered by edX training.
 ### Microsoft Azure Virtual Networks
 
 [edX Microsoft Azure Virtual Networks](https://www.edx.org/course/microsoft-azure-virtual-networks-3)
+
+[Hersh's Notes: Microsoft Azure Virtual Networks](https://hershbhasin.com/2018-06-15/az300-vm)
+
+
 
 **Create connectivity between virtual networks**
 

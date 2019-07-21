@@ -66,21 +66,23 @@ I will be checking off the items that are covered by edX training.
 
 [edx: Microsoft Azure Identity](https://www.edx.org/course/microsoft-azure-identity-3)
 
+[ Plualsight: Savill](https://app.pluralsight.com/library/courses/microsoft-azure-managing-active-directory/table-of-contents)
+
 **Manage Azure Active Directory (AD)**
 
-- [ ] add custom domains 
-- [ ] configure Azure AD Identity Protection, Azure AD Join, and Enterprise State Roaming
-- [ ] configure self-service password reset
-- [ ] implement conditional access policies
-- [ ] manage multiple directories
+- [x] add custom domains 
+- [x] configure Azure AD Identity Protection, Azure AD Join, and Enterprise State Roaming
+- [x] configure self-service password reset
+- [x] implement conditional access policies
+- [x] manage multiple directories
   perform an access review
 
 **Implement and manage hybrid identities**
 
-- [ ] install and configure Azure AD Connect
+- [x] install and configure Azure AD Connect
 - [ ] configure federation and single sign-on
-- [ ] manage Azure AD Connect
-- [ ] manage password sync and writeback
+- [x] manage Azure AD Connect
+- [x] manage password sync and writeback
 
 ### Microsoft Azure Storage
 

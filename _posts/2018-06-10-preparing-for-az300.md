@@ -68,6 +68,8 @@ I will be checking off the items that are covered by edX training.
 
 [ Plualsight: Savill](https://app.pluralsight.com/library/courses/microsoft-azure-managing-active-directory/table-of-contents)
 
+[Study Notes](https://hershbhasin.com/2018-07-03/active-directory)
+
 **Manage Azure Active Directory (AD)**
 
 - [x] add custom domains 

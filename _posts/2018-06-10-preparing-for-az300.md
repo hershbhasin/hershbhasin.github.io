@@ -90,19 +90,23 @@ I will be checking off the items that are covered by edX training.
 
 [edX: Microsoft Azure Storage](https://www.edx.org/course/microsoft-azure-storage-5)
 
+[Study Notes](https://hershbhasin.com/2018-08-03/azure-storage)
+
 **Create and configure storage accounts**
 
-- [ ] configure network access to the storage account
-- [ ] create and configure storage account
-- [ ] generate shared access signature
-- [ ] install and use Azure Storage Explorer
-- [ ] manage access keys
-- [ ] monitor activity log by using Azure Monitor logs
-- [ ] implement Azure storage replication
+- [x] configure network access to the storage account
+- [x] create and configure storage account
+- [x] generate shared access signature
+- [x] install and use Azure Storage Explorer
+- [x] manage access keys
+- [x] monitor activity log by using Azure Monitor logs
+- [x] implement Azure storage replication
 
 ### Analyze resource utilization and consumption
 
 No edx course available for this.
+
+[Pluralsight: Monitoring Microsoft Azure Resources and Workloads](https://app.pluralsight.com/library/courses/microsoft-azure-resources-workloads-monitoring/table-of-contents)
 
 - [ ] configure diagnostic settings on resources
 - [ ] create baseline for resources

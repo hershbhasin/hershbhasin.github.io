@@ -54,7 +54,7 @@ I will be checking off the items that are covered by edX training.
 **Create connectivity between virtual networks**
 
 - [x] create and configure VNET peering
-- [ ] create and configure VNET to VNET
+- [x] create and configure VNET to VNET
 - [x] verify virtual network connectivity
 - [x] create virtual network gateway
 
@@ -108,17 +108,17 @@ No edx course available for this.
 
 [Pluralsight: Monitoring Microsoft Azure Resources and Workloads](https://app.pluralsight.com/library/courses/microsoft-azure-resources-workloads-monitoring/table-of-contents)
 
-- [ ] configure diagnostic settings on resources
-- [ ] create baseline for resources
-- [ ] create and rest alerts
-- [ ] analyze alerts across subscription
-- [ ] analyze metrics across subscription
+- [x] configure diagnostic settings on resources
+- [x] create baseline for resources
+- [x] create and rest alerts
+- [x] analyze alerts across subscription
+- [x] analyze metrics across subscription
 - [ ] create action groups
 - [ ] monitor for unused resources
 - [ ] monitor spend
 - [ ] report on spend
-- [ ] utilize Log Search query functions
-- [ ] view alerts in Azure Monitor logs
+- [x] utilize Log Search query functions
+- [x] view alerts in Azure Monitor logs
 
 #  Implement workloads and security (20-25%)
 
@@ -128,12 +128,12 @@ No edx course available for this.
 
 - [ ] migrate by using Azure Site Recovery
 - [ ] migrate using P2V
-- [ ] configure storage
-- [ ] create a backup vault
+- [x] configure storage
+- [x] create a backup vault
 - [ ] prepare source and target environments
-- [ ] backup and restore data
+- [x] backup and restore data
 - [ ] deploy Azure Site Recovery agent
-- [ ] prepare virtual network
+- [x] prepare virtual network
 
 **Configure serverless computing**
 

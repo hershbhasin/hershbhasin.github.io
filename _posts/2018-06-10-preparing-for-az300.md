@@ -137,6 +137,8 @@ No edx course available for this.
 
 **Configure serverless computing**
 
+[Pluralsight: Configuring Serverless Computing in Microsoft Azure](https://app.pluralsight.com/library/courses/microsoft-azure-serverless-computing-configuring/table-of-contents)
+
 - [ ] manage a Logic App resource
 - [ ] manage Azure Function app settings
 - [ ] manage Event Grid

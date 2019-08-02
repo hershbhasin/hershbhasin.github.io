@@ -11,6 +11,8 @@ published: true
 
 ![](..\assets\monitor2.PNG)
 
+[Enabling Diagnotic  Settings using CLI](http://techgenix.com/azure-diagnostic-settings/)
+
 # Kusto Query Language (KQL)
 
 [(KQL) syntax reference](https://docs.microsoft.com/en-us/sharepoint/dev/general-development/keyword-query-language-kql-syntax-reference)

@@ -85,6 +85,7 @@ The maximum size for a file share is 5 TBs.
 You can add virtual disks to every virtual machine to store application data or other data you need to keep. Data disks are registered as SCSI drives and are labeled with a letter that you choose.
 
 ![](..\assets\storage13.PNG)
+Entity must contain a PartitionKey(customers, winephotos) and a RowKey (primary key for row). In JSON structure.
 ![](..\assets\storage14.PNG)
 ![](..\assets\storage15.PNG)
 ![](..\assets\storage16.PNG)

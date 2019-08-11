@@ -14,8 +14,8 @@ In this POC, we will take a stream of live events entering a Event Hub and send 
 
 This is a two part post:
 
-1. [Azure Stream Analytics](https://hershbhasin.com/2019-03-09/azure-stream-analytics )
-2. [Embedded Reporting with Azure Power BI Embedded](https://hershbhasin.com/2019-04-07/powerbi-embedded)
+1. [Azure Stream Analytics](https://hershbhasin.com/2019-08-05/azure-stream-analytics )
+2. [Embedded Reporting with Azure Power BI Embedded](https://hershbhasin.com/2019-08-06/powerbi-embedded)
 
 ## Create Azure Environment
 

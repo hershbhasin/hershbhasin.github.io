@@ -7,12 +7,12 @@ categories: Big-Data
 ---
 ## Introduction 
 
-Power BI Embedded is intended to simplify how ISVs and developers use Power BI capabilities with embedded analytics. In this proof of concept, I will show you how to set up an Azure  Power BI Embedded environment. In an earlier POC: [Event Streaming using Azure Stream Analytics](https://tech.hershbhasin.com/2019/04/event-streaming-using-azure-stream_2.html), I demonstrated the use of Azure Stream Analytics to stream event hub data into a Azure SQL Server database. This POC extends the earlier streaming POC and shows how to build reports off the event hub data, how to host the reports on Azure using PowerBI embedded and finally, how to embed the reports in a custom MVC application.
+Power BI Embedded is intended to simplify how ISVs and developers use Power BI capabilities with embedded analytics. In this proof of concept, I will show you how to set up an Azure  Power BI Embedded environment. In an earlier POC: [Event Streaming using Azure Stream Analytics](https://hershbhasin.com/2019-08-05/azure-stream-analytics), I demonstrated the use of Azure Stream Analytics to stream event hub data into a Azure SQL Server database. This POC extends the earlier streaming POC and shows how to build reports off the event hub data, how to host the reports on Azure using PowerBI embedded and finally, how to embed the reports in a custom MVC application.
 
 This is a two part post:
 
-1. [Azure Stream Analytics](https://hershbhasin.com/2019-03-09/azure-stream-analytics )
-2. [Embedded Reporting with Azure Power BI Embedded](https://hershbhasin.com/2019-04-07/powerbi-embedded)
+1. [Azure Stream Analytics](https://hershbhasin.com/2019-08-05/azure-stream-analytics )
+2. [Embedded Reporting with Azure Power BI Embedded](https://hershbhasin.com/2019-08-06/powerbi-embedded)
 
 
 ## Solution Overview

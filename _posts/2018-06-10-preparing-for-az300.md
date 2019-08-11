@@ -47,7 +47,7 @@ I will be checking off the items that are covered by edX training.
 
 [edX Microsoft Azure Virtual Networks](https://www.edx.org/course/microsoft-azure-virtual-networks-3)
 
-[Hersh's Notes: Microsoft Azure Virtual Networks](https://hershbhasin.com/2018-06-15/az300-vm)
+[Hersh's Notes: Microsoft Azure Virtual Networks](https://hershbhasin.com/2018-06-24/virtual-networks)
 
 
 

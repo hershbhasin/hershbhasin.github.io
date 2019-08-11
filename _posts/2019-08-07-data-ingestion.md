@@ -13,9 +13,9 @@ For analytics data, we would need to store large volumes of data. Storage in Cos
 
 This is a two part post:
 
-[Part 1: Data Ingestion](https://hershbhasin.com/2019-05-05/data-ingestion)
+[Part 1: Data Ingestion](https://hershbhasin.com/2019-08-07/data-ingestion)
 
-[Part 2: Data Curation with Azure Data Factory](https://hershbhasin.com/2019-06-02/azure-data-factory)
+[Part 2: Data Curation with Azure Data Factory](https://hershbhasin.com/2019-08-10/azure-data-factory)
 
 ## Price Comparison between CosmosDb and Data Lake
 

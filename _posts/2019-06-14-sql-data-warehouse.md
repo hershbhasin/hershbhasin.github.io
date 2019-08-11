@@ -267,6 +267,8 @@ We will still see  BrodcastMoveOperation the first time that we run a query afte
 
 In data warehousing, we have to run load processes to put data into the warehouse, and we want those processes to run as efficiently as possible. Table partitioning is a tool that helps us with that efficiency.  Partitioning helps us divide a large table into smaller parts, and those small parts give us the benefits of faster data loading and faster querying. We have the opportunity with partitioning to switch data in and out of our tables to help with our load process. The partitioning is not visible to our end users, so when they query the database, it just appears like it's one logical structure.
 
+A partition is created when you create a table in SQL Data Warehouse, and you specify a partitioning key. It's typically a date. So let's say you want to keep one year of data in a specific table, and you're going to keep that as a rolling year. So when you get to the last month of the year, and your next month is going to start, or let's say you're next month is already started, then you're going to roll out that last month of data.
+
 ![](../assets/dw 5.png)
 
 **Partition Switching , Elimination and Partition Merging**
@@ -305,9 +307,15 @@ So what does that mean? Well, when we're talking about partitions, we're talking
 
 ​		Each Partition
 
-​			Has Row Groups (1 million rows per distribution and partition). Need at least 60 million rows 			per partition.
+​			Has Row Groups: to get your best performance, you want to make sure that each row group has 1 			    million rows in it.
 
-So all we do is we specify the partition values and the boundary values and we instantly have our partitions created for our table.
+Row Groups:  Within each partition, we get 100-million-row row groups for clustered column store. Now I bring this up because you're going to have one or more partitions, but you're going to get a minimum of one. I bring this up because the engineering team, the Microsoft Engineering Team does all this testing, and what they determined was that the sweet spot for cluster column store is 100-million-row row groups. It performs best when you have that many rows in a row group. So to get your best performance, you want to make sure that each row group has 1 million rows in it.
+
+Example: 60 distributions x 4 partitions/distribution x 1 million row group = 240 m rows.  We need a minimum of 240 rows to take advantage of partitions. And it has to be partitioned so at 1 million rows falls to row group.
+
+![](../assets/dw 20.png)
+
+
 
 And this is pretty neat as you compare it to SQL Database on-premise because you don't have any partition functions or partition schemes that you have to define separately from the CREATE TABLE statement. So all we do is we specify the partition values and the boundary values and we instantly have our partitions created for our table.
 
@@ -321,4 +329,107 @@ So what happens is we end up with a distribution, then we have a partition, and 
 
 So, if we had the 36-month example, we would need to have 1 million rows per month times 60 million rows per partition, times 1 million rows per row group. And then that comes to 2.1 billion rows. *So when you apply partitioning to a table that has cluster columnstore, you really need to make sure that you're going to have at least 1 million rows per distribution and partition to take advantage of the compression and performance benefits that you get from cluster columnstore.*
 
+**Partition Best Practice**
+
+Best practice is to leave an empty partition at the beginning and at the end of the partition ranges so that we can do what's called a *sliding partition*. A lot of times we're archiving data in and out at the end of a partition based on the amount of data that we want to keep in our warehouse. So, the way we're setting this up, will create an empty partition in the beginning and per best practice.
+
+**Partition Switch**
+
+Now a common thing that we do in Data Warehousing is called a Partition Switch. So, a partition switch happens when we want to either archive off old data or we want to load data into the warehouse. A lot of times this happens from a staging table. So, let's assume a scenario where we're switching out of a production table in a system outside of SQL DW into a SQL DQ table. So, we're going to create the staging table.  Now what we see is that with every table we have a partition one, we get that by default. We didn't create a partition but we automatically get that. There are no rows in that default partition. 
+
+![](../assets/dw 12.png)
+
+And then, we want to switch data out of partition three, in our orders table where we have eight partitions, into that staging table. So, this is our statement below. Partition 3 will now have 0 rows, and the rows will be moved to dbo.Orders_staging Partition 1 (the default).
+
+Both tables  in switch need to be partitioned similarly.
+
+We switch in when we're loading data from a production system into a warehouse
+
+![](../assets/dw 13.png)
+
+ We Switch out when we want to archive data
+
+![](../assets/dw 14.png)
+
+**Take away about partitioning** 
+
+The important thing to take away about partitioning is that, when you switch into an empty table or
+an empty partition the data is not moved, there's no logging: it's simply a metadata operation.
+We could actually switch millions of rows into a partition and as long as we're not moving any
+data, it's a metadata only operation. So, instead of inserting, where it might take hours to load
+data, this metadata operation will just take seconds. We switch out when we want to archive data,
+and we switch in when we're loading data from a production system into a warehouse.
+
+
+
+# Indexes
+
+![](../assets/dw 15.png)
+
+A primary data store, I'm considering something that is the table: A Clustered Index or a Heap is the table. We are able to put a Clustered Rowstore Index, a clustered Columnstore Index or a Heap on a table in Azure SQL Data Warehouse.
+
+ We can also put a non clustered Rowstore index on a table in SQL Data Warehouse, but it's important to note that we don't have Non Clustered Columnstore Indexes available in Azure SQL Data Warehouse. Clustered Columnstore Indexes are the default index.
+
+![](../assets/dw 16.png)
+
+So in a Rowstore Index, we are storing data in rows physically on disk. All of the columns are included in the storage for the Rowstore Index. In a Columnstore Index on the right side of this image, you can envision your data being stored in columns. The  Clustered Columnstore is the default Index. The data in a Columnstore gets highly compressed and it gives us more performance queries, because of the way that the Columnstore is structured.
+
+**Choosing Appropriate Index**
+
+You might wonder though, how do you choose between a Rowstore and a Columnstore index. Well, a Rowstore index typically performs best on queries that seek into the data, that are pulling back a few rows, a singleton row or a small range of data. Typically, if data is frequently updated or if we have small dimension tables in a SQL Data Warehouse, a Rowstore index will be a great candidate. A Clustered Columnstore index by contrast is typically what we use for large data sets.
+
+![](../assets/dw 17.png)
+
+**Syntax For creating a Table with Index**
+
+![](../assets/dw 18.png)
+
+So, one of the main differences here is that we don't specify a clustering key for a Clustered Columnstore index ( because it's clustered it is the table), but it's not stored in an ordered way.
+
+In a Clustered Rowstore index we have to specify one or more columns that are going to be used to test whether the data is physically ordered. In a Clustered Columnstore Index, we don't have to do that because there's a component of a Clustered Columnstore Index called a segment and row groups are divided into segments and each segment has min and max values stored for it. And so that's how a SQL Data Warehouse transverses through the Clustered Columnstore Index to determine where to find data.
+
+A Clustered index may outperform Clustered Columnstore Index when we need to look up a single row or a small range of values.
+
+**Heap**
+
+We can also create a Heap. And a Heap is really a no index option. It's an unordered list of values. It is supported in SQL Data Warehouse, and this might be the best choice for a table that you'd use for loading data.For Example:  loading data to stage it before running transformations might be faster by loading into a Heap versus an index table. 
+
+![](../assets/dw 19.png)
+
+
+
+Q:  How would I know when to apply some of those other indexes that you mentioned?
+
+Ans:  So, couple kind of rules of thumb. If you have a large fact table, hundreds of millions of rows, you're typically are going to apply your cluster columns for index. 
+
+But you asked specifically about these row store indexes. So for row store indexes, we're thinking about a row store index when we are *seeking into a set of data to look for a specific row for a range, a small range of rows*. That's when we're going to use a clustered index and non-clustered index, a row store. We need to tell SQL Data Warehouse where specifically to search for the data. You've got all this data so the index says, "This is where this data is located on disk. This is all you need to pull off in order to satisfy the query." You don't want to scan huge ranges of data.
+
+And so if you're putting a column in your filter criteria, your where clause on the key that the index was created on,  your row store index was created on, SQL Data Warehouse can have an easier time finding that row.
+
+
+
+# Query Statistics
+
+One of the most critical reasons for poor query performance is that your statistics are out of date.
+
+Statistics are objects that contain information about the distribution of values in one or more columns, or of a table, or indexed view, and they play a pivotal role in database performance. Essentially, statistics tell SQL Server how much data the query is potentially dealing with. The query optimizer uses these statistics to estimate the cardinality or the number of rows in the query result. These estimates are used to create a high-quality query plan by the query optimizer. Now, unlike SQL Server where SQL Server automatically creates statistics, SQL Data Warehouse in creating an updated statistics in SQL's Data Warehouse is currently a manual process meaning, they're not automatically created when you create a table. It's very simple to do, but when you create a table, you must also create the statistics and also keep them up to date.
+
+![dw 21](../assets/dw 21.png)
+
+![](../assets/dw 22.png)
+
+![](../assets/dw 23.png)
+
+
+
+# PolyBase
+
+![](../assets/dw 24.png)
+
+![](../assets/dw 25.png)
+
+![](/Users/hershbhasin/Documents/hbsites/hershbhasin.github.io/_posts/dw 26.png)
+
 #References
+
+ [eDX Delivering a Data Warehouse in the Cloud](https://courses.edx.org/courses/course-v1:Microsoft+DAT220x+2T2019)

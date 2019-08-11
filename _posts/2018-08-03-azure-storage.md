@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title: "Azure AZ 300 Storage Study Notes"
+title: "Azure Storage"
 author: "Hersh Bhasin"
 comments: true
 categories: Azure-Storage AZ-300

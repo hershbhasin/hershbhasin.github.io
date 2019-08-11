@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title: "AZ 300 Azure Virtual Networks Study Notes"
+title: "Azure Virtual Networks"
 author: "Hersh Bhasin"
 comments: true
 categories: paas AZ-300 Virtual-Networks
@@ -9,7 +9,7 @@ published: true
 
 ---
 
-# AZ 300 Azure Virtual Networks Study Notes
+# Azure Virtual Networks
 
 Study notes for [edx course: Azure Virtual Networks](https://courses.edx.org/courses/course-v1:Microsoft+AZURE203x+1T2019a/course/)
 

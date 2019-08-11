@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "AZ 300 Active Directory Study Notes"
+title: "Active Directory"
 author: "Hersh Bhasin"
 comments: true
 categories: AZ-300 Azure-Active-Directory

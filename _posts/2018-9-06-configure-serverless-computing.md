@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Azure AZ 300 Configure Serverless Computing Study Notes"
+title: "Configure Serverless Computing"
 author: "Hersh Bhasin"
 comments: true
 categories: Configure-serverless-computing AZ-300

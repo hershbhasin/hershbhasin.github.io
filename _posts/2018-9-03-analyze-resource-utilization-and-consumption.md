@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Azure AZ 300 Analyze resource utilization and consumption Study Notes"
+title: "Analyze resource utilization and consumption"
 author: "Hersh Bhasin"
 comments: true
 categories: Azure-Monitoring AZ-300

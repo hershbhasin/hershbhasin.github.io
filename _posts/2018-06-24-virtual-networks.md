@@ -17,6 +17,8 @@ Study notes for [edx course: Azure Virtual Networks](https://courses.edx.org/cou
 
 Azure Virtual Network is a fundamental component that acts as an organization’s network in Azure. Organizations can use virtual networks to connect resources. Virtual networks in Microsoft Azure are network overlays that you can use to configure and control connectivity between Azure resources such as VMs and load balancers.
 
+![](..\assets\vnet.PNG)
+
 ![](..\assets\vnet1.PNG)
 
 ![](..\assets\vnet2.PNG)

@@ -12,7 +12,7 @@ Written for intermediate to advanced ASP.NET developers,this book shows how to b
 
 
 
-[Available on Amazon](https://confluence.harman.com/confluence/pages/editpage.action?pageId=201386250)
+[Available on Amazon](https://www.amazon.com/ASP-NET-Professional-Projects-Hersh-Bhasin/dp/B008SM3P2M)
 
 ![](/assets/prof_1.PNG)
 

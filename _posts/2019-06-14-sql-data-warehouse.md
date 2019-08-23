@@ -430,6 +430,6 @@ Statistics are objects that contain information about the distribution of values
 
 ![](/Users/hershbhasin/Documents/hbsites/hershbhasin.github.io/_posts/dw 26.png)
 
-#References
+# References
 
  [eDX Delivering a Data Warehouse in the Cloud](https://courses.edx.org/courses/course-v1:Microsoft+DAT220x+2T2019)

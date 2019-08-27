@@ -3,7 +3,7 @@ layout: post
 title: "Embedded Reporting with Azure Power BI Embedded"
 author: "Hersh Bhasin"
 comments: true
-categories: Big-Data
+categories: Big-Data Power-BI
 ---
 ## Introduction 
 

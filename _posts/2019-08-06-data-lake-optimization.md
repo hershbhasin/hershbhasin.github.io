@@ -4,7 +4,7 @@ title: "Optimizing Azure Data Lake"
 author: "Hersh Bhasin"
 comments: true
 categories: Azure-Data-Lake
-published: false
+published: true
 ---
 
 

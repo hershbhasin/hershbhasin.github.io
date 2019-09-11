@@ -60,6 +60,18 @@ Blobs
 
 Blob block storage is the most cost effective storage. Data is written in blocks and optimized for sequention I/O.
 
+**CORS** : Azure storage supports CORS (cross origin resource sharing): You can configure storage to accept data coming from a different domain. You can do that in the browser now. That means you can write data directly to storage (instead of relying on an API that uploads byte stream of data into memory first.)
+
+**Valet Key Pattern:** Often used with storage: refer https://www.youtube.com/watch?v=H0-_XCv7-A4
+
+@timestamp: 10.09
+
+![](..\assets\storage32.PNG)
+
+![](..\assets\storage33.PNG)
+
+![](..\assets\storage34.PNG)
+
 # Virtual Machine Storage
 
 ![](..\assets\storage6.PNG)

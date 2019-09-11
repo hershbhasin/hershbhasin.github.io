@@ -34,6 +34,8 @@ Shared Services Examples
 
 ![](..\assets\best7.PNG)
 
+# Infrastructure Patterns
+
 ![](..\assets\best11.PNG)
 
 > mnemonic: FGVS: F*ing Great Valet Hosting
@@ -48,7 +50,7 @@ Shared Services Examples
 
 ![](..\assets\best12.PNG)
 
-**App Scalability Patterns**
+# App Scalability Patterns
 
 >  mnemonic: Competes with CQRS
 
@@ -65,7 +67,31 @@ Shared Services Examples
 2. Circuit Breaker Pattern:  Opposite of retry pattern. I know that service is down; no point retrying as it is never going to work. Wait when it is back up and then retry.
 3. Cache Aside Pattern:  Redis. Look to see if data is in cache first before hitting storage. If data not in cache, get from storage  and also  put in cache. If another instance then writes to the storage, notify  all cache consumers that cache has changed and flush the cache. Effect: you will never have stale data because the next request that will be made will  read fresh data from storage and will put fresh data back in the cache.
 
+# Storage Patterns
 
+**Materialized View Pattern**
+
+![](..\assets\best14.PNG)
+
+**Static Content Hosting Pattern**
+
+![](..\assets\best15.PNG)
+
+**CQRS**
+
+![](..\assets\best16.PNG)
+
+
+
+**Options simpler than CQRS for Geo Replication**
+
+* SQL Server Geo Replication
+
+  ![](..\assets\best17.PNG)
+
+* CosmosDB Multi Master
+
+![](..\assets\best18.PNG)
 
 # References
 

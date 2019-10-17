@@ -4,7 +4,7 @@ layout: post
 title: "A Cost Effective Data Ingestion & Curation Pipeline in Azure"
 author: "Hersh Bhasin"
 comments: true
-categories: Big-Data
+categories: Big-Data Event-Hubs Azure-Data-Analytics Azure-Data-Lake
 ---
 
 ## Introduction

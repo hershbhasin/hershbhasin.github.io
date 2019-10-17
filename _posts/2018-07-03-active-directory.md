@@ -50,7 +50,9 @@ However regular AAD is not speaking legacy protocols like Kerbros, which is simp
 
 
 
-[Install and use the log analytics views for Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/reports-monitoring/howto-install-use-log-analytics-views)
+![ad1](..\assets\ad30.PNG)
+
+Install and use the log analytics views for Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/reports-monitoring/howto-install-use-log-analytics-views)
 
 ## RBAC
 

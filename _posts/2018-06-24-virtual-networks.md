@@ -488,6 +488,17 @@ To achieve this configuration:
 
 ![](..\assets\vnet28.PNG)
 
+https://docs.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods
+
+The following traffic routing methods are available in Traffic Manager:
+
+- **Priority:** Select **Priority** when you want to use a primary service endpoint for all traffic, and provide backups in case the primary or the backup endpoints are unavailable.
+- **Weighted:** Select **Weighted** when you want to distribute traffic across a set of endpoints, either evenly or according to weights, which you define.
+- **Performance:** Select **Performance** when you have endpoints in different geographic locations and you want end users to use the "closest" endpoint in terms of the lowest network latency.
+- **Geographic:** Select **Geographic** so that users are directed to specific endpoints (Azure, External, or Nested) based on which geographic location their DNS query originates from. This empowers Traffic Manager customers to enable scenarios where knowing a user’s geographic region and routing them based on that is important. Examples include complying with data sovereignty mandates, localization of content & user experience and measuring traffic from different regions.
+- **Multivalue:** Select **MultiValue** for Traffic Manager profiles that can only have IPv4/IPv6 addresses as endpoints. When a query is received for this profile, all healthy endpoints are returned.
+- **Subnet:** Select **Subnet** traffic-routing method to map sets of end-user IP address ranges to a specific endpoint within a Traffic Manager profile. When a request is received, the endpoint returned will be the one mapped for that request’s source IP address. 
+
 ## Application Gateway
 
 One of the common uses for Application Gateway is in the situation when I have multiple web servers configured for http and I don't want to put certificates on all of them. I would then have a Application Gateway listening on the SSL port and transfer the request over http to underlying web servers; when response comes from underlying web servers, the process is reversed. 

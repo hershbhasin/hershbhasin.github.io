@@ -3,7 +3,7 @@ layout: post
 title: "Live Streaming with Azure Stream Analytics"
 author: "Hersh Bhasin"
 comments: true
-categories: Big-Data
+categories: Big-Data Azure-Stream-Analytics
 ---
 
 Azure Stream Analytics is a Cloud service in Azure that is used to process real time streams of data. The input for live data can be Azure event hub, an IOT hub or an Azure blob store location. As the data arrives in real time, we process it and send the results of that processing to an output sync which could be could be an Azure blob store location, or an Azure data location.

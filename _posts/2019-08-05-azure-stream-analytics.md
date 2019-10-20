@@ -28,23 +28,15 @@ In the source, there is a powershell script called reportingpoc.ps1. Run this sc
 In the Azure SQL Database (devicedb), create the following table
 
 ```sql
-CREATE TABLE [dbo].[AuditTable]
-
-( [Id] [int] IDENTITY(1,1) NOT NULL,
-
- [device] varchar NULL,
-
- [tenant] varchar NULL,
-
- project varchar NULL,
-
- [username] varchar NULL,
-
- [action] varchar NULL,
-
- [EventEnqueuedUtcTime] [datetime] NULL )
-
- ON [PRIMARY]
+CREATE TABLE [dbo].[AuditTable](
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [device] [varchar](50) NULL,
+    [tenant] [varchar](50) NULL,
+    project [varchar](50) NULL,
+    [username] [varchar](50) NULL,
+    [action] [varchar](150) NULL,
+    [EventEnqueuedUtcTime] [datetime] NULL
+) ON [PRIMARY]
 
 ```
 

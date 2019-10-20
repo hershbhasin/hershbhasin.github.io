@@ -1,7 +1,0 @@
-#Default neme
-
-defaults write com.apple.screencapture name "dw"
-defaults write com.apple.screencapture type png
-defaults write com.apple.screencapture "include-date" 0
-
-killall SystemUIServer

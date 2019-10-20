@@ -1,4 +1,0 @@
-# Introduction
-
-Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time Data Streams with Azure Stream Analytics". I work as a Cloud Architect 
-

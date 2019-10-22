@@ -63,7 +63,7 @@ Instead of locking up our data in database tables,  we can think of data as an e
 
 Lets stretch the analogy of the Beatles song to its breaking point. 
 
-* Applications cause events to occur. Maybe it is a sensor reporting the health of a device  every second. We can define an event as a fact about the world. Something happened in the world and the event is a record of it. It is a message with some information, maybe in the Jason format. 
+* Applications cause events to occur. Maybe it is a sensor reporting the health of a device  every second. We can define an event as a fact about the world. Something happened in the world and the event is a record of it. It is a message with some information, maybe in the Json format. 
 
 * These  events fall like raindrops,  and the accumulated raindrops become a river,  and that river  could be an Event Hub, an IOT Hub or an Azure Blob Location.
 

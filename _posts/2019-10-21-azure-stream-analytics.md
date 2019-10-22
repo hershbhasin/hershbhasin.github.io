@@ -15,9 +15,9 @@ Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time D
 
 While streaming of data and stream processing is a vast topic and there is a whole world view that goes with it, this course is an introduction to the area.  I want to look at topics like:
 
-1. What are the problems that streaming is trying to solve.
-2. How does data streams differ from OLTP databases, key value stores
-3. How can we listen on and extract data from an ever flowing stream of data.
+1. What are the problems streaming  data is trying to solve? Why do we need something new when we already have storage mediums like databases etc.
+2. How does flowing data streams differ from OLTP databases, key value stores, caches etc.
+3. As unbounded streams of data flows, how can we listen for trends that interests us, and extract such data.
 
 
 

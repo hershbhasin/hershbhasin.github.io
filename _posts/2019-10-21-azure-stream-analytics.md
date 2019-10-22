@@ -63,13 +63,17 @@ This is how data flows in a stream...
 
 ###  Azure Stream Analytics
 
+![](../assets/analytics_words.PNG)
+
 "Words are flowing out like endless rain into a paper cup..." goes the famous Beatles song.  If our data is the  rain of flowing words, then our Stream Analytics job is the cup that we will use to collect some of the rain drops.
 
-Lets stretch the analogy of the Beatles song to its breaking point. We have events that fall like raindrops.  We can define an event as a fact about the world. Something happened in the world and the event is a record of it. It is a message with some information, maybe in the Jason format. 
+Lets stretch the analogy of the Beatles song to its breaking point. 
 
 Applications cause events to occur. Maybe it is a sensor reporting the health of a device after every second.
 
-The raindrops collect and the collected raindrops become a river. And that river could be an Event Hub, an IOT Hub or an Azure Blob Location.
+ We can define an event as a fact about the world. Something happened in the world and the event is a record of it. It is a message with some information, maybe in the Jason format. 
+
+These  events that fall like raindrops and the collected raindrops become a river. And that river could be an Event Hub, an IOT Hub or an Azure Blob Location.
 
 Now to this river, we take our paper cup to fill it with a subset of the data we are interested in. This cup could be a database or it could be an Azure blob store location, or an Azure data location, or it could be a real time Power BI dashboard.
 

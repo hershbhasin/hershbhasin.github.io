@@ -21,7 +21,7 @@ This is a two part post:
 
 In the source, there is a powershell script called reportingpoc.ps1. Run this script to set up the environment in Azure. A Event Hub namespace and a SQL  Server database is created.
 
-![](/assets/streaming_1.png)
+![](../assets/streaming_1.png)
 
 ## Create Database table
 

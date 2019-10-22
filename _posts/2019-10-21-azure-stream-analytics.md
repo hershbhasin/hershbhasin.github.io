@@ -61,11 +61,13 @@ This is how data flows in a stream...
 
 
 
-###  Azure Stream Analytics
+###  What is Azure Stream Analytics?
 
-![](../assets/analytics_words.PNG)
+
 
 "Words are flowing out like endless rain into a paper cup..." goes the famous Beatles song.  If our data is the  rain of flowing words, then our Stream Analytics job is the cup that we will use to collect some of the rain drops.
+
+![](../assets/analytics_words.PNG)
 
 Lets stretch the analogy of the Beatles song to its breaking point. 
 

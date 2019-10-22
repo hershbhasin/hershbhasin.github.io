@@ -31,7 +31,7 @@ Most of our typical web or mobile applications are build on a HTTP request/respo
 
 
 
- *Pipeline Sprawl*
+## Pipeline Sprawl
 
 To extract data from multiple data stores, we need to build data pipelines and this can soon lead to a "pipeline sprawl".
 

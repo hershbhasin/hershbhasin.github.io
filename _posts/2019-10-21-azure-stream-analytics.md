@@ -9,7 +9,7 @@ published: true
 ---
 # Introduction
 
-Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time Data Streams with Azure Stream Analytics". I work as a Cloud Architect with... and have done quite a bit of work in helping transition workflows to a  stream-based architecture. 
+Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time Data Streams with Azure Stream Analytics". I work as a Cloud Architect with xyz company and recently I  have been doing  quite a bit of work in helping transition workflows to a  stream-based architecture.  I'd like to share some of my experience around data streaming with you. 
 
 # Objective
 

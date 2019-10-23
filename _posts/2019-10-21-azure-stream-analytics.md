@@ -17,7 +17,7 @@ While streaming of data and stream processing is a vast topic and there is a who
 
 1. What are the problems streaming  data is trying to solve? Why do we need something new when we already have storage mediums like databases etc.
 2. How does flowing data streams differ from OLTP databases, key value stores, caches etc.
-3. As unbounded streams of data flows, how can we listen for trends that interests us, and extract such data.
+3. As unbounded streams of data flows, how can we listen for data that interests us, and extract such data.
 
 
 
@@ -37,7 +37,7 @@ To extract data from multiple data stores, we need to build data pipelines and t
 
 ![analytics_pipelinemess](../assets/analytics_pipelinemess.PNG)
 
-Having a "well-known" data stores means that that data gets locked away in tables and  schemas, and this becomes a drawback when data has to be extracted from multiple stores, say by a offline batch process which needs to extract data from many databases and aggregate it for analytics. This  batch process would need to understand the specific schema of each of these databases,  unlock and open the door of each table as it were, and then perform transformation on the data. You can end up building hundreds of pipelines to extract data locked away and interwoven in these databases, caches and search indexes. This is inherently complicated and hard to manage.
+Having a "well-known" data stores means that that data gets locked away in tables and  schemas, and this becomes a drawback when data has to be extracted from multiple stores, say by a offline batch process which needs to extract data from many databases and aggregate it for analytics. This  batch process would need to understand the specific schema of each of these databases,  unlock and open the door of each table as it were, and then perform transformation on the data. You can end up building hundreds of pipelines to extract data that is locked away and interwoven in these databases, caches and search indexes. This is inherently complicated and hard to manage.
 
 # Data Streams
 
@@ -67,8 +67,10 @@ Lets stretch the analogy of the Beatles song to its breaking point.
 
 * These  events fall like raindrops,  and the accumulated raindrops become a river,  and that river  could be an Event Hub, an IOT Hub or an Azure Blob Location.
 
-* Now to this river, we take our paper cup to fill it with a subset of the data we are interested in. This cup could be a database or it could be an Azure blob store location, or an Azure data location, or it could be a real time Power BI dashboard.
+* To this river that is the event hub,  we take a  tool  to extract data. This tool is our Azure Stream Analytics job.  It bridges the input, say  an  event hub, to an output, say a sql server database, with a sql query. Then as the data come in real time into the river, the query runs against the unbounded stream of data as it arrives, and write out the  data of interest to the output. 
 
-* And the tool that we use to extract data from the river and fill our paper cup is an Azure Stream Analytics job. It bridges the input, say  an  event hub, to an output, say a sql server database, with a sql query. Then as the data come in real time into the river, the query runs against the unbounded stream of data as it arrives, and write out the  data of interest to the output. 
+* The output is our paper cup that holds the extracted data.. This cup could be a database or it could be an Azure blob store location, or an Azure data location, or it could be a real time Power BI dashboard.
+
+
 
 # Demo

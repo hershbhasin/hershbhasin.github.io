@@ -2,7 +2,7 @@
 layout: post
 title: "Live Streaming with Azure Stream Analytics"
 author: "Hersh Bhasin"
-comments: true
+comments: false
 categories: Big-Data Azure-Stream-Analytics
 ---
 

@@ -5,19 +5,21 @@ author: "Hersh Bhasin"
 comments: true
 categories: Azure-Stream-Analytics
 published: true
+permalink: /Azure Stream Analytics/
 
 ---
 # Introduction
 
-Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time Data Streams with Azure Stream Analytics". I work as a Cloud Architect with xyz company and recently I  have been doing  quite a bit of work in helping transition workflows to a  stream-based architecture.  I'd like to share some of my experience around data streaming with you. 
+Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time Data Streams with Azure Stream Analytics". I am a Author and work as a Cloud Architect  with.... Recently I  have been doing  quite a bit of work in helping transition workflows to a  stream-based architecture and  I'd like to share some of my experience around data streaming with you. 
 
 # Objective
 
-While streaming of data and stream processing is a vast topic and there is a whole world view that goes with it, this course is an introduction to the area.  I want to look at topics like:
+While streaming of data and stream processing is a vast topic and there is a whole world view that goes with it, this course is an introduction to the area.  In this course, I  want to discuss topics like:
 
-1. What are the problems streaming  data is trying to solve? Why do we need something new when we already have storage mediums like databases etc.
+1. What are the specific problems streaming  data is trying to solve? Why do we need something new when we already have storage mediums like databases etc?
 2. How does flowing data streams differ from OLTP databases, key value stores, caches etc.
 3. As unbounded streams of data flows, how can we listen for data that interests us, and extract such data.
+4. After discussing these topics, I'll do a live demo by building a  streaming platform.  This streaming platform will comprise of an Azure Event Hub, an Azure Stream Analytics job, a SQL Server database, and a C# console application that will generate events .
 
 
 
@@ -39,7 +41,7 @@ To extract data from multiple data stores, we need to build data pipelines and t
 
 Having a "well-known" data stores means that that data gets locked away in tables and  schemas, and this becomes a drawback when data has to be extracted from multiple stores, say by a offline batch process which needs to extract data from many databases and aggregate it for analytics. This  batch process would need to understand the specific schema of each of these databases,  unlock and open the door of each table as it were, and then perform transformation on the data. You can end up building hundreds of pipelines to extract data that is locked away and interwoven in these databases, caches and search indexes. This is inherently complicated and hard to manage.
 
-# Data Streams
+# Data Flowing as Streams
 
 
 
@@ -51,7 +53,11 @@ Instead of locking up our data in database tables,  we can think of data as an e
 
 
 
-#  What is Azure Stream Analytics?
+"Words are flowing out like endless rain into a paper cup..." goes the famous Beatles song and its a good analogy for the paradigm of streaming data. The rain drops are the events our applications generate. These rain drops of events accumulate and flow as a river of data, an analogy to our event hubs. To this river of data we take a tool, our hand, to scoop out a cup of event data. The tool is an Azure Stream Analytics job, and the cup that holds a sampling of data is our database. 
+
+![](../assets/analytics_words.PNG)
+
+
 
 >Words are flowing out like endless rain into a paper cup
 >
@@ -63,22 +69,13 @@ Instead of locking up our data in database tables,  we can think of data as an e
 >
 >*The Beatles:  Across the Universe*
 
-"Words are flowing out like endless rain into a paper cup..." goes the famous Beatles song and its a good analogy for the paradigm of streaming data. The rain drops are the events our applications generate. These rain drops of events accumulate and flow as a river of data, an analogy to our event hubs. To this river of data we take a tool, our hand, to scoop out a cup of event data. The tool is an Azure Stream Analytics job, and the cup that holds a sampling of data is our database. 
-
-![](../assets/analytics_words.PNG)
-
-
-
-# Tha Data Path
+# The Data Path
 
  ![](../assets/analytics_path.PNG)
 
 * Applications cause events to occur. Maybe it is a sensor reporting the health of a device  every second. We can define an event as a fact about the world. Something happened in the world and the event is a record of it. It is a message with some information, maybe in the Json format. 
-
 * These  events fall like raindrops,  and the accumulated raindrops become a river,  and that river  could be an Event Hub, an IOT Hub or an Azure Blob Location.
-
 * To this river that is the event hub,  we take a  tool, our hand,  to extract data. This tool is our Azure Stream Analytics job.  It bridges the input, say  an  event hub, to an output, say a sql server database, with a sql query. Then as the data come in real time into the river, the query runs against the unbounded stream of data as it arrives, and write out the  data of interest to the output. 
-
 * The output is our paper cup that holds the extracted data.. This cup could be a database or it could be an Azure blob store location, or an Azure data location, or it could be a real time Power BI dashboard.
 
 

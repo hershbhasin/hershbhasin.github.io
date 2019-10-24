@@ -53,9 +53,14 @@ Instead of locking up our data in database tables,  we can think of data as an e
 
 #  What is Azure Stream Analytics?
 
+>Words are flowing out like endless rain into a paper cup
+>They slither while they pass, they slip away across the universe
+>Pools of sorrow, waves of joy are drifting through my opened mind
+>Possessing and caressing me
+>
+>*The Beatles:  Across the Universe*
 
-
-""Words are flowing out like endless rain into a paper cup..." goes the famous Beatles song and its a good analogy for the paradigm of streaming data. The rain drops are the events our applications generate. These rain drops of events accumulate and flow as a river of data, an analogy to our event hubs. To this river of data we take a tool, our hand, to scoop out a cup of event data. The tool is an Azure Stream Analytics job, and the cup that holds a sampling of data is our database. 
+"Words are flowing out like endless rain into a paper cup..." goes the famous Beatles song and its a good analogy for the paradigm of streaming data. The rain drops are the events our applications generate. These rain drops of events accumulate and flow as a river of data, an analogy to our event hubs. To this river of data we take a tool, our hand, to scoop out a cup of event data. The tool is an Azure Stream Analytics job, and the cup that holds a sampling of data is our database. 
 
 ![](../assets/analytics_words.PNG)
 

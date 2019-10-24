@@ -84,3 +84,13 @@ Instead of locking up our data in database tables,  we can think of data as an e
 
 
 # Demo
+
+Let's do a live demo and bring together the concepts we have been talking about. 
+
+First we need a river that will accumulate the events we send to it. We could use an Event Hub, an IOT hub or a  Blob store. Here we'll use an Event Hub.
+
+Then we will provision an output source that will hold a subset of the data that we will extract out of the Event Hub. This could be  database, a blob store, or it could be a real time Power BI dashboard. For our demo we will use an SQL Server database.
+
+Then we will set up an Azure Streaming Analytics query that will bridges the Event Hub and the  SQL Server database. It will operate on the unbounded stream of data as it arrives in the Event Hub and write out the  data of interest to the SQL Server.
+
+Finally we will write a C# console application that will pump event data to the Event Hub.

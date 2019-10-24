@@ -55,19 +55,21 @@ Instead of locking up our data in database tables,  we can think of data as an e
 
 
 
-"*Words are flowing out like endless rain into a paper cup*..." goes the famous Beatles song.  If our flowing data is the  rain of words, then our Stream Analytics job is  the tool that will collect some of the rain water and put it into a  cup.
+""Words are flowing out like endless rain into a paper cup..." goes the famous Beatles song and its a good analogy for the paradigm of streaming data. The rain drops are the events our applications generate. These rain drops of events accumulate and flow as a river of data, an analogy to our event hubs. To this river of data we take a tool, our hand, to scoop out a cup of event data. The tool is an Azure Stream Analytics job, and the cup that holds a sampling of data is our database. 
 
-  <img src="../assets/analytics_words.PNG" alt="Smiley face" height="600" width="425">  
+![](../assets/analytics_words.PNG)
 
 
 
-Lets stretch the analogy of the Beatles song to its breaking point. 
+# Tha Data Path
+
+ ![](../assets/analytics_path.PNG)
 
 * Applications cause events to occur. Maybe it is a sensor reporting the health of a device  every second. We can define an event as a fact about the world. Something happened in the world and the event is a record of it. It is a message with some information, maybe in the Json format. 
 
 * These  events fall like raindrops,  and the accumulated raindrops become a river,  and that river  could be an Event Hub, an IOT Hub or an Azure Blob Location.
 
-* To this river that is the event hub,  we take a  tool  to extract data. This tool is our Azure Stream Analytics job.  It bridges the input, say  an  event hub, to an output, say a sql server database, with a sql query. Then as the data come in real time into the river, the query runs against the unbounded stream of data as it arrives, and write out the  data of interest to the output. 
+* To this river that is the event hub,  we take a  tool, our hand,  to extract data. This tool is our Azure Stream Analytics job.  It bridges the input, say  an  event hub, to an output, say a sql server database, with a sql query. Then as the data come in real time into the river, the query runs against the unbounded stream of data as it arrives, and write out the  data of interest to the output. 
 
 * The output is our paper cup that holds the extracted data.. This cup could be a database or it could be an Azure blob store location, or an Azure data location, or it could be a real time Power BI dashboard.
 

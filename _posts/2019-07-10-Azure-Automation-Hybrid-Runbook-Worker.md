@@ -4,6 +4,7 @@ title: "Azure Automation Hybrid Runbook Worker"
 author: "Hersh Bhasin"
 comments: true
 categories: Azure-Automation
+permalink: /azure-automation-run-books/
 ---
 
 ##  Introduction

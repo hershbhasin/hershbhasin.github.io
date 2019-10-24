@@ -6,6 +6,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: paas AZ-300 Virtual-Networks
 published: true
+permalink: /azure-virtual-networks/
 
 ---
 

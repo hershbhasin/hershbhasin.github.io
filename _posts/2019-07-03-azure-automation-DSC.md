@@ -5,6 +5,7 @@ title: "DSC with Infrastructure-As-Code and  Azure Automation is a potent combin
 author: "Hersh Bhasin"
 comments: true
 categories: Azure-Automation
+permalink: /azure-automation/
 ---
 
 ## Introduction

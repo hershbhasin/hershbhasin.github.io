@@ -5,6 +5,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: Azure-Data-Lake
 published: true
+permalink: /azure-data-lake-optimization/
 ---
 
 

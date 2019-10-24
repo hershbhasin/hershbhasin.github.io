@@ -4,6 +4,7 @@ title: "Pagination Strategy for Cosmosdb APIs"
 author: "Hersh Bhasin"
 comments: true
 categories: CosmosDB
+permalink: /azure-cosmosdb-pagination-strategy/
 ---
 
 ## Introduction

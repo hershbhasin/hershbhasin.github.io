@@ -5,6 +5,7 @@ title: "Security Strategy for CosmosDB APIs"
 author: "Hersh Bhasin"
 comments: true
 categories: CosmosDB
+permalink: /azure-cosmosdb-api-security/
 
 ---
 

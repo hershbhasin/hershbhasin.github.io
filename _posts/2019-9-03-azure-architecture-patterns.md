@@ -5,6 +5,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: AZ-300 Azure-Architecture-Patterns
 published: true
+permalink: /azure-architecture-patterns/
 
 ---
 

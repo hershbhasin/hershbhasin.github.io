@@ -3,7 +3,8 @@ layout: post
 title: "AWS Networking"
 author: "Hersh Bhasin"
 comments: true
-categories: AWS AWS-Networking
+categories: AWS
+permalink: /aws-networking/
 ---
 
 

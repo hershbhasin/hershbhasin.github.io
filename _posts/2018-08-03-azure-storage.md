@@ -6,6 +6,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: Azure-Storage AZ-300
 published: true
+permalink: /azure-storage/
 ---
 
 # Introduction

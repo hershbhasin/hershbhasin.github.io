@@ -5,7 +5,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: Azure-Stream-Analytics
 published: true
-permalink: /Azure Stream Analytics/
+permalink: /azure-stream-analytics/
 
 ---
 # Introduction

@@ -5,6 +5,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: AZ-300 Azure-Active-Directory
 published: true
+permalink: /azure-active-directory/
 
 ---
 

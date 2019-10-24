@@ -5,6 +5,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: Azure-Monitoring AZ-300
 published: true
+permalink: /azure-resource-monitoring/
 ---
 
 ![](..\assets\monitor1.PNG)

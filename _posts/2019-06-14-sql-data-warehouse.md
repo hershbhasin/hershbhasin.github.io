@@ -4,6 +4,7 @@ title: "Azure SQL Data Warehouse"
 author: "Hersh Bhasin"
 comments: true
 categories: Azure-Sql-Data-Warehouse Big-Data AZ-300
+permalink: /azure-sql-data-warehouse/
 ---
 
 ![](../assets/dw1.png)

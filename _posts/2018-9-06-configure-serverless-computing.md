@@ -5,6 +5,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: Configure-serverless-computing AZ-300
 published: true
+permalink: /azure-serverless-computing/
 ---
 
 # Introduction

@@ -3,6 +3,7 @@ layout: post
 title: Azure AZ 300 Test Preparation
 author: Hersh Bhasin
 category: AZ-300
+permalink: /azure-az300-prep/
 ---
 
 # Proposed Strategy for preparing for AZ300

@@ -54,9 +54,12 @@ Instead of locking up our data in database tables,  we can think of data as an e
 #  What is Azure Stream Analytics?
 
 >Words are flowing out like endless rain into a paper cup
+>
 >They slither while they pass, they slip away across the universe
+>
 >Pools of sorrow, waves of joy are drifting through my opened mind
->Possessing and caressing me
+>
+>Possessing and caressing me...
 >
 >*The Beatles:  Across the Universe*
 

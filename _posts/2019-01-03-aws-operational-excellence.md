@@ -14,7 +14,7 @@ In this post, we will look at
 3. Understand stack update behaviors and policies
 4. Use stack outputs
 
-This post is is essentially my  study notes for the excellent Pluralsight course: [Architecting for Operational Excellence on AWS | Pluralsight](https://app.pluralsight.com/library/courses/architecting-operational-excellence-aws) by Ben Piper
+This post is is essentially my  study notes for the excellent Pluralsight course:  [Architecting for Operational Excellence on AWS Pluralsight](https://app.pluralsight.com/library/courses/architecting-operational-excellence-aws) by Ben Piper
 
 With multiple CloudFormation templates, we will build the following:
 
@@ -467,4 +467,5 @@ Ref: & !Ref  mean the same. !Ref is the short form and can only be used in yaml 
 
 [Cloud Formation Intrensic Function References](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html)
 
- [Architecting for Operational Excellence on AWS | Pluralsight](https://app.pluralsight.com/library/courses/architecting-operational-excellence-aws)
+ [Architecting for Operational Excellence on AWS Pluralsight](https://app.pluralsight.com/library/courses/architecting-operational-excellence-aws)
+

@@ -10,7 +10,7 @@ permalink: /azure-stream-analytics/
 ---
 # Introduction
 
-Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time Data Streams with Azure Stream Analytics". I am a Author and work as a Cloud Architect  with.... Recently I  have been doing  quite a bit of work in helping transition workflows to a  stream-based architecture and  I'd like to share some of my experience around data streaming with you. 
+Hello, my name is Hersh Bhasin and welcome to my course, "Processing Real-Time Data Streams with Azure Stream Analytics". I am an Author and work as a Cloud Architect. Recently I  have been doing  quite a bit of work in helping transition workflows to a  stream-based architecture and  I'd like to share some of my experience around data streaming with you. 
 
 # Objective
 
@@ -19,7 +19,7 @@ While streaming of data and stream processing is a vast topic and there is a who
 1. What are the specific problems streaming  data is trying to solve? Why do we need something new when we already have storage mediums like databases etc?
 2. How does flowing data streams differ from OLTP databases, key value stores, caches etc.
 3. As unbounded streams of data flows, how can we listen for data that interests us, and extract such data.
-4. After discussing these topics, I'll do a live demo by building a  streaming platform.  This streaming platform will comprise of an Azure Event Hub, an Azure Stream Analytics job, a SQL Server database, and a C# console application that will generate events .
+4. After discussing these topics, I'll do a live demo by building a  streaming platform.  This streaming platform will comprise of an Azure Event Hub, an Azure Stream Analytics job, a SQL Server database, and a C# console application that will generate events.
 
 
 

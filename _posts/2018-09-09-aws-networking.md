@@ -219,17 +219,31 @@ VPC: shared-vpc
 
 Associate database subnet with route table "shared"
 
-**Database**
+**Database** Instance
 
 EC2/Launch Instance / Community AMIs/search for: ami-1cb6b467 (same image as before, i.e. image with docker)
 
-Network: shared-vpc
+* Network: shared-vpc
 
-subnet: database
+* subnet: database
 
-Network interfaces/etho/primary ip:  10.2.2.41
+* Network interfaces/etho/primary ip:  10.2.2.41
 
-(note no ENI card here as this will not have a  public ip as this is private)
+  (note no ENI card here as this will not have a  public ip as this is private)
+
+* Security Group: New
+
+  * Name : database_sg
+
+  * Rules:
+
+    *  Type: SSH / Protocol:  TCP /Port" 22/ Source: 192.168.0.0/16, 10.2.0.0/16
+    *  Type: MYSQL/Aurora / Protocol:  TCP /Port 3306/ Source: 10.1.254.0/24
+    *  Type: ALL ICMP-IPV4/ Protocol:  TCP /Port 0-65535/ Source: Anywhere
+
+    
+
+
 
 
 
@@ -238,6 +252,8 @@ Network interfaces/etho/primary ip:  10.2.2.41
 ![](..\assets\aws-vpc-5.PNG)
 
 Peering is only for instance to instance connections
+
+Go to: VPC Dashboard/ Peering Connections
 
 **Peering** 
 
@@ -326,13 +342,7 @@ Here NAT1 instance (a linux vm) will have a route table pointing to the internet
 
    vpc: shared-vpc
 
-4. Add route for the internet gateway (Edit Routes)
-
-    Destination: 0.0.0.0/0
-
-   Target: internet gateway shared-igw
-
-5. Associate Subnet (Subnet Associations Tab)
+4. Associate Subnet (Subnet Associations Tab)
 
    Edit subnet associations
 
@@ -340,13 +350,21 @@ Here NAT1 instance (a linux vm) will have a route table pointing to the internet
 
    Now you have an implied router
 
+5. Add route for the internet gateway (Edit Routes)
+
+   Destination: 0.0.0.0/0
+
+   Target: internet gateway shared-igw
+
+   
+
 **Configuring a NAT Instance**
 
 Amazon has provided a Linux image that is preconfigured to perform Network Address Translation
 
 1. Allocate a new Elastic IP
 
-2. Copy the PIP: 3.234.59.161
+2. Copy the PIP:  52.201.19.214
 
 3. Go to EC2 Instances and launch a new instance
 
@@ -369,11 +387,11 @@ Amazon has provided a Linux image that is preconfigured to perform Network Addre
 
       (Note 10.0.0.0/8 covers both 10.1.0.0/16 and 10.2.0.0/16 ... I think; and we sonn't have an on-premise network yes)
 
-   5. After instance is launched, go to instance, Actions and select "Change Source/Dest. Check"
+   5. After instance is launched, go to instance, Actions and select "Networking/Change Source/Dest. Check"/ Yes Disable
 
       When db1 instance gets a  returns a message from the internet from the NAT, the NAT will use the source IP of the originating host  from internet. The Source/Destination IPs will differ and this check will block it. Hence we must disable this check
 
-   6. Associate Elastic IP to the nat1 instance
+   6. Associate Elastic IP to the nat1 instance (Elastic IP/Instance=NAT Instance/Private IP =10.1.254.10)
 
 ## Configuring Routing for a NAT Client
 
@@ -401,7 +419,7 @@ ssh -i "pizza-keys.pem" ec2-user@3.234.59.161
 nano pizza-keys.pem
 
 #give it restrictive permissions: remove read write; go=> group, other
-chmod go-rw pizza-keys.pem
+cm
 
 #ssh into db1
 ssh -i "pizza-keys.pem" ec2-user@10.2.2.41
@@ -474,3 +492,63 @@ Route:
 Subnet Association:
 
 ​	Subnet:  transit
+
+## Creating a CISCO CSR 1000V Instance
+
+* Goto/ec2/launch instance/aws marketplace
+* Search for car
+* Select: **Cisco Cloud Services Router (CSR) 1000V - BYOL for Maximum Performance**
+* Select t2.medium
+* Network : transit-vpc
+* Subnet: transit
+* Network interfaces/eth0/primary ip: 10.3.0.10
+* Security Group:  Rule allow ssh access from MyIP
+* Associate a new public (elastic) ip to the instance: 52.86.229.56
+* Ssh into Csr instance: ssh -i "hb.pem" ec2-user@52.86.229.56
+
+## Creating a VPN Connection between two VPCs
+
+VPN -> VPN Gateway -> VPN Connection->points to Cisco csr's elastic ip ->download configuration file->edit and replace csr's private ip->ssh into csr instance and add to configs
+
+**Virtual Private Gateway in VPN to be connected**
+
+1. Create a Virtual Private Gateway (goto: vis/Virtual private gateway): Name= shared-vgw
+2. Attach to VPC: shared-vpc
+
+**Create a VPN Connection**
+
+Goto: VPN/Site-To-Site VPN Connections & click Create VPN Connection
+
+* Name: transit-shared-vpn
+* Virtual Private Gateway: shared-vgw
+* Customer Gateway: New (refers to the transit csr instance we created above)
+  * Ip: 52.86.229.56 (transit csr's elastic ip)
+  * BGP ASN: 65000
+  * Routing options: dynamic
+  * Click create
+* Download Configuration button click
+  * Vendor:  Cisco Systems Inc
+  * Platform: CSRv AMI
+  * Software: ASA 9.7+ VTI
+  * Search & Replace outside_interface with private ip of transit csr: 10.3.0.10
+  * Copy entire file to clipboard
+  * Ssh into transit csr:
+    * conf t
+    * paste
+* Route propagation has to be enabled in the VPN with the VPN Gateway (in Routes Table): when enabled the route table will "learn" about routes from the csr instance
+
+```bash
+#to show learned routes: this will display route to other vpn--the share vp gateway adviterised this route via bgp
+show ip route bgp
+
+#ping db
+ping db-ip source <csr internal ip>
+
+
+```
+
+
+
+
+
+## 

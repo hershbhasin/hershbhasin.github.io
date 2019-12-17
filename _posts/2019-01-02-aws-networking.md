@@ -33,21 +33,15 @@ CIDR: 10.1.254.0/24
 
 Zone: us-east-1a
 
-**Internet Gateway**
 
-Go to the internet gateways tab and create
-
-Name: web-igw
-
-Attach to vpc: web-vpc
 
 
 
 **Route Table** (aka "Implied Router")
 
-Each VPC has a default route table which is automatically associated with each subnet you create. All traffic into, out of and within a vpc traverses a implied router. It is the gatekeeper and the brains of vpc networking
 
-*Create a route table and associate it with a vpc*
+
+*Create a route table and associate it with a vpc* (There will be a default route created for this vac, ignore it)
 
 ​	Name: web-pub, 
 
@@ -59,11 +53,29 @@ Each VPC has a default route table which is automatically associated with each s
 
 ​	Associated subnet: web-pub (10.1.254.0/24)
 
+
+
+Notes:
+
+Each VPC has a default route table which is automatically associated with each subnet you create. All traffic into, out of and within a vpc traverses a implied router. It is the gatekeeper and the brains of vpc networking
+
 What this has done is that the aws has now assigned the "implied router" an ip address of 10.1.254.1 (it always gets the first address in the subnet associated with the route table: in this case web-pub subnet)
 
 So each vpc has a "pingable" implicit router.
 
-Analogy to a traditional network: this is like when your internet service provider places an internet router at your site: they configure it for their site, and all you have to do is connect your network to it, which is what we are going to do now. We will connect our internet gateway to the implicit router by adding a route for our internet gateway.
+Analogy to a traditional network: this is like when your internet service provider places an internet router at your site: they configure it for their site, and all you have to do is connect your network to it, which is what we are going to do now. 
+
+**Internet Gateway**
+
+Go to the internet gateways tab and create
+
+Name: web-igw
+
+Attach to vpc: web-vpc
+
+**Add Route in Route Table To Point To Internet Gateway**
+
+We will connect our internet gateway to the implicit router by adding a route for our internet gateway.
 
 1. Go to route tables
 2. Select web-pub route
@@ -81,23 +93,25 @@ Hence the analogy: creating a default route, pointing to the internet gateway is
 
 Group name: web-pub-sg
 
-Rules:
+Inbound Rules:
 
-Protocol/port		 Source
+Description /port/ Source
 
-ssh (TCP/22)			Your IP
+(Search for ssh)/(TCP/22)/My IP
 
-HTTP (TCP/80)		0.0.0.0/0 (all ips)
+Search for HTTP/(TCP/80)/0.0.0.0/0 (Anywhere)
 
 
 
 **Elastic Network Interface (ENI)**  (network card)
 
+Go to ec2/network & security/network interfaces
+
 Name: www1.eth0
 
 Subnet: web-pub
 
-IP Address: 10.1.244.10
+IPv4 Address (custom): 10.1.254.10
 
 Security group: web-pub-sg
 
@@ -105,19 +119,23 @@ Security group: web-pub-sg
 
 **Elastic IP (EIP)**
 
-Allocate new address (click)
+Go to ec2/network & security/elastic ip
 
-Associate  address (select)
+1. Allocate new address (click)
 
-Resource type: Network interface
+2. Associate  address (select)
 
-Network interface: www1.eth0
+   * Resource type: Network interface
 
-Private ip: select only ip address from drop down
+   * Network interface: www1.eth0
+
+   * Private ip: select only ip address from drop down (ENI IP 10.1.254.10)
+
+3. The name section in AWS portal will be blank, so give it the name www1.eth0
 
 **Launch Instance**
 
-Instances/Launch instance
+Goto: Instances/Launch instance
 
 Community AMIs: search for ami-1cb6b467 (this include  docker )
 
@@ -126,11 +144,12 @@ Instance Type: t2.micro
 Configure Details Tab:
 
 1. Network: web-vpc
-
 2. subnet: web-pub
-
-3. (ENI) Network Interfaces: eth0
+3. Go to section(ENI) Network Interfaces/ eth0
    1. Network Interface:  www1.eth0
+4. Step 6/ Security Group
+   1. Select and existing security group: web-pub-sg
+5. Select a key pair
 
 
 
@@ -182,7 +201,7 @@ curl ifconfig.co
 # but if we do a ip a, notice that the public ip address is not configured. Hence AWS is doing network adress translation NAT
 ip a
 
-#if you do ifconfig the eth0 inet addr is the implicit router address : 10.1.254.1S
+#if you do ifconfig the eth0 inet addr is the implicit router address : 10.1.254.10
 ```
 
 ![](..\assets\aws-vpc-3.PNG)
@@ -197,7 +216,7 @@ ip a
 
 ## VPC
 
-Name: share-vpc
+Name: shared-vpc
 
 ipv4 cidr: 10.2.0.0/16
 
@@ -208,6 +227,8 @@ Name: database
 CIDR: 10.2.2.0/24
 
 VPC: share-vpc
+
+Availability Zone: us-east-1a
 
 **Route Table**
 
@@ -223,29 +244,54 @@ Associate database subnet with route table "shared"
 
 EC2/Launch Instance / Community AMIs/search for: ami-1cb6b467 (same image as before, i.e. image with docker)
 
-Network: shared-vpc
+1. Network: shared-vpc
 
-subnet: database
+2. subnet: database
 
-Network interfaces/etho/primary ip:  10.2.2.41
+3. Network interfaces/etho/
 
-(note no ENI card here as this will not have a  public ip as this is private)
+   ​	primary ip:  10.2.2.41
+
+   (note no ENI card here as this will not have a  public ip as this is private)
+
+4. Security Group Tab 
+
+   1. Create New Security Group:
+
+      * Name: database-sg
+
+      * Rule: 
+        * Type: SSH /Protocol: TCP/Port: 22 / Source:192.168.0.0/16,10.2.0.0/16 (on premises network, & shared vpc cider)
+        * Type: MySQL/Aurora /Protocol: TCP / Port: 3306 /Source: 10.1.254.0/24 (web-pub subnet)
+        * Type: All ICMP-IPV4/Protocol: ICMP/ port 0-65535/ Source: Anywhere (for ping)
+
+
 
 
 
 # VPC Peering & Routing
 
+Here we will peer the web-ops to the shared-vpc so that the web instance can talk to the db instance
+
+Pcx =>P(erring) CX(connection)
+
+1. Create peering connection
+2. Update route tables in both vpcs to point to peering connection
+
 ![](..\assets\aws-vpc-5.PNG)
 
 Peering is only for instance to instance connections
 
-**Peering** 
+**Create Peering Connection** 
 
-Name: web-shared-pcx
+Goto: vpc/Peering connections
 
-VPC-Requester: web-vpc
+1. Name: web-shared-pcx
 
-VPC-Accepter:  shared-vpc
+2. VPC-Requester: web-vpc
+
+3. VPC-Accepter:  shared-vpc
+4. Create click
 
 **Accept Request**  (on Peering window)
 
@@ -253,29 +299,28 @@ Actions:  Accept Request
 
 
 
-**Set Routes**  (go to route tables)
+**Modify Routes Tables to point to pcx**  (go to route tables)
 
-routes for route table: web-pub 
+Add Routes
 
-Destination: 10.2.2.0/24 (database subnet)
+1. routes for route table: web-pub 
 
-Target:  web-shared-pcx
+   * Destination: 10.2.2.0/24 (database subnet)
+
+   * Target:  web-shared-pcx
+
+2. routes for route table: shared
+
+   * Destination: 10.1.0.0/16     (to just Connect subnet use 10.1.254.0/24)
+
+   * Target: web-shared-pcx
+
+Here we are pointing to vpc cider (10.1.0.0/16)  instead of a specific subnet so that any subnet in the shared-vpc gets paired to web-vpc
 
 
-
-routes for route table: shared
-
-Destination: 10.1.254.0/24
-
-Target: web-shared-pcx
-
-Instead of creating routes to subnets in VPC, create a subnet to the VPC
-
-Destination:  10.1.0.0/16
-
-Target: web-shared-pcx
 
 ```bash
+# now ping between vpc will work
 ssh -i "pizza-keys.pem" ec2-user@34.206.56.131
 ping 10.2.2.41
 

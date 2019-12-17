@@ -1,7 +1,0 @@
-CREATE TABLE [dbo].[TShirts](
-    [Id] [int] IDENTITY(1,1) NOT NULL,
-    [Brand] [varchar](50) NULL,
-    [Tshirtcolor] [varchar](50) NULL,
-    [EventEnqueuedUtcTime] [datetime] NULL
-) ON [PRIMARY]
- 

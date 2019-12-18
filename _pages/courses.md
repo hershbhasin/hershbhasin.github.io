@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "About"
+title: "Courses"
 author: "Hersh Bhasin"
 permalink: /courses/
 comments: false

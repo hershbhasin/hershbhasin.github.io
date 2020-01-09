@@ -5,7 +5,7 @@ author: "Hersh Bhasin"
 comments: true
 categories: Azure-Architecture-Patterns
 permalink: /hub-and-spoke/
-published: false
+published: true
 ---
 
 

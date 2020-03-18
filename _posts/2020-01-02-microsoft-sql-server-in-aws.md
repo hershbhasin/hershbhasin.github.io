@@ -22,19 +22,19 @@ permalink: /microsoft-sql-server-in-aws/
 
 # SQL Server on EC2
 
-1. When to use SQL Server on EC2 instances
+**When to use SQL Server on EC2 instances**
 
-2. When you want to support legacy versions of SQL Server
+1. When you want to support legacy versions of SQL Server
 
-3. When you want full control over the instance (OS and software stack)
+2. When you want full control over the instance (OS and software stack)
 
-4. When you want to support instance storage: these are direct attached drives, typically SSD based that can be used to deploy high I/O clusters that exceed the capabilities of network block storage provided by Amazon's Elastic Block Storage.
+3. When you want to support instance storage: these are direct attached drives, typically SSD based that can be used to deploy high I/O clusters that exceed the capabilities of network block storage provided by Amazon's Elastic Block Storage.
 
-5. When you want multi-data center high availability (see Multi-AZ Always on Availability Group below)
+4. When you want multi-data center high availability (see Multi-AZ Always on Availability Group below)
 
-6. When you have Microsoft Software Assurance and bring your own licence, and want to take advantage of passive instance licencing (see Passive Licence below).
+5. When you have Microsoft Software Assurance and bring your own licence, and want to take advantage of passive instance licencing (see Passive Licence below).
 
-   **Considerations**
+**Considerations**
 
    1. Need to manage your own backups, maintenance & patching
       Multi- AZ AlwaysOn Availability Group
@@ -104,6 +104,15 @@ Full Control only in EC2: In RDS you cannot access the file system, or RDP into 
 Automated backups in RDS: RDS provides automated backups with point in time restore, consistent configuration management via parameter and option groups and automated patching.
 
 Hight availability: in EC2, you manage your own always-on availability group clusters whereas RDS provides a fully managed solution.
+
+
+
+# Installing SQL Server RDS
+
+1. Create a new VPC: Launch VPC Wizard, select: "VPC with a Single Public Subnet". Note: for public access, DNS resolution and DNS hostname should be enabled (which are, if you choose this wizard item)
+2. Create an additional subnet in the VPC (RDS requires 2 subnets)
+3. When creating the RDS, check the "Publicly Accessibility" option if you want to connect to the RDS outside the VPC
+4. In the Service Section,  choose RDS, click "Create Database", follow the steps in the template and select your VPC
 
 
 

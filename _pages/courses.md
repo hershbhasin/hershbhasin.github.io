@@ -6,7 +6,8 @@ permalink: /courses/
 comments: false
 ---
 
-<h4><a href= "http://bit.ly/2r7mK90">Real Time Stream Processing With Azure, Published on Udemy </a> </h4>
+<h4><a href= "https://www.udemy.com/course/real-time-data-stream-processing-in-azure/?referralCode=A6B8A7CC805476478A8B">Real Time Stream Processing With Azure, Published on Udemy </a> </h4>
+
 <a href= "http://bit.ly/2r7mK90">
 <img  alt="Hersh Bhasin"  src="../assets/course-streaming.jpeg">
 </a>

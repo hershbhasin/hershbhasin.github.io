@@ -1,0 +1,378 @@
+---
+
+layout: post
+title: "Kubernetes Commands"
+author: "Hersh Bhasin"
+comments: true
+categories: Kubernetes
+published: true
+permalink: /Kubernetes/commands
+
+---
+# Alias
+
+```bash
+nano ~/.bash_profile
+#alias
+alias k=kubectl
+
+
+```
+
+# Get
+
+```bash
+alias k=kubectl
+
+# all
+k get all
+# pods
+k get pods
+#services
+k get service
+
+# get with output formated
+k get pod <podname> -o yaml
+
+
+```
+
+
+
+#  Delete
+
+```bash
+#delete: however the pod will come back with a new id when you do a get
+k delete pod foo --now
+#"Officially" delete so pods don't come back
+k delete deployment <name of deployment>
+k delete -f file.yml
+```
+
+
+
+# Create/Apply
+
+```bash
+#run a single pod
+kubectl run my-nginx --image=nginx:alpine
+# Apply
+k apply -f <filename.yaml>
+
+```
+
+# exec
+```bash
+kubectl exec [pod-name] -it sh
+
+nginx location: usr/share/nginx/html
+```
+
+
+
+# Ports
+
+You can port forwards to a pod or a deployment
+
+```bash
+# Forward 
+# external:internal
+# pod
+kubectl port-forward pod/mypod 8080:80
+#deployment
+kubectl port-forward deployment/<deployment-name> 8080:80
+#service
+kubectl port-forward service/<service-name> 8080:80
+```
+
+#  Labels
+
+
+
+```bash
+#show labels
+get deploy --show-labels
+#get with a label -l
+get deploy -l app=abc
+
+
+```
+
+
+
+# Deployments
+
+```bash
+#can use deploy, deployment, deployments
+kubectl get deployment --show-labels
+
+# get specific label
+kubectl get deployment -l app=nginx
+#delete
+kubectl delete deployment <deployment-name>
+kubectl delete deployment  -f <deployment.yaml>
+#scale
+kubectl scale deployment <deployment-name> --replicas=5
+kubectl scale deployment -f <deployment.yaml> --replicas=5
+```
+
+
+
+
+
+#  Examples
+
+~~~bash
+#simple nginx
+kubectl run my-nginx --image=nginx:alpine
+kubectl port-forward pod/my-nginx 8080:80
+http://localhost:8080/ 
+~~~
+
+
+
+# Testing if one pod call call another via curl
+
+```bash
+kubectl exec <pod name> -- curl - s http://other-pod-ip
+# if curl is not available i.g. Alpine Linux, to install
+kubectl exec <pod-name> -it sh
+> apk add curl
+> curl -s http://other-pod-id
+
+
+```
+
+
+
+#  Techniques for working with ConfigMaps
+
+**Using a k8s ConfigMap manifest**
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-settings
+  labels:
+    app: app-settings
+data:
+  enemies: aliens
+  lives: "3"
+  enemies.cheat: "true"
+  enemies.cheat.level: noGoodRotten
+  
+# kubectl create -f settings.configmap.yml
+```
+
+
+
+**Load settings from a file:**
+
+```yaml
+#filename: settings.properties
+enemies=aliens
+lives=3
+enemies.cheat=true
+enemies.cheat.level=noGoodRotten
+
+#kubectl create cm app-settings --from-file=settings.properties
+#filename becaomes the key
+#Will add file name as key into ConfigMap data. Will NOT add quotes around non-string values.
+```
+
+ **Load settings from an env file**
+
+```yaml
+#same file as above
+kubectl create cm app-settings --from-env-file=settings.properties
+
+#Will NOT add file name as key into ConfigMap data. Will add quotes around non-string values.
+#end result will look a lot like manifest
+```
+
+
+
+ **Define settings in kubectl command**
+
+```bash
+kubectl create cm app-settings
+--from-literal=apiUurl=https://my-api 
+--from-literal=otherKey=otherValue 
+--from-literal=count=50
+
+# Will add quotes around non-string values.
+```
+
+
+
+**Working with ConfigMap**
+
+```bash
+#alias
+alias k=kubectl
+#create
+k apply -f settings.configmap.yml 
+#get
+kubectl get cm <cm-name> -o yaml
+#get all cm
+k get cm
+# Delete
+kubectl delete cm <cm-name>
+```
+
+**Sample Config Map**
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-settings
+data:
+  enemies: aliens
+  lives: "3"
+  enemies.cheat: "true"
+  enemies.cheat.level=noGoodRotten
+  
+# k apply -f settings.configmap.yml
+```
+
+
+
+**Storing  individual Keys/values in ENV**
+
+```yaml
+        # Map env variable data to a ConfigMap property
+        env:
+        - name: ENEMIES
+          valueFrom:
+            configMapKeyRef:
+              name: app-settings
+              key: enemies
+              # optional: true  
+```
+
+**Storing all keys/values in one go**: envFrom
+
+```yaml
+ # Load all ConfigMap keys/values into environment variables (simplified way if you need them all vs. only a few as with "env" above)
+        envFrom:
+        - configMapRef:
+            name: app-settings
+```
+
+
+
+**Storing  key/values in Files: each key is converted to a file**
+
+```yaml
+apiVersion: apps/v1
+...
+spec:
+  template:
+    ...
+spec:
+    volumes:
+    - name: app-config-vol
+            configMap:
+              name: app-settings
+     containers:
+        volumeMounts:
+          - name: app-config-vol
+            mountPath: /etc/config
+  
+```
+
+
+
+# Secrets
+
+```bash
+# Create a secret and store securely in Kubernetes
+kubectl create secret generic my-secret --from-literal=pwd=my-password
+
+# Create a secret from a file
+kubectl create secret generic my-secret --from-file=ssh-privatekey=~/.ssh/id_rsa --from-file=ssh-publickey=~/.ssh/id_rsa.pub
+
+# Create a secret from a key pair
+kubectl create secret tls tls-secret --cert=path/to/tls.cert --key=path/to/tls.key
+
+#get a secret
+kubectl get secrets
+
+kubectl get secrets <secret-name> -o yaml
+
+```
+
+ **Pull secrets** & create env variable
+
+```yaml
+ # Pull password from secrets
+ 			env:
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-passwords
+              key: db-password
+```
+
+
+
+**Pull Secrets & create files**
+
+```yaml
+apiVersion: apps/v1
+...
+spec:
+  template:
+    ...
+	spec:
+    volumes:
+      - name: secrets
+        secret:
+          secretName: db-passwords
+        containers:
+        volumeMounts:
+          - name: secrets
+            mountPath: /etc/db-passwords
+            readOnly: true
+```
+
+
+
+# Troubleshooting
+
+```bash
+# View the logs for a Pod's container
+kubectl logs [pod-name]
+
+# View the logs for a specific container within a Pod
+kubectl logs [pod-name] –c [container-name]
+
+# View the logs for a previously running Pod
+kubectl logs -p [pod-name]
+
+# Stream a Pod's logs
+kubectl logs -f [pod-name]
+
+# Describe a Pod
+kubectl describe pod [pod-name]
+
+# Change a Pod's output format
+kubectl get pod [pod-name] –o yaml
+
+# Change a Deployment's output format
+kubectl get deployment [deployment-name] –o yaml
+
+# Shell into a Pod container
+kubectl exec [pod-name] –it sh
+```
+
+
+
+
+
+# References
+
+https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands
+
